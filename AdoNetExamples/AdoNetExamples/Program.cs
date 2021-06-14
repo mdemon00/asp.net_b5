@@ -21,13 +21,17 @@ namespace AdoNetExamples
             //myorm.Delete(1);
 
             var students = myorm.GetAll();
-
             foreach (var person in students)
             {
                 Console.WriteLine($"Id: {person.Id} ");
                 Console.WriteLine($"Name: {person.Name} ");
                 Console.WriteLine($"Weight: {person.Weight} ");
             }
+
+            //var single_student = myorm.GetById(1);
+            //Console.WriteLine($"Id: {single_student.Id} ");
+            //Console.WriteLine($"Name: {single_student.Name} ");
+            //Console.WriteLine($"Weight: {single_student.Weight} ");
         }
     }
 }

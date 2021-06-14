@@ -17,7 +17,7 @@ namespace AdoNetExamples
         }
 
         public MyORM(string connectionString)
-            :this(new SqlConnection(connectionString))
+            : this(new SqlConnection(connectionString))
         {
 
         }
@@ -95,7 +95,7 @@ namespace AdoNetExamples
 
             foreach (var property in properties)
             {
-                if(property.Name != "Id")
+                if (property.Name != "Id")
                 {
                     sql.Append(property.Name)
                         .Append('=')
@@ -140,7 +140,7 @@ namespace AdoNetExamples
             Delete(item.Id);
         }
 
-        public void Delete (int id)
+        public void Delete(int id)
         {
             var type = this.GetType();
             var param = type.GetGenericArguments();
@@ -156,7 +156,7 @@ namespace AdoNetExamples
                 {
                     // Delete after adding the VALUE
                     command.CommandText = sql.ToString();
-                    command.Parameters.AddWithValue("@Id" , id);
+                    command.Parameters.AddWithValue("@Id", id);
                     command.ExecuteNonQuery();
                 }
             }
@@ -172,45 +172,96 @@ namespace AdoNetExamples
 
         public IList<T> GetAll()
         {
-            //var sql2 = "select * from student";
-            //var students = ReadOperation(sql2, connection);
-
             var type = this.GetType();
             var param = type.GetGenericArguments();
 
             var sql = $"SELECT * FROM {param[0].Name}";
-
-            if (_sqlConnection.State == ConnectionState.Closed)
-                _sqlConnection.Open();
-
-            using SqlCommand command = new SqlCommand(sql, _sqlConnection);
-
-            var reader = command.ExecuteReader();
-
             var results = new List<T>();
 
-            while (reader.Read())
+            try
             {
-                
-                var item = Activator.CreateInstance<T>(); //create a instance of given class
-                foreach (var property in typeof(T).GetProperties())
+                if (_sqlConnection.State == ConnectionState.Closed)
+                    _sqlConnection.Open();
+
+                using (var command = _sqlConnection.CreateCommand())
                 {
-                    if (!reader.IsDBNull(reader.GetOrdinal(property.Name))) //check null
+                    command.CommandText = sql.ToString();
+
+                    var reader = command.ExecuteReader();
+
+                    while (reader.Read())
                     {
-                        Type convertTo = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType; //get the type of property 
-                        property.SetValue(item, Convert.ChangeType(reader[property.Name], convertTo), null); //cast the reader with that property
+                        var item = Activator.CreateInstance<T>(); //create a instance of given class
+                        foreach (var property in typeof(T).GetProperties())
+                        {
+                            if (!reader.IsDBNull(reader.GetOrdinal(property.Name))) //check null
+                            {
+                                Type convertTo = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType; //get the type of property 
+                                property.SetValue(item, Convert.ChangeType(reader[property.Name], convertTo), null); //cast the reader with that property
+                            }
+                        }
+                        results.Add(item);
                     }
                 }
-                results.Add(item);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                _sqlConnection.Close();
             }
 
             return results;
-
         }
 
         public T GetById(int id)
         {
-            throw new NotImplementedException();
+            var type = this.GetType();
+            var param = type.GetGenericArguments();
+
+            var sql = $"SELECT * FROM {param[0].Name} WHERE Id = @Id;";
+            var results = new List<T>();
+
+            try
+            {
+                if (_sqlConnection.State == ConnectionState.Closed)
+                    _sqlConnection.Open();
+
+                using (var command = _sqlConnection.CreateCommand())
+                {
+                    command.CommandText = sql.ToString();
+
+                        command.Parameters.AddWithValue("@Id", id); //assign id
+
+                    var reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        var item = Activator.CreateInstance<T>(); //create a instance of given class
+                        foreach (var property in typeof(T).GetProperties())
+                        {
+                            if (!reader.IsDBNull(reader.GetOrdinal(property.Name))) //check null
+                            {
+                                Type convertTo = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType; //get the type of property 
+                                property.SetValue(item, Convert.ChangeType(reader[property.Name], convertTo), null); //cast the reader with that property
+                            }
+                        }
+                        results.Add(item);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+
+            return results[0];
         }
     }
 }
