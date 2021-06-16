@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -24,48 +23,21 @@ namespace AdoNetExamples
 
         }
 
-        public void Test(T item)
+
+        public void TestAction(Type type, PropertyInfo[] properties, object obj, 
+            Type BaseType, int BaseTypeId)
         {
-            var type = item.GetType();
-            var properties = type.GetProperties();
-            foreach (var property in properties)
-            {
-
-                if (!property.PropertyType.IsPrimitive)
-                {
-                    // Check if it a COllection type by IEnumerable which is implemented
-                    // by every single collection, even by arrays
-                    if (property.PropertyType.GetInterfaces()
-                       .Any(x => x == typeof(IEnumerable)))
-                    {
-                         //This is a only nested class with collections
-                    }
-                    else //This is a only nested class
-                    {
-                        var newtype = property.PropertyType;
-                        var newproperties = newtype.GetProperties();
-
-                        foreach (var newproperty in newproperties)
-                        {
-                            Console.WriteLine(newproperty.Name);
-                        }
-
-                    }
-                }
-            }
-        }
-        public void Insert(T item)
-        {
-            var type = item.GetType();
-            var properties = type.GetProperties();
-
             /*---building the INSERT command started---*/
             var sql = new StringBuilder($"Insert into {type.Name} (");
 
             foreach (var property in properties)
             {
-                sql.Append(' ').Append(property.Name).Append(',');
+                if (property.PropertyType.IsPrimitive) // avoid non-premitive properties
+                    sql.Append(' ').Append(property.Name).Append(',');
             }
+
+            if (BaseType != null) // nested class checking
+                sql.Append(' ').Append($"{BaseType.Name}Id").Append(',');
 
             sql.Remove(sql.Length - 1, 1); //removing extra (,)
 
@@ -73,8 +45,12 @@ namespace AdoNetExamples
 
             foreach (var property in properties)
             {
-                sql.Append('@').Append(property.Name).Append(',');
+                if (property.PropertyType.IsPrimitive) // avoid non-premitive properties
+                    sql.Append('@').Append(property.Name).Append(',');
             };
+
+            if (BaseType != null) // nested class checking
+                sql.Append($"@{BaseType.Name}Id").Append(',');
 
             sql.Remove(sql.Length - 1, 1);
             sql.Append(");");
@@ -95,8 +71,13 @@ namespace AdoNetExamples
                     command.CommandText = sql.ToString();
                     foreach (var property in properties)
                     {
-                        command.Parameters.AddWithValue("@" + property.Name, property.GetValue(item));
+                        if (property.PropertyType.IsPrimitive) // avoid non-premitive properties
+                            command.Parameters.AddWithValue("@" + property.Name, property.GetValue(obj));
                     }
+
+                    if (BaseType != null) // nested class checking
+                        command.Parameters.AddWithValue($"@{BaseType.Name}Id", BaseTypeId);
+
                     command.ExecuteNonQuery();
 
                     // turn OFF IDENTITY_INSERT
@@ -112,6 +93,60 @@ namespace AdoNetExamples
             {
                 _sqlConnection.Close();
             }
+
+            // search for more nested classes if any
+            foreach (var property in properties)
+            {
+                if (!property.PropertyType.IsPrimitive)
+                {
+                    // Check if it a COllection type properties by IEnumerable which is implemented
+                    // by every single collection, even by arrays
+                    if (property.PropertyType.GetInterfaces()
+                       .Any(x => x == typeof(IEnumerable)))
+                    {
+                        // This is a nested class with collections
+                    }
+                    else // Now Insert nested class if any 
+                    {
+                        var newobj = property.GetValue(obj);
+                        var newtype = property.PropertyType;
+                        var newproperties = newtype.GetProperties();
+                        var CurrentClassID = type.GetProperty("Id").GetValue(obj);
+
+                        TestAction(newtype, newproperties, newobj, type,(int)CurrentClassID);
+                    }
+                }
+            }
+        }
+        public void Insert(T item)
+        {
+            var type = item.GetType();
+            var properties = type.GetProperties();
+
+            // Insert Base Class first
+            TestAction(type, properties, item, null, 0);
+
+            //foreach (var property in properties)
+            //{
+            //    if (!property.PropertyType.IsPrimitive)
+            //    {
+            //        // Check if it a COllection type properties by IEnumerable which is implemented
+            //        // by every single collection, even by arrays
+            //        if (property.PropertyType.GetInterfaces()
+            //           .Any(x => x == typeof(IEnumerable)))
+            //        {
+            //            // This is a nested class with collections
+            //        }
+            //        else // Now Insert nested class if any 
+            //        {
+            //            var newobj = property.GetValue(item);
+            //            var newtype = property.PropertyType;
+            //            var newproperties = newtype.GetProperties();
+
+            //            TestAction(newtype, newproperties, newobj, type, item.Id);
+            //        }
+            //    }
+            //}
         }
 
         public void Update(T item)

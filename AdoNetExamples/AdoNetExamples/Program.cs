@@ -6,7 +6,6 @@ namespace AdoNetExamples
     class House : IData
     {
         public int Id { get; set; }
-        public List<Room> Rooms { get; set; }
         public Room Room { get; set; }
     }
 
@@ -14,6 +13,26 @@ namespace AdoNetExamples
     {
         public int Id { get; set; }
         public double Rent { get; set; }
+        public Door Door { get; set; }
+        public Window Window { get; set; }
+    }
+    class Door : IData
+    {
+        public int Id { get; set; }
+        public double Height { get; set; }
+        public Camera Camera { get; set; }
+    }
+
+    class Window : IData
+    {
+        public int Id { get; set; }
+        public double size { get; set; }
+    }
+
+    class Camera : IData
+    {
+        public int Id { get; set; }
+        public int CameraPX { get; set; }
     }
     class Program
     {
@@ -28,10 +47,26 @@ namespace AdoNetExamples
 
             var house = new House
             {
-                Id = 2,
-                Rooms = new List<Room>
+                Id = 1,
+                Room = new Room
                 {
-                    new Room { Id = 1, Rent = 5000 }
+                    Id = 2,
+                    Rent = 5879,
+                    Door = new Door
+                    {
+                        Id = 3,
+                        Height = 10.5,
+                        Camera = new Camera
+                        {
+                            Id = 7,
+                            CameraPX = 5
+                        }
+                    },
+                    Window = new Window
+                    {
+                        Id = 5,
+                        size = 55.5
+                    }
                 }
             };
 
@@ -54,7 +89,7 @@ namespace AdoNetExamples
             //Console.WriteLine($"Name: {single_student.Name} ");
             //Console.WriteLine($"Weight: {single_student.Weight} ");
 
-            myorm.Test(house);
+            myorm.Insert(house);
         }
     }
 }
