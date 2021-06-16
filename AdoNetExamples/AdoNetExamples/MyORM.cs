@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -22,6 +24,36 @@ namespace AdoNetExamples
 
         }
 
+        public void Test(T item)
+        {
+            var type = item.GetType();
+            var properties = type.GetProperties();
+            foreach (var property in properties)
+            {
+
+                if (!property.PropertyType.IsPrimitive)
+                {
+                    // Check if it a COllection type by IEnumerable which is implemented
+                    // by every single collection, even by arrays
+                    if (property.PropertyType.GetInterfaces()
+                       .Any(x => x == typeof(IEnumerable)))
+                    {
+                         //This is a only nested class with collections
+                    }
+                    else //This is a only nested class
+                    {
+                        var newtype = property.PropertyType;
+                        var newproperties = newtype.GetProperties();
+
+                        foreach (var newproperty in newproperties)
+                        {
+                            Console.WriteLine(newproperty.Name);
+                        }
+
+                    }
+                }
+            }
+        }
         public void Insert(T item)
         {
             var type = item.GetType();
