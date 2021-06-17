@@ -23,9 +23,7 @@ namespace AdoNetExamples
 
         }
 
-
-        public void TestAction(Type type, PropertyInfo[] properties, object obj, 
-            Type BaseType, int BaseTypeId)
+        public StringBuilder InsertCommand(Type type, PropertyInfo[] properties, Type BaseType)
         {
             /*---building the INSERT command started---*/
             var sql = new StringBuilder($"Insert into {type.Name} (");
@@ -49,12 +47,58 @@ namespace AdoNetExamples
                     sql.Append('@').Append(property.Name).Append(',');
             };
 
-            if (BaseType != null) // nested class checking
-                sql.Append($"@{BaseType.Name}Id").Append(',');
+            if (BaseType != null) // nested class checking 
+                sql.Append($"@{BaseType.Name}Id").Append(','); // adding base class Id for foreign relationship
 
             sql.Remove(sql.Length - 1, 1);
             sql.Append(");");
             /*---building the INSERT command completed---*/
+
+            return sql;
+        }
+
+        public void NestedChecking(Type type, PropertyInfo[] properties, object obj)
+        {
+            foreach (var property in properties)
+            {
+                if (!property.PropertyType.IsPrimitive)
+                {
+                    // Check if it a COllection of nested classes by IEnumerable which is implemented
+                    // by every single collection, even by arrays
+                    if (property.PropertyType.GetInterfaces()
+                       .Any(x => x == typeof(IEnumerable)))
+                    {
+                        if (property.PropertyType.IsGenericType &&
+                            property.PropertyType.GetGenericTypeDefinition() == typeof(IList<>))
+                        {
+                            var list = property.GetValue(obj) as IList;
+                            foreach (var newobj in list)
+                            {
+                                var newtype = property.PropertyType.GetGenericArguments()[0];
+                                var newproperties = newtype.GetProperties();
+                                var CurrentClassId = type.GetProperty("Id").GetValue(obj);
+
+                                TestAction(newtype, newproperties, newobj, type, (int)CurrentClassId);
+                            }
+                        }
+                    }
+                    else // This is a nested class
+                    {
+                        var newobj = property.GetValue(obj);
+                        var newtype = property.PropertyType;
+                        var newproperties = newtype.GetProperties();
+                        var CurrentClassId = type.GetProperty("Id").GetValue(obj);
+
+                        TestAction(newtype, newproperties, newobj, type, (int)CurrentClassId);
+                    }
+                }
+            }
+        }
+
+        public void TestAction(Type type, PropertyInfo[] properties, object obj,
+            Type BaseType, int BaseTypeId)
+        {
+            var sql = InsertCommand(type, properties, BaseType);
 
             try
             {
@@ -94,29 +138,8 @@ namespace AdoNetExamples
                 _sqlConnection.Close();
             }
 
-            // search for more nested classes if any
-            foreach (var property in properties)
-            {
-                if (!property.PropertyType.IsPrimitive)
-                {
-                    // Check if it a COllection type properties by IEnumerable which is implemented
-                    // by every single collection, even by arrays
-                    if (property.PropertyType.GetInterfaces()
-                       .Any(x => x == typeof(IEnumerable)))
-                    {
-                        // This is a nested class with collections
-                    }
-                    else // Now Insert nested class if any 
-                    {
-                        var newobj = property.GetValue(obj);
-                        var newtype = property.PropertyType;
-                        var newproperties = newtype.GetProperties();
-                        var CurrentClassID = type.GetProperty("Id").GetValue(obj);
-
-                        TestAction(newtype, newproperties, newobj, type,(int)CurrentClassID);
-                    }
-                }
-            }
+            // search for nested classes if any
+            NestedChecking(type, properties, obj);
         }
         public void Insert(T item)
         {
@@ -125,28 +148,6 @@ namespace AdoNetExamples
 
             // Insert Base Class first
             TestAction(type, properties, item, null, 0);
-
-            //foreach (var property in properties)
-            //{
-            //    if (!property.PropertyType.IsPrimitive)
-            //    {
-            //        // Check if it a COllection type properties by IEnumerable which is implemented
-            //        // by every single collection, even by arrays
-            //        if (property.PropertyType.GetInterfaces()
-            //           .Any(x => x == typeof(IEnumerable)))
-            //        {
-            //            // This is a nested class with collections
-            //        }
-            //        else // Now Insert nested class if any 
-            //        {
-            //            var newobj = property.GetValue(item);
-            //            var newtype = property.PropertyType;
-            //            var newproperties = newtype.GetProperties();
-
-            //            TestAction(newtype, newproperties, newobj, type, item.Id);
-            //        }
-            //    }
-            //}
         }
 
         public void Update(T item)
@@ -300,7 +301,7 @@ namespace AdoNetExamples
                 {
                     command.CommandText = sql.ToString();
 
-                        command.Parameters.AddWithValue("@Id", id); //assign id
+                    command.Parameters.AddWithValue("@Id", id); //assign id
 
                     var reader = command.ExecuteReader();
 

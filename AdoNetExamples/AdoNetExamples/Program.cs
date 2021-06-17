@@ -6,7 +6,7 @@ namespace AdoNetExamples
     class House : IData
     {
         public int Id { get; set; }
-        public Room Room { get; set; }
+        public IList<Room> Room { get; set; }
     }
 
     class Room : IData
@@ -48,24 +48,47 @@ namespace AdoNetExamples
             var house = new House
             {
                 Id = 1,
-                Room = new Room
+                Room = new List<Room>
                 {
-                    Id = 2,
-                    Rent = 5879,
-                    Door = new Door
+                    new Room
                     {
-                        Id = 3,
-                        Height = 10.5,
-                        Camera = new Camera
+                        Id = 1,
+                        Rent = 10000,
+                        Door = new Door
                         {
-                            Id = 7,
-                            CameraPX = 5
+                            Id = 1,
+                            Height = 10.5,
+                            Camera = new Camera
+                            {
+                                Id = 1,
+                                CameraPX = 5
+                            }
+                        },
+                        Window = new Window
+                        {
+                            Id = 1,
+                            size = 55.5
                         }
                     },
-                    Window = new Window
+                    new Room
                     {
-                        Id = 5,
-                        size = 55.5
+                        Id = 2,
+                        Rent = 7879,
+                        Door = new Door
+                        {
+                            Id = 2,
+                            Height = 70.5,
+                            Camera = new Camera
+                            {
+                                Id = 2,
+                                CameraPX = 1
+                            }
+                        },
+                        Window = new Window
+                        {
+                            Id = 2,
+                            size = 75.5
+                        }
                     }
                 }
             };
