@@ -23,9 +23,9 @@ namespace AdoNetExamples
 
         }
 
-        public List<String> _deletelist = new List<String>() { };
+        private List<String> _deletelist = new List<String>() { };
 
-        public List<Object> _obj = new List<object>() { };
+        private List<Object> _obj = new List<object>() { };
 
         public void Insert(T item)
         {
@@ -148,7 +148,7 @@ namespace AdoNetExamples
             return (T)_obj[0];
         }
 
-        public void ReadWritePropertiesRecursive(Type type, object obj, PropertyInfo[] properties, string mode,
+        private void ReadWritePropertiesRecursive(Type type, object obj, PropertyInfo[] properties, string mode,
             int Id = 0, string root = "")
         {
             int _id;
@@ -332,7 +332,7 @@ namespace AdoNetExamples
 
         }
 
-        public StringBuilder InsertCommandBuilder(Type type, PropertyInfo[] properties, Type BaseType)
+        private StringBuilder InsertCommandBuilder(Type type, PropertyInfo[] properties, Type BaseType)
         {
             var sql = new StringBuilder($"Insert into {type.Name} (");
 
@@ -363,7 +363,7 @@ namespace AdoNetExamples
 
             return sql;
         }
-        public StringBuilder UpdateCommandBuider(Type type, PropertyInfo[] properties, Type BaseType)
+        private StringBuilder UpdateCommandBuider(Type type, PropertyInfo[] properties, Type BaseType)
         {
             var sql = new StringBuilder($"UPDATE {type.Name} SET ");
 
@@ -385,7 +385,7 @@ namespace AdoNetExamples
             sql.Append(" WHERE Id = ").Append("@Id");
             return sql;
         }
-        public void InsertCommandAction(SqlCommand command, Type type, Type BaseType, StringBuilder sql,
+        private void InsertCommandAction(SqlCommand command, Type type, Type BaseType, StringBuilder sql,
     PropertyInfo[] properties, object obj, int BaseTypeId)
         {
             // turn ON IDENTITY_INSERT
@@ -409,7 +409,7 @@ namespace AdoNetExamples
             command.CommandText = $"SET IDENTITY_INSERT {type.Name} OFF";
             command.ExecuteNonQuery();
         }
-        public void UpdateCommandAction(SqlCommand command, Type type, Type BaseType, StringBuilder sql,
+        private void UpdateCommandAction(SqlCommand command, Type type, Type BaseType, StringBuilder sql,
     PropertyInfo[] properties, object obj, int BaseTypeId)
         {
             // Update after adding the VALUES
@@ -429,7 +429,7 @@ namespace AdoNetExamples
                 command.ExecuteNonQuery();
         }
 
-        public void NestedChecking(Type type, PropertyInfo[] properties, object obj, string action)
+        private void NestedChecking(Type type, PropertyInfo[] properties, object obj, string action)
         {
             foreach (var property in properties)
             {
@@ -467,7 +467,7 @@ namespace AdoNetExamples
             }
         }
 
-        public void DbWriteHelper(Type type, PropertyInfo[] properties, object obj,
+        private void DbWriteHelper(Type type, PropertyInfo[] properties, object obj,
             Type BaseType, int BaseTypeId, string action)
         {
             StringBuilder sql = new StringBuilder();
