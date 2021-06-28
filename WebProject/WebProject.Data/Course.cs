@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WebProject.Data
 {
@@ -8,5 +9,6 @@ namespace WebProject.Data
         public string Title { get; set; }
         public int Fees { get; set; }
         public DateTime StartDate { get; set; }
+        List<Topic> Topics { get; set; }
     }
 }
