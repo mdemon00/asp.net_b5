@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebProject.Data;
+using WebProject.Training.Context;
 
 namespace WebProject.Data.Migrations
 {
@@ -19,7 +19,7 @@ namespace WebProject.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("WebProject.Data.Course", b =>
+            modelBuilder.Entity("WebProject.Training.Entities.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace WebProject.Data.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("WebProject.Data.Student", b =>
+            modelBuilder.Entity("WebProject.Training.Entities.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace WebProject.Data.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("WebProject.Data.Topic", b =>
+            modelBuilder.Entity("WebProject.Training.Entities.Topic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,8 +71,8 @@ namespace WebProject.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Name")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -81,15 +81,15 @@ namespace WebProject.Data.Migrations
                     b.ToTable("Topics");
                 });
 
-            modelBuilder.Entity("WebProject.Data.Topic", b =>
+            modelBuilder.Entity("WebProject.Training.Entities.Topic", b =>
                 {
-                    b.HasOne("WebProject.Data.Course", "course")
+                    b.HasOne("WebProject.Training.Entities.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("course");
+                    b.Navigation("Course");
                 });
 #pragma warning restore 612, 618
         }
