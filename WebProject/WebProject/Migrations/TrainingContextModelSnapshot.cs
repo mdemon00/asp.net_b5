@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProject.Training.Context;
 
-namespace WebProject.Data.Migrations
+namespace WebProject.Migrations
 {
     [DbContext(typeof(TrainingContext))]
-    [Migration("20210629085918_AddCoursesAndTopics")]
-    partial class AddCoursesAndTopics
+    partial class TrainingContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,6 +38,21 @@ namespace WebProject.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("WebProject.Training.Entities.CourseStudents", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseId", "StudentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("CourseStudents");
                 });
 
             modelBuilder.Entity("WebProject.Training.Entities.Student", b =>
@@ -83,15 +96,46 @@ namespace WebProject.Data.Migrations
                     b.ToTable("Topics");
                 });
 
+            modelBuilder.Entity("WebProject.Training.Entities.CourseStudents", b =>
+                {
+                    b.HasOne("WebProject.Training.Entities.Course", "Course")
+                        .WithMany("EnrolledStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProject.Training.Entities.Student", "Student")
+                        .WithMany("EnrolledCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("WebProject.Training.Entities.Topic", b =>
                 {
                     b.HasOne("WebProject.Training.Entities.Course", "Course")
-                        .WithMany()
+                        .WithMany("Topics")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("WebProject.Training.Entities.Course", b =>
+                {
+                    b.Navigation("EnrolledStudents");
+
+                    b.Navigation("Topics");
+                });
+
+            modelBuilder.Entity("WebProject.Training.Entities.Student", b =>
+                {
+                    b.Navigation("EnrolledCourses");
                 });
 #pragma warning restore 612, 618
         }

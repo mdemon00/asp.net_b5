@@ -10,5 +10,7 @@ namespace WebProject.Training
     public interface ICourseService
     {
         IList<Course> GetAllCourses();
+        void EnrollStudent(Course course, Student student);
+        void CreateCourse(Course course);
     }
 }

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebProject.Common;
 using WebProject.Data;
 using WebProject.Training;
 using WebProject.Training.Context;
@@ -44,6 +45,7 @@ namespace WebProject
 
             builder.RegisterModule(new TrainingModule(connectionInfo.connectionString,
                 connectionInfo.migrationAssemblyName));
+            builder.RegisterModule(new CommonModule());
             builder.RegisterModule(new WebModule());
         }
 

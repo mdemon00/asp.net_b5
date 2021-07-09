@@ -4,9 +4,86 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Courses</h1>
+@section Styles
+{
+    <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+}
 
-@foreach(var course in Model.Courses)
-            {
-                <h1>@course.Title</h1><h2>@course.Fees</h2><br />
-            }
+@section Scripts
+{
+    <!-- DataTables  & Plugins -->
+    <script src="/admin/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    
+    <!-- Page specific script -->
+    <script>
+        $(function () {
+            $("#courses").DataTable();
+        });
+    </script>
+}
+
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>Available Courses</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active">DataTables</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">All Available Course</h3>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <table id="courses" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Fees</th>
+                                                <th>Start Date(s)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var course in Model.Courses)
+                                            {
+                                                <tr>
+                                                    <td>@course.Title</td>
+                                                    <td>@course.Fees</td>
+                                                    <td>@course.StartDate</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Fees</th>
+                                                <th>StartDate</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                            <!-- /.card -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+            </section>
+            <!-- /.content -->

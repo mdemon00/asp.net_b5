@@ -24,12 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WebProject.Common\WebProject.Common.csproj" />
     <ProjectReference Include="..\WebProject.Data\WebProject.Data.csproj" />
     <ProjectReference Include="..\WebProject.Training\WebProject.Training.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>
