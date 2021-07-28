@@ -11,7 +11,6 @@ namespace WebProject.Areas.Admin.Models
     public class CourseListModel
     {
         private ICourseService _courseService;
-        public IList<Course> Courses { get; set; }
         public CourseListModel()
         {
             _courseService = Startup.AutofacContainer.Resolve<ICourseService>();
@@ -21,9 +20,33 @@ namespace WebProject.Areas.Admin.Models
             _courseService = courseService;
         }
 
-        public void LoadModelData()
+        internal object GetCourses(DataTablesAjaxRequestModel tableModel)
         {
-            Courses = _courseService.GetAllCourses();
+            var data = _courseService.GetCourses(
+                tableModel.PageIndex,
+                tableModel.PageSize,
+                tableModel.SearchText,
+                tableModel.GetSortText(new string[] { "Title", "Fees", "StartDate" }));
+
+            return new
+            {
+                recordsTotal = data.total,
+                recordsFiltered = data.totalDisplay,
+                data = (from record in data.records
+                        select new string[]
+                        {
+                                record.Title,
+                                record.Fees.ToString(),
+                                record.StartDate.ToString(),
+                                record.Id.ToString()
+                        }
+                  ).ToArray()
+            };
+        }
+
+        internal void Delete(int id)
+        {
+            _courseService.DeleteCourse(id);
         }
     }
 }

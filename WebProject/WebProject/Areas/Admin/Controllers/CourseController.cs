@@ -19,10 +19,16 @@ namespace WebProject.Areas.Admin.Controllers
         public IActionResult Index() 
         {
             var model = new CourseListModel();
-            model.LoadModelData();
             return View(model);
         }
 
+        public JsonResult GetCourseData()
+        {
+            var dataTablesModel = new DataTablesAjaxRequestModel(Request);
+            var model = new CourseListModel();
+            var data = model.GetCourses(dataTablesModel);
+            return Json(data);
+        }
         public IActionResult Enroll()
         {
             var model = new EnrollStudentModel();
@@ -61,6 +67,35 @@ namespace WebProject.Areas.Admin.Controllers
                 }
             }
             return View(model);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var model = new EditCourseModel();
+            model.LoadModelData(id);
+
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Edit(EditCourseModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.Update();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            var model = new CourseListModel();
+
+            model.Delete(id);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
