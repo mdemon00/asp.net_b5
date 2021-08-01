@@ -1,0 +1,112 @@
+﻿@model CustomerListModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $('#customers').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/Admin/Customer/GetCustomerData",
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": 3,
+                        "render": function (data, type, row) {
+                            return `<td>
+                                <div class="form-button-action">
+                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/admin/customer/edit/${data}'" value='${data}'>
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div></td>`;
+                        }
+                    }
+                ]
+
+            });
+            $('#customers').on('click', '.show-delete-modal', function (event) {
+                var id = $(this).data("id");
+                var modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+                $("#deleteId").val(id);
+                $("#deleteForm").attr("action", "/admin/customer/delete")
+                modal.modal('show');
+            });
+            $("#deleteButton").click(function () {
+                $("#deleteForm").submit();
+            });
+        });
+    </script>
+}
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Customers</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">admin</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">customers </a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">All Available Customers</h4>
+                        <button class="btn btn-primary btn-round ml-auto" onclick="window.location.href='/admin/customer/create'">
+                            <i class="fa fa-plus"></i>
+                            Create a new Customer
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="table-responsive">
+                        <table id="customers" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Address</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Address</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <partial name="_DeletePopupPartial" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

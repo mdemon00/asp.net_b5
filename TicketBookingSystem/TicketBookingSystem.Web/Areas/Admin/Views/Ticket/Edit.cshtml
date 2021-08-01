@@ -1,0 +1,74 @@
+﻿@model EditTicketModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Edit Ticket</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">admin</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">edit ticket</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Edit an Existing Ticket</div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <form id="customerform" class="form-horizontal" method="post" asp-controller="Ticket"
+                                  asp-action="Edit" asp-antiforgery="true">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label asp-for="CustomerId">Customer Id</label>
+                                    <input asp-for="CustomerId" type="text" class="form-control" id="customerid" placeholder="Enter CustomerId">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Destination">Destination</label>
+                                    <input asp-for="Destination" type="text" class="form-control" id="destination" placeholder="Enter Destination">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="TicketFee">Ticket Fee</label>
+                                    <input asp-for="TicketFee" type="text" class="form-control" id="ticketfee" placeholder="Enter TicketFee">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <button id="btnsubmit" class="btn btn-success">Submit</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/admin/ticket/'">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#btnsubmit").click(function () {
+        $("#customerform").submit();
+    });
+</script>

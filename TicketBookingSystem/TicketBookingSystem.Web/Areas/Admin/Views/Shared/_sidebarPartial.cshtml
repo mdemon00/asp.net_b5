@@ -1,0 +1,31 @@
+﻿@{
+    var controller = @ViewContext.RouteData.Values["controller"].ToString();
+
+    var customer = (controller == "Customer") ? "active" : "";
+    var ticket = (controller == "Ticket") ? "active" : "";
+}
+
+<!-- Sidebar -->
+<div class="sidebar sidebar-style-2">
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+        <div class="sidebar-content">
+            <ul class="nav nav-primary">
+                <li class="nav-item @customer">
+                    <a href="/admin/customer" class="collapsed" aria-expanded="false">
+                        <i class="fas fa-users"></i>
+                        <p>Customers</p>
+                        <span class="caret"></span>
+                    </a>
+                </li>
+                <li class="nav-item @ticket">
+                    <a href="/admin/ticket" class="collapsed" aria-expanded="false">
+                        <i class="fas fa-ticket-alt"></i>
+                        <p>Tickets</p>
+                        <span class="caret"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Sidebar -->
