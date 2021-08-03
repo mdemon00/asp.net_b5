@@ -2,6 +2,7 @@
     var controller = @ViewContext.RouteData.Values["controller"].ToString();
 
     var product = (controller == "Product") ? "active" : "";
+    var stock = (controller == "Stock") ? "active" : "";
 }
 
 <!-- Sidebar -->
@@ -13,6 +14,13 @@
                     <a href="/admin/product" class="collapsed" aria-expanded="false">
                         <i class="fas fa-shopping-basket"></i>
                         <p>Products</p>
+                        <span class="caret"></span>
+                    </a>
+                </li>
+                <li class="nav-item @stock">
+                    <a href="/admin/stock" class="collapsed" aria-expanded="false">
+                        <i class="fas fa-boxes"></i>
+                        <p>Stocks</p>
                         <span class="caret"></span>
                     </a>
                 </li>

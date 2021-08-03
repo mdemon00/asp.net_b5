@@ -1,4 +1,4 @@
-﻿@model EditProductModel
+﻿@model EditStockModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +6,7 @@
 
 <div class="page-inner">
     <div class="page-header">
-        <h4 class="page-title">Edit Product</h4>
+        <h4 class="page-title">Edit Stock</h4>
         <ul class="breadcrumbs">
             <li class="nav-home">
                 <a href="#">
@@ -23,7 +23,7 @@
                 <i class="flaticon-right-arrow"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Edit product</a>
+                <a href="#">Edit stock</a>
             </li>
         </ul>
     </div>
@@ -31,22 +31,22 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">Edit a New Product</div>
+                    <div class="card-title">Edit a New Stock</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 col-lg-12">
-                            <form id="productform" class="form-horizontal" method="post" asp-controller="product"
+                            <form id="stockform" class="form-horizontal" method="post" asp-controller="stock"
                                   asp-action="Edit" asp-antiforgery="true">
                                 <div asp-validation-summary="All" class="text-danger"></div>
                                 <div class="form-group">
-                                    <label asp-for="Name">Name</label>
-                                    <input asp-for="Name" type="text" class="form-control" id="name" placeholder="Enter Name">
+                                    <label asp-for="ProductId">ProductId</label>
+                                    <input asp-for="ProductId" type="text" class="form-control" id="productId" placeholder="Enter ProductId">
                                     <small id="" class="form-text text-muted"></small>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="Price">Price</label>
-                                    <input asp-for="Price" type="text" class="form-control" id="price" placeholder="Enter Price">
+                                    <label asp-for="Quantity">Quantity</label>
+                                    <input asp-for="Quantity" type="text" class="form-control" id="quantity" placeholder="Enter Quantity">
                                     <small id="" class="form-text text-muted"></small>
                                 </div>
                             </form>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="card-action">
                     <button id="btnsubmit" class="btn btn-success">Submit</button>
-                    <button class="btn btn-danger" onclick="window.location.href='/admin/Product/'">Cancel</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/admin/Stock/'">Cancel</button>
                 </div>
             </div>
         </div>
@@ -64,6 +64,6 @@
 
 <script>
     $("#btnsubmit").click(function () {
-        $("#productform").submit();
+        $("#stockform").submit();
     });
 </script>

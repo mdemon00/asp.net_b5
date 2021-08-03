@@ -8,10 +8,12 @@ namespace InventorySystem.Stocking.UnitOfWorks
     public class StockingUnitOfWork : UnitOfWork, IStockingUnitOfWork
     {
         public IProductRepository Products { get; private set; }
+        public IStockRepository Stocks { get; private set; }
 
-        public StockingUnitOfWork(IStockingContext context, IProductRepository products) : base((DbContext)context)
+        public StockingUnitOfWork(IStockingContext context, IProductRepository products, IStockRepository stocks) : base((DbContext)context)
         {
             Products = products;
+            Stocks = stocks;
         }
     }
 }

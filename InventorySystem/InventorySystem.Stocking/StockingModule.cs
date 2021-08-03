@@ -40,6 +40,14 @@ namespace InventorySystem.Stocking
             builder.RegisterType<ProductService>().As<IProductService>()
             .InstancePerLifetimeScope();
             base.Load(builder);
+
+            builder.RegisterType<StockRepository>().As<IStockRepository>()
+            .InstancePerLifetimeScope();
+            base.Load(builder);
+
+            builder.RegisterType<StockService>().As<IStockService>()
+            .InstancePerLifetimeScope();
+            base.Load(builder);
         }
     }
 }

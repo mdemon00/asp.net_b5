@@ -26,6 +26,7 @@ namespace InventorySystem.Stocking.Contexts
 
         }
 
-        public DbSet<Product> products { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
     }
 }
