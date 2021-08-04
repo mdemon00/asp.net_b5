@@ -1,0 +1,69 @@
+﻿@model EditPhotoModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Edit Photo</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">admin</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">edit photo</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Edit an Existing Photo</div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <form id="photoform" class="form-horizontal" method="post" asp-controller="Photo"
+                                  asp-action="Edit" asp-antiforgery="true">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label asp-for="MemberId">Member Id</label>
+                                    <input asp-for="MemberId" type="text" class="form-control" id="photoid" placeholder="Enter Member Id">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PhotoFileName">Photo File Name</label>
+                                    <input asp-for="PhotoFileName" type="text" class="form-control" id="photofilename" placeholder="Enter Photo File Name">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <button id="btnsubmit" class="btn btn-success">Submit</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/admin/photo/'">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#btnsubmit").click(function () {
+        $("#photoform").submit();
+    });
+</script>

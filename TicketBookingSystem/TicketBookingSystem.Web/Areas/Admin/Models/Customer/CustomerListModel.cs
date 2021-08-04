@@ -34,7 +34,7 @@ namespace TicketBookingSystem.Web.Areas.Admin.Models
                         {
                                 record.Name,
                                 record.Age.ToString(),
-                                record.Address.ToString(),
+                                record.Address,
                                 record.Id.ToString()
                         }
                     ).ToArray()

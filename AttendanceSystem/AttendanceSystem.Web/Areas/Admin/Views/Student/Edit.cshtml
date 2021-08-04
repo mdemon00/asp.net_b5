@@ -1,0 +1,69 @@
+﻿@model EditStudentModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Edit Student</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">admin</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Edit student</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Edit a New Student</div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <form id="studentform" class="form-horizontal" method="post" asp-controller="student"
+                                  asp-action="Edit" asp-antiforgery="true">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label asp-for="Name">Name</label>
+                                    <input asp-for="Name" type="text" class="form-control" id="name" placeholder="Enter Name">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="StudentRollNumber">StudentRollNumber</label>
+                                    <input asp-for="StudentRollNumber" type="text" class="form-control" id="age" placeholder="Enter Student Roll">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <button id="btnsubmit" class="btn btn-success">Submit</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/admin/Student/'">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#btnsubmit").click(function () {
+        $("#studentform").submit();
+    });
+</script>

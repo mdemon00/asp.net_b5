@@ -1,0 +1,69 @@
+﻿@model CreateAttendanceModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Create Attendance</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">admin</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">create attendance</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Create a New Attendance</div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <form id="attendanceform" class="form-horizontal" method="post" asp-controller="attendance"
+                                  asp-action="Create" asp-antiforgery="true">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label asp-for="StudentId">Student Id</label>
+                                    <input asp-for="StudentId" type="text" class="form-control" id="studentid" placeholder="Enter Student Id">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Date">Date</label>
+                                    <input asp-for="Date" type="text" class="form-control" id="date" placeholder="Enter Date">
+                                    <small id="" class="form-text text-muted"></small>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <button id="btnsubmit" class="btn btn-success">Submit</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/admin/Attendance/'">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#btnsubmit").click(function () {
+        $("#attendanceform").submit();
+    });
+</script>
