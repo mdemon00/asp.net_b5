@@ -1,6 +1,5 @@
 ﻿using AttendanceSystem.Attending.BuisnessObjects;
 using AttendanceSystem.Attending.Services;
-using AttendanceSystem.Common.Utilities;
 using Autofac;
 using System;
 using System.ComponentModel.DataAnnotations;

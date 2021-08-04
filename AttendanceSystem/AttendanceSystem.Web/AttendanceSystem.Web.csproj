@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AttendanceSystem.Attending\AttendanceSystem.Attending.csproj" />
-    <ProjectReference Include="..\AttendanceSystem.Common\AttendanceSystem.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
