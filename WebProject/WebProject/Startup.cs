@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,12 +10,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebProject.Common;
 using WebProject.Data;
+using WebProject.Membership;
+using WebProject.Membership.BuisnessObjects;
+using WebProject.Membership.Contexts;
+using WebProject.Membership.Entities;
+using WebProject.Membership.Services;
 using WebProject.Training;
 using WebProject.Training.Context;
 
@@ -47,6 +54,8 @@ namespace WebProject
                 connectionInfo.migrationAssemblyName));
             builder.RegisterModule(new CommonModule());
             builder.RegisterModule(new WebModule());
+            builder.RegisterModule(new MembershipModule(connectionInfo.connectionString,
+                connectionInfo.migrationAssemblyName));
         }
 
         private (string connectionString, string migrationAssemblyName) GetConnectionStringAndAssemblyName()
@@ -63,16 +72,45 @@ namespace WebProject
             var connectionInfo = GetConnectionStringAndAssemblyName();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionInfo.connectionString));
+                options.UseSqlServer(connectionInfo.connectionString, b =>
+                b.MigrationsAssembly(connectionInfo.migrationAssemblyName)));
 
             services.AddDbContext<TrainingContext>(options =>
                 options.UseSqlServer(connectionInfo.connectionString, b =>
                 b.MigrationsAssembly(connectionInfo.migrationAssemblyName)));
 
-            services.AddDefaultIdentity<IdentityUser>(options =>
-                options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            // Identity customization started here
+            services
+                .AddIdentity<ApplicationUser, Role>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserManager<UserManager>()
+                .AddRoleManager<RoleManager>()
+                .AddSignInManager<SignInManager>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
             services.AddRazorPages();
@@ -96,6 +134,24 @@ namespace WebProject
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddAuthorization(
+                options =>
+                {
+                    options.AddPolicy("AdminAccess", policy =>
+                    {
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireRole("Admin");
+                        policy.RequireRole("Teacher");
+                    });
+
+                    options.AddPolicy("ViewPermission", policy =>
+                    {
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new ViewRequirement());
+                    });
+                });
+
+            services.AddSingleton<IAuthorizationHandler, ViewRequirementHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

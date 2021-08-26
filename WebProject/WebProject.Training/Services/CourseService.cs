@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebProject.Common;
@@ -11,10 +12,12 @@ namespace WebProject.Training
     {
         private readonly ITrainingUnitOfWork _trainingUnitOfWork;
         private readonly IDateTimeUtility _dateTimeUtility;
-        public CourseService(ITrainingUnitOfWork trainingUnitOfWork, IDateTimeUtility dateTimeUtility)
+        private readonly IMapper _mapper;
+        public CourseService(ITrainingUnitOfWork trainingUnitOfWork, IDateTimeUtility dateTimeUtility, IMapper mapper)
         {
             _trainingUnitOfWork = trainingUnitOfWork;
             _dateTimeUtility = dateTimeUtility;
+            _mapper = mapper;
         }
         public IList<Course> GetAllCourses()
         {
@@ -23,13 +26,7 @@ namespace WebProject.Training
 
             foreach(var entity in courseEntities)
             {
-                var course = new Course
-                {
-                    Id = entity.Id,
-                    Title = entity.Title,
-                    Fees = entity.Fees,
-                    StartDate = entity.StartDate
-                };
+                var course = _mapper.Map<Course>(entity);
 
                 courses.Add(course);
             }
@@ -48,15 +45,11 @@ namespace WebProject.Training
                 throw new InvalidOperationException("Start date should be atleast 30 days ahead");
 
 
-                _trainingUnitOfWork.Courses.Add(
-                new Entities.Course
-                {
-                    Title = course.Title,
-                    Fees = course.Fees,
-                    StartDate = course.StartDate
-                });
+            _trainingUnitOfWork.Courses.Add(
+            _mapper.Map<Entities.Course>(course)
+            );
 
-                _trainingUnitOfWork.Save();
+            _trainingUnitOfWork.Save();
 
         }
 
@@ -93,13 +86,7 @@ namespace WebProject.Training
             var courseData =_trainingUnitOfWork.Courses.GetDynamic(string.IsNullOrWhiteSpace(searchText) ? null : x => x.Title.Contains(searchText), sorttext, string.Empty, pageIndex, pageSize);
 
             var resultData = (from course in courseData.data
-                          select new Course
-                          {
-                              Id = course.Id,
-                              Title = course.Title,
-                              Fees = course.Fees,
-                              StartDate = course.StartDate
-                          }).ToList();
+                          select _mapper.Map<Course>(course)).ToList();
             return (resultData, courseData.total, courseData.totalDisplay);
         }
 
@@ -108,13 +95,7 @@ namespace WebProject.Training
             var course = _trainingUnitOfWork.Courses.GetById(id);
 
             if (course == null) return null;
-            return new Course
-            {
-                Id = course.Id,
-                Title = course.Title,
-                Fees = course.Fees,
-                StartDate = course.StartDate
-            };
+            return _mapper.Map<Course>(course);
         }
 
         public void UpdateCourse(Course course)
@@ -129,9 +110,7 @@ namespace WebProject.Training
 
             if(courseEntity != null)
             {
-                courseEntity.Title = course.Title;
-                courseEntity.Fees = course.Fees;
-                courseEntity.StartDate = course.StartDate;
+                _mapper.Map(course, courseEntity);
 
                 _trainingUnitOfWork.Save();
             }
