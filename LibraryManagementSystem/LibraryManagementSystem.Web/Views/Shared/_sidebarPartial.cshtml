@@ -1,0 +1,34 @@
+﻿@{
+    var controller = @ViewContext.RouteData.Values["controller"].ToString();
+
+    var book = (controller == "Book") ? "active" : "";
+    var author = (controller == "Author") ? "active" : "";
+}
+
+<!-- Sidebar -->
+<div class="sidebar sidebar-style-2">
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+        <div class="sidebar-content">
+            <ul class="nav nav-primary">
+                <li class="nav-item @book">
+                    <a href="/book" class="collapsed" aria-expanded="false">
+                        <i class="fas fa-book"></i>
+                        <p>Books</p>
+                        <span class="caret"></span>
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="nav nav-primary">
+                <li class="nav-item @author">
+                    <a href="/author" class="collapsed" aria-expanded="false">
+                        <i class="fas fa-users"></i>
+                        <p>Authors</p>
+                        <span class="caret"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Sidebar -->
