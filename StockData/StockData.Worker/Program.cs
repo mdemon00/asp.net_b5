@@ -19,7 +19,8 @@ namespace StockData.Worker
 
         public static void Main(string[] args)
         {
-            _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false)
+            _configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false)
                 .AddEnvironmentVariables()
                 .Build();
 

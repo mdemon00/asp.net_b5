@@ -1,4 +1,5 @@
 using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StockData.Scraping.BuisnessObjects;
@@ -20,9 +21,15 @@ namespace StockData.Worker
         private readonly ILogger<Worker> _logger;
         private readonly ICompanyService _companyService;
         private readonly IStockPriceService _stockPriceService;
+        private readonly IConfiguration _configuration;
 
         public Worker(ILogger<Worker> logger, ICompanyService companyService, IStockPriceService stockPriceService)
         {
+            _configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false)
+                .AddEnvironmentVariables()
+                .Build();
+
             _logger = logger;
             _companyService = companyService;
             _stockPriceService = stockPriceService;
@@ -32,52 +39,90 @@ namespace StockData.Worker
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                string url = "https://www.dse.com.bd/latest_share_price_scroll_l.php";
 
-                var htmlDoc = UrlHandlerModel.GetUrlResponse(url);
+                var url = _configuration.GetSection("Url").Get<List<string>>();
 
-                var sharesTableRows = htmlDoc.DocumentNode.SelectNodes("//table")
-                    .Where(a => a.HasClass("shares-table")).FirstOrDefault()
-                    .SelectNodes("tr | tbody/tr").ToList();
+                var htmlDoc = UrlHandlerModel.GetUrlResponse(url[0]);
 
-                if(sharesTableRows != null)
+                if (htmlDoc != null)
                 {
-                    foreach (var htmlrow in sharesTableRows)
-                    {
-                        var row = htmlrow.SelectNodes("td").ToList();
+                    string marketStatus = "";
 
-                        if(row.Count != 11)
+                    try
+                    {
+                        marketStatus = htmlDoc.DocumentNode.SelectNodes("//div/span")
+                           .Where(a => a.InnerText.Contains("Market Status:")).FirstOrDefault()
+                           .SelectNodes("span/b").FirstOrDefault()
+                           .InnerText.Trim();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("{0} : Can't get Market Status {1}", DateTimeOffset.Now, ex);
+                    }
+
+                    if (marketStatus == "Open")
+                    {
+                        IList<HtmlNode> sharesTableRows = null;
+
+                        try
                         {
-                            _logger.LogError("{1} : Cells length mitch matched on Row No: {0}", row[0], DateTimeOffset.Now);
-                            break;
+                            sharesTableRows = htmlDoc.DocumentNode.SelectNodes("//table")
+                               .Where(a => a.HasClass("shares-table")).FirstOrDefault()
+                               .SelectNodes("tr | tbody/tr").ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError("{0} : Can't get Shares Table Rows {1}", DateTimeOffset.Now, ex);
                         }
 
-                        _companyService.CreateCompany(new Company() {
-                            TradeCode = row[1].InnerText.Trim() 
-                        });
-
-                        _stockPriceService.CreateStockPrice(new StockPrice()
+                        if (sharesTableRows != null)
                         {
-                            CompanyId = row[1].InnerText.Trim(),
-                            LastTradingPrice = Double.Parse(row[2].InnerText.Trim()),
-                            High = Double.Parse(row[3].InnerText.Trim()),
-                            Low = Double.Parse(row[4].InnerText.Trim()),
-                            ClosePrice = Double.Parse(row[5].InnerText.Trim()),
-                            YesterdayClosePrice = Double.Parse(row[6].InnerText.Trim()),
-                            Change = Double.Parse(row[7].InnerText.Trim()),
-                            Trade = Double.Parse(row[8].InnerText.Trim()),
-                            Value = Double.Parse(row[9].InnerText.Trim()),
-                            Volume = Double.Parse(row[10].InnerText.Trim())
-                        });
+                            foreach (var htmlrows in sharesTableRows)
+                            {
+                                var rows = htmlrows.SelectNodes("td").ToList();
 
+                                if (rows.Count != 11)
+                                {
+                                    _logger.LogError("{1} : Cells length mitch matched on Row No: {0}", rows[0], DateTimeOffset.Now);
+                                    break;
+                                }
+
+                                if (!_companyService.ExistsCompany(rows[1].InnerText.Trim()))
+                                {
+                                    _companyService.CreateCompany(new Company()
+                                    {
+                                        TradeCode = rows[1].InnerText.Trim()
+                                    });
+                                }
+
+                                _stockPriceService.CreateStockPrice(new StockPrice()
+                                {
+                                    CompanyId = rows[1].InnerText.Trim(),
+                                    LastTradingPrice = rows[2].InnerText.Trim().ConvertToDouble(),
+                                    High = rows[3].InnerText.Trim().ConvertToDouble(),
+                                    Low = rows[4].InnerText.Trim().ConvertToDouble(),
+                                    ClosePrice = rows[5].InnerText.Trim().ConvertToDouble(),
+                                    YesterdayClosePrice = rows[6].InnerText.Trim().ConvertToDouble(),
+                                    Change = rows[7].InnerText.Trim().ConvertToDouble(),
+                                    Trade = rows[8].InnerText.Trim().ConvertToDouble(),
+                                    Value = rows[9].InnerText.Trim().ConvertToDouble(),
+                                    Volume = rows[10].InnerText.Trim().ConvertToDouble()
+                                });
+
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogError("{time} : Found a empty Row List.", DateTimeOffset.Now);
+                        }
                     }
                 }
                 else
                 {
-                    _logger.LogError("{time} : Found a empty List.", DateTimeOffset.Now);
+                    _logger.LogError("No Url response");
                 }
 
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(60000, stoppingToken);
             }
         }
 

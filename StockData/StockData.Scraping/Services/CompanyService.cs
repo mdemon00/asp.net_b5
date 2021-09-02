@@ -28,5 +28,12 @@ namespace StockData.Scraping.Services
             _scrapingUnitOfWork.Save();
         }
 
+        public bool ExistsCompany(string tradeCode)
+        {
+            var exists = _scrapingUnitOfWork.Companies.GetAll().Any(x => x.TradeCode == tradeCode);
+
+            return exists;
+        }
+
     }
 }

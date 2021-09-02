@@ -11,5 +11,10 @@ namespace StockData.Scraping.Repositories
         {
 
         }
+
+        public StockPrice GetStockPrice(string tradeCode)
+        {
+            return _dbSet.Find(tradeCode);
+        }
     }
 }

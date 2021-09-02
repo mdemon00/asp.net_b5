@@ -1,6 +1,7 @@
 ﻿using StockData.Scraping.BuisnessObjects;
 using StockData.Scraping.UnitOfWorks;
 using StockData.Scraping.Exceptions;
+using System;
 
 namespace StockData.Scraping.Services
 {
@@ -33,6 +34,5 @@ namespace StockData.Scraping.Services
 
             _scrapingUnitOfWork.Save();
         }
-
     }
 }

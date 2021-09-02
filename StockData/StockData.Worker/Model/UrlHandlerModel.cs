@@ -13,9 +13,17 @@ namespace StockData.Worker.Model
     {
         public static HtmlDocument GetUrlResponse(string url)
         {
-            HtmlDocument htmlDoc = new HtmlDocument();
-            string urlResponse = URLRequest(url);
-            htmlDoc.LoadHtml(urlResponse);
+            var urlResponse = "";
+            HtmlDocument htmlDoc = null;
+
+            try 
+            {
+                urlResponse = URLRequest(url);
+
+                htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(urlResponse);
+            }
+            catch { } //Error not handled intentionally
 
             return htmlDoc;
         }

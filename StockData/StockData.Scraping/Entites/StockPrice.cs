@@ -1,4 +1,6 @@
 ﻿using StockData.Data;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockData.Scraping.Entites
 {

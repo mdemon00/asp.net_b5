@@ -9,7 +9,7 @@ using StockData.Scraping.Contexts;
 namespace StockData.Scraping.Migrations
 {
     [DbContext(typeof(ScrapingContext))]
-    [Migration("20210901182524_AddCompanyAndStockPrice")]
+    [Migration("20210902113650_AddCompanyAndStockPrice")]
     partial class AddCompanyAndStockPrice
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
