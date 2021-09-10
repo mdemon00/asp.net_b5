@@ -1,0 +1,485 @@
+﻿@*@model ContactsListModel*@
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*@section Styles{
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    }*@
+@*@section Scripts
+    {
+        <script>
+            $(function () {
+                $('#contacts').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": "/member/Contacts/GetContactsData",
+                    "columnDefs": [
+                        {
+                            "orderable": false,
+                            "targets": 1,
+                            "render": function (data, type, row) {
+                                return `<td>
+                                    <div class="form-button-action">
+                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contacts/edit/${data}'" value='${data}'>
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div></td>`;
+                            }
+                        }
+                    ]
+                });
+                $('#contacts').on('click', '.show-delete-modal', function (event) {
+                    var id = $(this).data("id");
+                    var modal = $("#modal-default");
+                    modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+                    $("#deleteId").val(id);
+                    $("#deleteForm").attr("action", "/member/contacts/delete")
+                    modal.modal('show');
+                });
+                $("#deleteButton").click(function () {
+                    $("#deleteForm").submit();
+                });
+            });
+        </script>
+    }*@
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Contactss</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">member</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">contacts </a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">All Available Contacts</h4>
+
+                        <a class="btn btn-info btn-border btn-round btn-sm mr-2 ml-auto" data-toggle="modal" data-target="#importModal">
+                            Import
+                        </a>
+                        <a class="btn btn-info btn-border btn-round btn-sm mr-2" data-toggle="modal" data-target="#exportModal">
+                            <i class="fa fa-print"></i>
+                            Export
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="form-check form-check-inline mb-2">
+                        <input id="toggle-event" class="form-check-input" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="danger" data-size="xs" checked>
+                        <h5 class="ml-2 mt-2">Advance Search</h5>
+                    </div>
+
+                    <div class="collapse mb-3 show" id="advance-search">
+                        <div class="col-md-12">
+                            <form id="clear">
+                                <div class="row">
+                                    <div class="col-md-2 pl-1">
+                                        <div class="form-group">
+                                            <label>Group</label>
+                                            <select name="Job" class="form-control">
+                                                <option>student</option>
+                                                <option>teacher</option>
+                                                <option>drive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 pl-1">
+                                        <div class="form-group">
+                                            <label>From</label>
+                                            <input type="text" id="date-min" name="datepicker" class="form-control" placeholder="From:">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 pl-1">
+                                        <div class="form-group">
+                                            <label>To</label>
+                                            <input type="text" id="date-max" name="datepicker" class="form-control" placeholder="To:">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 pl-1 mt-auto">
+                                        <div class="form-group">
+                                            <a class="btn btn-primary btn-default" href="#"><i class="fa fa-filter "></i> Filter</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 pl-1 mt-auto">
+                                        <div class="form-group">
+                                            <a class="btn btn-secondary btn-default " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Export Modal -->
+                    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header no-bd">
+                                    <h5 class="modal-title">
+                                        <span class="fw-mediumbold">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New
+                                        </span>
+                                        <span class="fw-light">
+                                            Export
+                                        </span>
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <div class="form-group mr-auto w-50">
+                                                        <label>From Group</label>
+                                                        <select name="Job" class="form-control">
+                                                            <option>student</option>
+                                                            <option>teacher</option>
+                                                            <option>drive</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                    <div class="input-group">
+                                                        <input type="email" class="form-control" aria-label="Text input with dropdown button">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary">Send To Email</button>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer no-bd">
+                                    <button type="button" id="addRowButton" class="btn btn-primary">Download Now</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Import Modal -->
+                    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header no-bd">
+                                    <h5 class="modal-title">
+                                        <span class="fw-mediumbold">
+                                            New
+                                        </span>
+                                        <span class="fw-light">
+                                            Upload
+                                        </span>
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="upload.php" class="dropzone">
+                                        <div class="dz-message" data-dz-message>
+                                            <div class="icon">
+                                                <i class="flaticon-file"></i>
+                                            </div>
+                                            <h4 class="message">Drag and Drop files here</h4>
+                                            <div class="note">(This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)</div>
+                                        </div>
+                                        <div class="fallback">
+                                            <input name="file" type="file" multiple />
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer no-bd">
+                                    <div class="form-group mr-auto w-50">
+                                        <label style="position: absolute;margin-top: -29px; width: 50%;">Select a group where to Import.</label>
+                                        <select name="Job" class="form-control">
+                                            <option>student</option>
+                                            <option>teacher</option>
+                                            <option>drive</option>
+                                        </select>
+                                    </div>
+
+                                    <button type="button" id="addRowButton" class="btn btn-primary">Import</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-md-8">
+            <div class="form-group">
+                <label>Input Date Picker</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="datepicker" name="datepicker">
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                    @*<div class="text-center">
+            <a class="btn btn-success btn-lg " href="#"><i class="fa fa-filter "></i> Filter</a>
+            <a class="btn btn-secondary btn-lg " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
+        </div>*@
+                    <div class="table-responsive">
+                        <table id="contacts" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Office</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Office</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                <tr>
+                                    <td>Tiger Nixon</td>
+                                    <td>System Architect</td>
+                                    <td>Edinburgh</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Garrett Winters</td>
+                                    <td>Accountant</td>
+                                    <td>Tokyo</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ashton Cox</td>
+                                    <td>Junior Technical Author</td>
+                                    <td>San Francisco</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Cedric Kelly</td>
+                                    <td>Senior Javascript Developer</td>
+                                    <td>Edinburgh</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Airi Satou</td>
+                                    <td>Accountant</td>
+                                    <td>Tokyo</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Brielle Williamson</td>
+                                    <td>Integration Specialist</td>
+                                    <td>New York</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Herrod Chandler</td>
+                                    <td>Sales Assistant</td>
+                                    <td>San Francisco</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Rhona Davidson</td>
+                                    <td>Integration Specialist</td>
+                                    <td>Tokyo</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Colleen Hurst</td>
+                                    <td>Javascript Developer</td>
+                                    <td>San Francisco</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Sonya Frost</td>
+                                    <td>Software Engineer</td>
+                                    <td>Edinburgh</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <partial name="_DeletePopupPartial" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    >
+
+    <script>
+        $(document).ready(function () {
+
+            // Add Row
+            $('#contacts').DataTable({
+                "pageLength": 5,
+            });
+        });
+
+
+        $('#date-min').datetimepicker({
+            format: 'MM/DD/YYYY',
+        });
+
+        $('#date-max').datetimepicker({
+            format: 'MM/DD/YYYY',
+        });
+
+        $(function () {
+            $('#toggle-event').change(function () {
+                /*                $('#console-event').html('Toggle: ' + $(this).prop('checked'))*/
+                if ($(this).prop('checked')) {
+                    $('#advance-search').addClass("show");
+                }
+                else {
+                    $('#advance-search').removeClass("show");
+                }
+
+            })
+        })
+
+        $(document).ready(function () {
+            Dropzone.autoDiscover = false;
+            //Simple Dropzonejs 
+            $("#dZUpload").dropzone({
+                url: "hn_SimpeFileUploader.ashx",
+                addRemoveLinks: true,
+                success: function (file, response) {
+                    var imgName = response;
+                    file.previewElement.classList.add("dz-success");
+                    console.log("Successfully uploaded : " + imgName);
+                },
+                error: function (file, response) {
+                    file.previewElement.classList.add("dz-error");
+                }
+            });
+        });
+    </script>
+
+}

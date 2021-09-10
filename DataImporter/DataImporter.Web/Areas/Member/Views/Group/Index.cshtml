@@ -1,0 +1,141 @@
+﻿@model GroupListModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $('#groups').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/member/Group/GetGroupData",
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": 1,
+                        "render": function (data, type, row) {
+                            return `<td>
+                                <div class="form-button-action">
+                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/group/edit/${data}'" value='${data}'>
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div></td>`;
+                        }
+                    }
+                ]
+            });
+            $('#groups').on('click', '.show-delete-modal', function (event) {
+                var id = $(this).data("id");
+                var modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+                $("#deleteId").val(id);
+                $("#deleteForm").attr("action", "/member/group/delete")
+                modal.modal('show');
+            });
+            $("#deleteButton").click(function () {
+                $("#deleteForm").submit();
+            });
+        });
+    </script>
+}
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Groups</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="#">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">member</a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">groups </a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">All Available Groups</h4>
+                        <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#addRowModal">
+                            <i class="fa fa-plus"></i>
+                            Create a new Group
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Modal -->
+                    <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header no-bd">
+                                    <h5 class="modal-title">
+                                        <span class="fw-mediumbold">
+                                            New
+                                        </span>
+                                        <span class="fw-light">
+                                            Group
+                                        </span>
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="largeInput">Name</label>
+                                                    <input type="text" class="form-control form-control" id="groupInput" placeholder="Enter Name">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer no-bd">
+                                    <button type="button" id="addRowButton" class="btn btn-primary">Add</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="groups" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Group Name</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Group Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <partial name="_DeletePopupPartial" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
