@@ -8,5 +8,8 @@ namespace DataImporter.Importing.UnitOfWorks
     public interface IImportingUnitOfWork : IUnitOfWork
     {
         IGroupRepository Groups { get; }
+        IColumnRepository Columns { get; }
+        IRowRepository Rows { get; }
+        ICellRepository Cells { get; }
     }
 }

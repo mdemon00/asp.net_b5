@@ -2,19 +2,15 @@
 using DataImporter.Importing.Contexts;
 using DataImporter.Importing.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace DataImporter.Importing.Repositories
 {
-    public class GroupRepository : Repository<Group, int>,
-        IGroupRepository
+    public class ColumnRepository : Repository<Column, int>,
+    IColumnRepository
     {
-        public GroupRepository(IImportingContext context)
+        public ColumnRepository(IImportingContext context)
             : base((DbContext)context)
         {
         }
-
-
     }
 }

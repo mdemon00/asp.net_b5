@@ -9,6 +9,9 @@ namespace DataImporter.Importing.Profiles
         public ImportingProfile()
         {
             CreateMap<EO.Group, BO.Group>().ReverseMap();
+            CreateMap<EO.Column, BO.Column>().ReverseMap();
+            CreateMap<EO.Row, BO.Row>().ReverseMap();
+            CreateMap<EO.Cell, BO.Cell>().ReverseMap();
         }
     }
 }

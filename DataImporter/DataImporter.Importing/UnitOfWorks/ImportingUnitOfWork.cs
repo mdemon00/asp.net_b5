@@ -9,12 +9,18 @@ namespace DataImporter.Importing.UnitOfWorks
     public class ImportingUnitOfWork : UnitOfWork, IImportingUnitOfWork
     {
         public IGroupRepository Groups { get; private set; }
+        public IColumnRepository Columns { get; private set; }
+        public IRowRepository Rows { get; private set; }
+        public ICellRepository Cells { get; private set; }
 
         public ImportingUnitOfWork(IImportingContext context,
-            IGroupRepository groups
+            IGroupRepository groups, IColumnRepository columns, IRowRepository rows, ICellRepository cells
             ) : base((DbContext)context)
         {
             Groups = groups;
+            Columns = columns;
+            Rows = rows;
+            Cells = cells;
         }
     }
 }

@@ -29,13 +29,36 @@ namespace DataImporter.Importing
                 .WithParameter("migrationAssemblyName", _migrationAssemblyName)
                 .InstancePerLifetimeScope();
 
+
             builder.RegisterType<GroupRepository>().As<IGroupRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ColumnRepository>().As<IColumnRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<RowRepository>().As<IRowRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CellRepository>().As<ICellRepository>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ImportingUnitOfWork>().As<IImportingUnitOfWork>()
                 .InstancePerLifetimeScope();
 
+
             builder.RegisterType<GroupService>().As<IGroupService>()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ColumnService>().As<IColumnService>()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<RowService>().As<IRowService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ContactService>().As<IContactService>()
+    .InstancePerLifetimeScope();
+
+            builder.RegisterType<CellService>().As<ICellService>()
                 .InstancePerLifetimeScope();
 
             base.Load(builder);

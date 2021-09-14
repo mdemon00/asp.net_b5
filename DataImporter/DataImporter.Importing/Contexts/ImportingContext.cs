@@ -26,7 +26,9 @@ namespace DataImporter.Importing.Contexts
             base.OnConfiguring(dbContextOptionsBuilder);
         }
 
-
         public DbSet<Group> Groups { get; set; }
+        public DbSet<Column> Columns { get; set; }
+        public DbSet<Row> Rows { get; set; }
+        public DbSet<Cell> Cells { get; set; }
     }
 }

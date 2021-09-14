@@ -22,6 +22,8 @@ namespace DataImporter.Data
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "", int pageIndex = 1, int pageSize = 10, bool isTrackingOff = false);
 
+        TEntity GetDynamic(Expression<Func<TEntity, bool>> filter = null);
+
         (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
             Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null,

@@ -26,7 +26,7 @@ namespace DataImporter.Importing.Services
             var groupEntities = _importingUnitOfWork.Groups.GetAll();
             var groups = new List<Group>();
 
-            foreach(var entity in groupEntities)
+            foreach (var entity in groupEntities)
             {
                 var group = _mapper.Map<Group>(entity);
                 groups.Add(group);
@@ -42,7 +42,7 @@ namespace DataImporter.Importing.Services
 
             if (IsNameAlreadyUsed(group.Name))
                 throw new DuplicateNameException("Group name already exists");
-            
+
             _importingUnitOfWork.Groups.Add(
                 _mapper.Map<Entities.Group>(group)
             );
@@ -56,11 +56,11 @@ namespace DataImporter.Importing.Services
         private bool IsNameAlreadyUsed(string name, int id) =>
             _importingUnitOfWork.Groups.GetCount(x => x.Name == name && x.Id != id) > 0;
 
-        public (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize, 
+        public (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize,
             string searchText, string sortText)
         {
             var groupData = _importingUnitOfWork.Groups.GetDynamic(
-                string.IsNullOrWhiteSpace(searchText)? null: x => x.Name.Contains(searchText), 
+                string.IsNullOrWhiteSpace(searchText) ? null : x => x.Name.Contains(searchText),
                 sortText, string.Empty, pageIndex, pageSize);
 
             var resultData = (from gr in groupData.data
@@ -78,6 +78,16 @@ namespace DataImporter.Importing.Services
             return _mapper.Map<Group>(group);
         }
 
+        public Group GetGroup(string name)
+        {
+            var group = _importingUnitOfWork.Groups.GetDynamic(
+                string.IsNullOrWhiteSpace(name) ? null : x => x.Name.Contains(name));
+
+            if (group == null) return null;
+
+            return _mapper.Map<Group>(group);
+
+        }
         public void UpdateGroup(Group group)
         {
             if (group == null)

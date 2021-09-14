@@ -98,23 +98,23 @@
                         <div class="col-md-12">
                             <form id="clear">
                                 <div class="row">
-                                    <div class="col-md-2 pl-1">
-                                        <div class="form-group">
-                                            <label>Group</label>
-                                            <select name="Job" class="form-control">
-                                                <option>student</option>
-                                                <option>teacher</option>
-                                                <option>drive</option>
+                                    <div class="form-group col-md-2 pl-1">
+                                        <label>Group</label>
+                                        <div class=" select2-input">
+                                            <select id="multiple" name="multiple[]" class="form-control" multiple="multiple">
+                                                <option value="AL">student</option>
+                                                <option value="AA">teacher</option>
+                                                <option value="AP">drive</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2 pl-1">
+                                    <div class="col-md-2 pl-1 mt-auto">
                                         <div class="form-group">
                                             <label>From</label>
                                             <input type="text" id="date-min" name="datepicker" class="form-control" placeholder="From:">
                                         </div>
                                     </div>
-                                    <div class="col-md-2 pl-1">
+                                    <div class="col-md-2 pl-1 mt-auto">
                                         <div class="form-group">
                                             <label>To</label>
                                             <input type="text" id="date-max" name="datepicker" class="form-control" placeholder="To:">
@@ -136,55 +136,7 @@
                     </div>
 
                     <!-- Export Modal -->
-                    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header no-bd">
-                                    <h5 class="modal-title">
-                                        <span class="fw-mediumbold">
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New
-                                        </span>
-                                        <span class="fw-light">
-                                            Export
-                                        </span>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <div class="form-group mr-auto w-50">
-                                                        <label>From Group</label>
-                                                        <select name="Job" class="form-control">
-                                                            <option>student</option>
-                                                            <option>teacher</option>
-                                                            <option>drive</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                    <div class="input-group">
-                                                        <input type="email" class="form-control" aria-label="Text input with dropdown button">
-                                                        <div class="input-group-append">
-                                                            <button class="btn btn-primary">Send To Email</button>
-                                                        </div>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer no-bd">
-                                    <button type="button" id="addRowButton" class="btn btn-primary">Download Now</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_ExportModalPartial" />
 
                     <!-- Import Modal -->
                     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -431,8 +383,6 @@
 </div>
 
 @section Scripts{
-    >
-
     <script>
         $(document).ready(function () {
 

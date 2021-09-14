@@ -20,7 +20,7 @@ namespace DataImporter.Data
             _dbContext = context;
             _dbSet = _dbContext.Set<TEntity>();
         }
-        
+
         public virtual void Add(TEntity entity)
         {
             _dbSet.Add(entity);
@@ -97,6 +97,18 @@ namespace DataImporter.Data
             return _dbSet.Find(id);
         }
 
+        public virtual TEntity GetDynamic(Expression<Func<TEntity, bool>> filter = null)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return query.FirstOrDefault();
+        }
+
         public virtual (IList<TEntity> data, int total, int totalDisplay) Get(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -139,7 +151,7 @@ namespace DataImporter.Data
         public virtual (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
             Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null,
-            string includeProperties = "", int pageIndex = 1, int pageSize = 10, bool isTrackingOff = false)
+            string includeProperties = null, int pageIndex = 1, int pageSize = 10, bool isTrackingOff = false)
         {
             IQueryable<TEntity> query = _dbSet;
             var total = query.Count();
@@ -151,11 +163,15 @@ namespace DataImporter.Data
                 totalDisplay = query.Count();
             }
 
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            if (includeProperties != null)
             {
-                query = query.Include(includeProperty);
+                foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
             }
+
 
             if (orderBy != null)
             {
@@ -221,10 +237,13 @@ namespace DataImporter.Data
                 query = query.Where(filter);
             }
 
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            if(includeProperties != null)
             {
-                query = query.Include(includeProperty);
+                foreach (var includeProperty in includeProperties.Split
+    (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
             }
 
             if (orderBy != null)
