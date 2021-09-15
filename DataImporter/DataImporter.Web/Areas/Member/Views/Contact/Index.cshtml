@@ -1,56 +1,57 @@
-﻿@*@model ContactsListModel*@
+﻿@model ContactListModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
 @*@section Styles{
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-    }*@
-@*@section Scripts
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+}*@
+
+@section Scripts
     {
-        <script>
-            $(function () {
-                $('#contacts').DataTable({
-                    "processing": true,
-                    "serverSide": true,
-                    "ajax": "/member/Contacts/GetContactsData",
-                    "columnDefs": [
-                        {
-                            "orderable": false,
-                            "targets": 1,
-                            "render": function (data, type, row) {
-                                return `<td>
-                                    <div class="form-button-action">
-                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contacts/edit/${data}'" value='${data}'>
-                                            <i class="fa fa-edit"></i>
-                                        </button>
-                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                    </div></td>`;
-                            }
+    <script>
+        $(function () {
+            $('#contacts').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/member/Contact/GetContactsData",
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": 2,
+                        "render": function (data, type, row) {
+                            return `<td>
+                                        <div class="form-button-action">
+                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div></td>`;
                         }
-                    ]
-                });
-                $('#contacts').on('click', '.show-delete-modal', function (event) {
-                    var id = $(this).data("id");
-                    var modal = $("#modal-default");
-                    modal.find('.modal-body p').text('Are you sure you want to delete this record?')
-                    $("#deleteId").val(id);
-                    $("#deleteForm").attr("action", "/member/contacts/delete")
-                    modal.modal('show');
-                });
-                $("#deleteButton").click(function () {
-                    $("#deleteForm").submit();
-                });
+                    }
+                ]
             });
-        </script>
-    }*@
+            $('#contacts').on('click', '.show-delete-modal', function (event) {
+                var id = $(this).data("id");
+                var modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+                $("#deleteId").val(id);
+                $("#deleteForm").attr("action", "/member/contact/delete")
+                modal.modal('show');
+            });
+            $("#deleteButton").click(function () {
+                $("#deleteForm").submit();
+            });
+        });
+    </script>
+}
 
 <div class="page-inner">
     <div class="page-header">
-        <h4 class="page-title">Contactss</h4>
+        <h4 class="page-title">Contacts</h4>
         <ul class="breadcrumbs">
             <li class="nav-home">
                 <a href="#">
@@ -187,192 +188,39 @@
                         </div>
                     </div>
                     @*<div class="col-md-8">
-            <div class="form-group">
-                <label>Input Date Picker</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="datepicker" name="datepicker">
-                    <div class="input-group-append">
-                        <span class="input-group-text">
-                            <i class="fa fa-calendar"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>*@
+                            <div class="form-group">
+                                <label>Input Date Picker</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="datepicker" name="datepicker">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
                     @*<div class="text-center">
-            <a class="btn btn-success btn-lg " href="#"><i class="fa fa-filter "></i> Filter</a>
-            <a class="btn btn-secondary btn-lg " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
-        </div>*@
+                            <a class="btn btn-success btn-lg " href="#"><i class="fa fa-filter "></i> Filter</a>
+                            <a class="btn btn-secondary btn-lg " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
+                        </div>*@
                     <div class="table-responsive">
                         <table id="contacts" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
+                                    <th style="width: 10%">A</th>
+                                    <th style="width: 10%">B</th>
                                     <th style="width: 10%">Action</th>
                                 </tr>
+
                             </thead>
                             <tfoot>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
+                                    <th>A</th>
+                                    <th>B</th>
                                     <th>Action</th>
                                 </tr>
                             </tfoot>
-                            <tbody>
-                                <tr>
-                                    <td>Tiger Nixon</td>
-                                    <td>System Architect</td>
-                                    <td>Edinburgh</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Garrett Winters</td>
-                                    <td>Accountant</td>
-                                    <td>Tokyo</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Ashton Cox</td>
-                                    <td>Junior Technical Author</td>
-                                    <td>San Francisco</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Cedric Kelly</td>
-                                    <td>Senior Javascript Developer</td>
-                                    <td>Edinburgh</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Airi Satou</td>
-                                    <td>Accountant</td>
-                                    <td>Tokyo</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Brielle Williamson</td>
-                                    <td>Integration Specialist</td>
-                                    <td>New York</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Herrod Chandler</td>
-                                    <td>Sales Assistant</td>
-                                    <td>San Francisco</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Rhona Davidson</td>
-                                    <td>Integration Specialist</td>
-                                    <td>Tokyo</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Colleen Hurst</td>
-                                    <td>Javascript Developer</td>
-                                    <td>San Francisco</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Sonya Frost</td>
-                                    <td>Software Engineer</td>
-                                    <td>Edinburgh</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
                         </table>
                         <partial name="_DeletePopupPartial" />
                     </div>
@@ -382,54 +230,51 @@
     </div>
 </div>
 
-@section Scripts{
-    <script>
-        $(document).ready(function () {
+<script>
+    //$(document).ready(function () {
 
-            // Add Row
-            $('#contacts').DataTable({
-                "pageLength": 5,
-            });
-        });
+    //    // Add Row
+    //    $('#contacts').DataTable({
+    //        "pageLength": 5,
+    //    });
+    //});
 
 
-        $('#date-min').datetimepicker({
-            format: 'MM/DD/YYYY',
-        });
+    $('#date-min').datetimepicker({
+        format: 'MM/DD/YYYY',
+    });
 
-        $('#date-max').datetimepicker({
-            format: 'MM/DD/YYYY',
-        });
+    $('#date-max').datetimepicker({
+        format: 'MM/DD/YYYY',
+    });
 
-        $(function () {
-            $('#toggle-event').change(function () {
-                /*                $('#console-event').html('Toggle: ' + $(this).prop('checked'))*/
-                if ($(this).prop('checked')) {
-                    $('#advance-search').addClass("show");
-                }
-                else {
-                    $('#advance-search').removeClass("show");
-                }
+    $(function () {
+        $('#toggle-event').change(function () {
+            /*                $('#console-event').html('Toggle: ' + $(this).prop('checked'))*/
+            if ($(this).prop('checked')) {
+                $('#advance-search').addClass("show");
+            }
+            else {
+                $('#advance-search').removeClass("show");
+            }
 
-            })
         })
+    })
 
-        $(document).ready(function () {
-            Dropzone.autoDiscover = false;
-            //Simple Dropzonejs 
-            $("#dZUpload").dropzone({
-                url: "hn_SimpeFileUploader.ashx",
-                addRemoveLinks: true,
-                success: function (file, response) {
-                    var imgName = response;
-                    file.previewElement.classList.add("dz-success");
-                    console.log("Successfully uploaded : " + imgName);
-                },
-                error: function (file, response) {
-                    file.previewElement.classList.add("dz-error");
-                }
-            });
+    $(document).ready(function () {
+        Dropzone.autoDiscover = false;
+        //Simple Dropzonejs
+        $("#dZUpload").dropzone({
+            url: "hn_SimpeFileUploader.ashx",
+            addRemoveLinks: true,
+            success: function (file, response) {
+                var imgName = response;
+                file.previewElement.classList.add("dz-success");
+                console.log("Successfully uploaded : " + imgName);
+            },
+            error: function (file, response) {
+                file.previewElement.classList.add("dz-error");
+            }
         });
-    </script>
-
-}
+    });
+</script>

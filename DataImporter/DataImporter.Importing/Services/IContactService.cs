@@ -8,5 +8,6 @@ namespace DataImporter.Importing.Services
         void ImportSheet(string path, dynamic worksheetName, string groupName);
         (IList<Cell> records, int total, int totalDisplay) GetContacts(int pageIndex, int pageSize,
             string searchText, string sortText, string groupName);
+        List<Column> GetColums();
     }
 }

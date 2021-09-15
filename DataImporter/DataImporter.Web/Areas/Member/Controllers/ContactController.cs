@@ -1,4 +1,5 @@
 ﻿using DataImporter.Areas.Member.Models;
+using DataImporter.Common.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,7 +24,16 @@ namespace DataImporter.Web.Areas.Member.Controllers
             //var model = new CreateContactModel();
             //model.Create();
 
-            return View();
+            var model = new ContactListModel();
+            return View(model);
+        }
+
+        public JsonResult GetContactsData()
+        {
+            var dataTablesModel = new DataTablesAjaxRequestModel(Request);
+            var model = new ContactListModel();
+            var data = model.GetContacts(dataTablesModel);
+            return Json(data);
         }
     }
 }

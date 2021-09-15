@@ -92,29 +92,54 @@ namespace DataImporter.Importing.Services
 
             var groupId = _groupService.GetGroup(groupName).Id;
 
-            var rowsId = _importingUnitOfWork.Rows.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId,null,null,false)
+            var rowsId = _importingUnitOfWork.Rows.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId, null, null, false)
                 .Select(x => x.Id).ToList(); ;
 
 
-            var cellsData = _importingUnitOfWork.Cells.GetDynamic(x => rowsId.Contains(x.RowId), sortText, string.Empty, pageIndex, pageSize);
+            var cellsData = _importingUnitOfWork.Cells.GetDynamic(x => rowsId.Contains(x.RowId), null, null,false);
 
             List<Cell> resultData;
 
+            var total = cellsData.Count();
+            var totalDisplay = cellsData.Count();
+
             if (searchText != null)
             {
-                resultData = (from cell in cellsData.data
+                resultData = (from cell in cellsData
                               where cell.Data.Contains(searchText)
                               select _mapper.Map<Cell>(cell)).ToList();
+
+                totalDisplay = resultData.Count();
             }
             else
             {
-                 resultData = (from cell in cellsData.data
-                                  select _mapper.Map<Cell>(cell)).ToList();
+                resultData = (from cell in cellsData
+                              select _mapper.Map<Cell>(cell)).ToList();
             }
 
+            if (sortText != null)
+            {
+                var result = resultData.OrderBy(x => x.Data == sortText).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
+                    return (result, total, totalDisplay);
+            }
+            else
+            {
+                var result = resultData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-            return (resultData, cellsData.total, cellsData.totalDisplay);
+                return (result, total, totalDisplay);
+            }
+        }
+
+        public List<Column> GetColums()
+        {
+            List<Column> _columns = new List<Column>();
+
+            var columns = _columnService.GetAllColumns();
+
+            _mapper.Map(columns, _columns);
+
+            return _columns;
         }
     }
 }
