@@ -34,6 +34,14 @@ namespace DataImporter.Web.Areas.Member.Controllers
             var model = new ContactListModel();
             var data = model.GetContacts(dataTablesModel);
             return Json(data);
+        } 
+        
+        public JsonResult GetColumns()
+        {
+            var model = new ContactListModel();
+            var data = model.GetColums();
+
+            return Json(data);
         }
     }
 }

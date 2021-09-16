@@ -86,48 +86,76 @@ namespace DataImporter.Importing.Services
             }
         }
 
-        public (IList<Cell> records, int total, int totalDisplay) GetContacts(int pageIndex, int pageSize,
+        public (IList<string[]> records, int total, int totalDisplay) GetContacts(int pageIndex, int pageSize,
     string searchText, string sortText, string groupName)
         {
 
             var groupId = _groupService.GetGroup(groupName).Id;
-
             var rowsId = _importingUnitOfWork.Rows.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId, null, null, false)
+                .Skip(1)
                 .Select(x => x.Id).ToList(); ;
 
 
-            var cellsData = _importingUnitOfWork.Cells.GetDynamic(x => rowsId.Contains(x.RowId), null, null,false);
+            var cellsData = _importingUnitOfWork.Cells.GetDynamic(x => rowsId.Contains(x.RowId), null, null, false);
+            var cellsGroupList = cellsData.GroupBy(x => x.RowId).ToList();
 
-            List<Cell> resultData;
-
+            var resultData = new List<string[]>();
             var total = cellsData.Count();
             var totalDisplay = cellsData.Count();
 
-            if (searchText != null)
+            foreach (var cellGroup in cellsGroupList)
             {
-                resultData = (from cell in cellsData
-                              where cell.Data.Contains(searchText)
-                              select _mapper.Map<Cell>(cell)).ToList();
+                var filteredCellGroup = new List<string>();
+                var exist = false;
 
-                totalDisplay = resultData.Count();
+                if (searchText != null)
+                {
+                    foreach (var cell in cellGroup)
+                    {
+                        if (cell.Data.Contains(searchText))
+                        {
+                            exist = true;
+                        }
+                    }
+                }
+
+                if (exist || searchText == null)
+                {
+                    foreach (var cell in cellGroup)
+                    {
+                        filteredCellGroup.Add(cell.Data);
+                    }
+
+                    resultData.Add(filteredCellGroup.ToArray());
+
+                }
             }
-            else
-            {
-                resultData = (from cell in cellsData
-                              select _mapper.Map<Cell>(cell)).ToList();
-            }
+
+            totalDisplay = resultData.Count();
 
             if (sortText != null)
             {
-                var result = resultData.OrderBy(x => x.Data == sortText).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var pos = cellsData.First().Data == sortText.Split(" ")[0] ? 0 : 1;
 
-                    return (result, total, totalDisplay);
+                if (sortText.Split(" ")[1] == "asc")
+                {
+                    resultData = resultData.OrderBy(o => o[pos])
+                        .Skip((pageIndex - 1) * pageSize).Take(pageSize)
+                        .ToArray().ToList();
+                }
+                else
+                {
+                    resultData = resultData.OrderByDescending(o => o[pos])
+                        .Skip((pageIndex - 1) * pageSize).Take(pageSize)
+                        .ToArray().ToList();
+                }
+                return (resultData, total, totalDisplay);
             }
             else
             {
-                var result = resultData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                resultData = resultData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                return (result, total, totalDisplay);
+                return (resultData, total, totalDisplay);
             }
         }
 

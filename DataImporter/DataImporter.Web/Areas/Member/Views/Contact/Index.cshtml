@@ -12,6 +12,7 @@
     {
     <script>
         $(function () {
+            $.fn.myFunction();
             $('#contacts').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -32,7 +33,10 @@
                                         </div></td>`;
                         }
                     }
-                ]
+                ],
+                oLanguage: {
+                    sProcessing: "<div class='card-body is-loading is-loading-lg'></div>"
+                }
             });
             $('#contacts').on('click', '.show-delete-modal', function (event) {
                 var id = $(this).data("id");
@@ -88,7 +92,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="card-body">
+                <div id="body" class="card-body">
 
                     <div class="form-check form-check-inline mb-2">
                         <input id="toggle-event" class="form-check-input" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="danger" data-size="xs" checked>
@@ -204,31 +208,62 @@
                             <a class="btn btn-success btn-lg " href="#"><i class="fa fa-filter "></i> Filter</a>
                             <a class="btn btn-secondary btn-lg " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
                         </div>*@
-                    <div class="table-responsive">
-                        <table id="contacts" class="display table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th style="width: 10%">A</th>
-                                    <th style="width: 10%">B</th>
-                                    <th style="width: 10%">Action</th>
-                                </tr>
+                <div class="table-responsive">
+                    <table id="contacts" class="display table table-striped table-hover">
+                        <thead>
+                            <tr id="row1">
 
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>A</th>
-                                    <th>B</th>
-                                    <th>Action</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        <partial name="_DeletePopupPartial" />
+                            </tr>
+
+                        </thead>
+                        <tfoot>
+                            <tr id="row2">
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <partial name="_DeletePopupPartial" />
                     </div>
+                </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $.fn.myFunction = function () {
+            $.ajax({
+                type: "GET",
+                url: '/member/Contact/GetColumns',
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('#body').addClass("is-loading is-loading-lg");
+
+                },
+                success: function (response) {
+                    console.log(response);
+                    // Looping over emloyee list and display it
+                    $.each(response, function (index, col) {
+                        $('#row1').append('<th style="width: 10%">' + col.name + index + '</th>');
+                        $('#row2').append('<th>' + col.name + index + '</th>');
+                    });
+                    $('#row1').append('<th style="width: 10%">Action</th>');
+                    $('#row2').append('<th style="width: 10%">Action</th>');
+                },
+                complete: function () {
+                    $('#body').removeClass("is-loading is-loading-lg");
+
+                },
+                failure: function (jqXHR, textStatus, errorThrown) {
+                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                }
+            });
+        }
+    });
+</script>
 
 <script>
     //$(document).ready(function () {
@@ -249,6 +284,7 @@
     });
 
     $(function () {
+
         $('#toggle-event').change(function () {
             /*                $('#console-event').html('Toggle: ' + $(this).prop('checked'))*/
             if ($(this).prop('checked')) {
@@ -262,6 +298,7 @@
     })
 
     $(document).ready(function () {
+
         Dropzone.autoDiscover = false;
         //Simple Dropzonejs
         $("#dZUpload").dropzone({
@@ -277,4 +314,6 @@
             }
         });
     });
+
+
 </script>

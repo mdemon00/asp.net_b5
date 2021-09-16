@@ -16,13 +16,11 @@ namespace DataImporter.Areas.Member.Models
         private IContactService _contactService;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        public List<Column> _columns;
         public ContactListModel()
         {
             _contactService = Startup.AutofacContainer.Resolve<IContactService>();
             _httpContextAccessor = Startup.AutofacContainer.Resolve<IHttpContextAccessor>();
             _mapper = Startup.AutofacContainer.Resolve<IMapper>();
-            _columns = _contactService.GetColums();
         }
 
         public ContactListModel(IContactService contactService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
@@ -30,7 +28,6 @@ namespace DataImporter.Areas.Member.Models
             _contactService = contactService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _columns = _contactService.GetColums();
         }
 
         internal object GetContacts(DataTablesAjaxRequestModel tableModel)
@@ -43,39 +40,24 @@ namespace DataImporter.Areas.Member.Models
                 "Attendence"
                 );
 
-            var cellsGroupList = data.records
-            .GroupBy(x => x.RowId)
-            .Select(grp => grp.ToList()).ToList();
-
-            var masterArray = new List<string[]>();
-            foreach(var cellGroup in cellsGroupList)
-            {
-                var temp = new List<string>();
-                foreach (var cell in cellGroup)
-                {
-                    foreach (PropertyInfo prop in cell.GetType().GetProperties())
-                    {
-                        if (prop.Name != "Id" && prop.Name != "RowId")
-                        {
-                            if (prop.PropertyType.IsPrimitive || prop.PropertyType == typeof(string))
-                                temp.Add(prop.GetValue(cell).ToString());
-                        }
-
-                    }
-                }
-                temp.Add(cellGroup.First().RowId.ToString());
-
-                masterArray.Add(temp.ToArray());
-
-            }
-
             return new
             {
                 recordsTotal = data.total,
                 recordsFiltered = data.totalDisplay,
-                data = masterArray.ToArray()
+                data = data.records.ToArray()
             };
 
+        }
+
+        public List<Column> GetColums()
+        {
+            var _columns = new List<Column>()
+            {
+                 new Column { Id = 0, GroupId = 0, Name="Manas"},
+                 new Column { Id = 0, GroupId = 0, Name="Tester"}
+            };
+
+            return _columns;
         }
 
     }
