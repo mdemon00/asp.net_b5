@@ -89,14 +89,24 @@ namespace DataImporter.Importing.Services
         public (IList<string[]> records, int total, int totalDisplay) GetContacts(int pageIndex, int pageSize,
     string searchText, string sortText, string groupName)
         {
+            int groupId;
 
-            var groupId = _groupService.GetGroup(groupName).Id;
-            var rowsId = _importingUnitOfWork.Rows.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId, null, null, false)
-                .Skip(1)
-                .Select(x => x.Id).ToList(); ;
+            if (groupName == null)
+            {
+                groupId = _groupService.GetAllGroups().FirstOrDefault().Id;
+            }
+            else
+            {
+                groupId = _groupService.GetGroup(groupName).Id;
+            }
 
+            var rowsId = _rowService.GetAllRowsId(groupId);
 
-            var cellsData = _importingUnitOfWork.Cells.GetDynamic(x => rowsId.Contains(x.RowId), null, null, false);
+            if (rowsId.Count < 1)
+                return (new List<string[]>() { }, 0, 0);
+
+            var cellsData = _cellService.GetCells(rowsId);
+
             var cellsGroupList = cellsData.GroupBy(x => x.RowId).ToList();
 
             var resultData = new List<string[]>();

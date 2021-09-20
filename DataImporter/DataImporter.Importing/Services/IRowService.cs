@@ -7,6 +7,7 @@ namespace DataImporter.Importing.Services
     public interface IRowService
     {
         IList<Row> GetAllRows();
+        IList<int> GetAllRowsId(int groupId);
         Entities.Row CreateRow(Row row);
         //(IList<Row> records, int total, int totalDisplay) GetRows(int pageIndex, int pageSize,
         //    string searchText, string sortText);

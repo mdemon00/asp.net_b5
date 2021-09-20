@@ -35,6 +35,20 @@ namespace DataImporter.Importing.Services
             return cells;
         }
 
+        public List<Cell> GetCells(IList<int> rowsId)
+        {
+            var cellEntities = _importingUnitOfWork.Cells.GetDynamic(x => rowsId.Contains(x.RowId), null, null, false);
+            var cells = new List<Cell>();
+
+            foreach (var entity in cellEntities)
+            {
+                var cell = _mapper.Map<Cell>(entity);
+                cells.Add(cell);
+            }
+
+            return cells;
+        }
+
         public void CreateCell(Cell cell)
         {
             if (cell == null)
@@ -91,5 +105,7 @@ namespace DataImporter.Importing.Services
             _importingUnitOfWork.Cells.Remove(id);
             _importingUnitOfWork.Save();
         }
+
+
     }
 }

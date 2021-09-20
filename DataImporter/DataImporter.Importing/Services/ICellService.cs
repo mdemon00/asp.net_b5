@@ -6,6 +6,7 @@ namespace DataImporter.Importing.Services
 {
     public interface ICellService
     {
+        List<Cell> GetCells(IList<int> rowsId);
         void CreateCell(Cell cell);
         Cell GetCell(int id);
         Cell GetCell(string name);

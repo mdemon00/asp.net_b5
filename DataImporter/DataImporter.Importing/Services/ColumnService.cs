@@ -2,6 +2,7 @@
 using DataImporter.Importing.BusinessObjects;
 using DataImporter.Importing.Exceptions;
 using DataImporter.Importing.UnitOfWorks;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,18 +14,78 @@ namespace DataImporter.Importing.Services
     {
         private readonly IImportingUnitOfWork _importingUnitOfWork;
         private readonly IMapper _mapper;
+        private readonly IGroupService _groupService;
+        private readonly ILogger<ColumnService> _logger;
 
-        public ColumnService(IImportingUnitOfWork importingUnitOfWork,
-            IMapper mapper)
+        public ColumnService(IImportingUnitOfWork importingUnitOfWork, IGroupService groupService,
+            IMapper mapper, ILogger<ColumnService> logger)
         {
             _importingUnitOfWork = importingUnitOfWork;
+            _groupService = groupService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public IList<Column> GetAllColumns()
         {
             var columnEntities = _importingUnitOfWork.Columns.GetAll();
             var columns = new List<Column>();
+
+            foreach (var entity in columnEntities)
+            {
+                var column = _mapper.Map<Column>(entity);
+                columns.Add(column);
+            }
+
+            return columns;
+        }
+
+        public List<Column> GetAllColumns(string groupName)
+        {
+            int groupId = 0;
+            var columns = new List<Column>();
+            var columnEntities = new List<Entities.Column>();
+
+            if (groupName == null)
+            {
+                try
+                {
+                    groupId = _groupService.GetAllGroups().FirstOrDefault().Id;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("{0} : Can't get group Id {1}", DateTimeOffset.Now, ex);
+
+                    return null;
+                }
+            }
+            else
+            {
+                try
+                {
+                    var group = _groupService.GetGroup(groupName);
+
+                    if (group != null)
+                        groupId = _groupService.GetGroup(groupName).Id;
+                }
+                catch
+                {
+                    return null;
+                }
+
+            }
+
+            try
+            {
+                columnEntities = (List<Entities.Column>)_importingUnitOfWork.Columns.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId, null, null, false);
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (columnEntities.Count < 1)
+                return null;
 
             foreach (var entity in columnEntities)
             {

@@ -12,24 +12,29 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": "/member/Group/GetGroupData",
-                "columnDefs": [
-                    {
-                        "orderable": false,
-                        "targets": 1,
-                        "render": function (data, type, row) {
-                            return `<td>
-                                <div class="form-button-action">
-                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/group/edit/${data}'" value='${data}'>
-                                        <i class="fa fa-edit"></i>
-                                    </button>
-                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </div></td>`;
+                "ajax": {
+                    'type': 'POST',
+                    'url': '/member/Group/GetGroupData',
+                    'data': {},
+                },
+                    "columnDefs": [
+                        {
+                            "orderable": false,
+                            "targets": 1,
+                            "render": function (data, type, row) {
+                                return `<td>
+                                    <div class="form-button-action">
+                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/group/edit/${data}'" value='${data}'>
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div></td>`;
+                            }
                         }
-                    }
-                ]
-            });
+                    ]
+                });
             $('#groups').on('click', '.show-delete-modal', function (event) {
                 var id = $(this).data("id");
                 var modal = $("#modal-default");

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace DataImporter.Common.Utilities
 {
@@ -13,14 +15,14 @@ namespace DataImporter.Common.Utilities
         {
             get
             {
-                return Convert.ToInt32(_request.Query["start"]);
+                return Convert.ToInt32(_request.Form["start"]);
             }
         }
         public int Length
         {
             get
             {
-                return Convert.ToInt32(_request.Query["length"]);
+                return Convert.ToInt32(_request.Form["length"]);
             }
         }
 
@@ -28,10 +30,17 @@ namespace DataImporter.Common.Utilities
         {
             get
             {
-                return _request.Query["search[value]"];
+                return _request.Form["search[value]"];
             }
         }
 
+        public string GroupName
+        {
+            get
+            {
+                return _request.Form["groupName"];
+            }
+        }
         public int SortingCols { get; set; }
 
         public DataTablesAjaxRequestModel(HttpRequest request)
@@ -76,16 +85,31 @@ namespace DataImporter.Common.Utilities
 
         public string GetSortText(string[] columnNames)
         {
+            var method = _request.Method.ToLower();
+            if (method == "get")
+                return ReadValues(_request.Query, columnNames);
+            else if (method == "post")
+                return ReadValues(_request.Form, columnNames);
+            else
+                throw new InvalidOperationException("Http method not supported, use get or post");
+        }
+
+        private string ReadValues(IEnumerable<KeyValuePair<string, StringValues>>
+            requestValues, string[] columnNames)
+        {
             var sortText = new StringBuilder();
             for (var i = 0; i < columnNames.Length; i++)
             {
-                if (_request.Query.ContainsKey($"order[{i}][column]"))
+                if (requestValues.Any(x => x.Key == $"order[{i}][column]"))
                 {
                     if (sortText.Length > 0)
                         sortText.Append(",");
 
-                    var column = int.Parse(_request.Query[$"order[{i}][column]"]);
-                    var direction = _request.Query[$"order[{i}][dir]"].ToString();
+                    var columnValue = requestValues.Where(x => x.Key == $"order[{i}][column]").FirstOrDefault();
+                    var directionValue = requestValues.Where(x => x.Key == $"order[{i}][dir]").FirstOrDefault();
+
+                    var column = int.Parse(columnValue.Value.ToArray()[0]);
+                    var direction = directionValue.Value.ToArray()[0];
                     var sortDirection = $"{columnNames[column]} {(direction == "asc" ? "asc" : "desc")}";
                     sortText.Append(sortDirection);
                 }

@@ -14,17 +14,20 @@ namespace DataImporter.Areas.Member.Models
     public class ContactListModel
     {
         private IContactService _contactService;
+        private IColumnService _columnService;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         public ContactListModel()
         {
             _contactService = Startup.AutofacContainer.Resolve<IContactService>();
+            _columnService = Startup.AutofacContainer.Resolve<IColumnService>();
             _httpContextAccessor = Startup.AutofacContainer.Resolve<IHttpContextAccessor>();
             _mapper = Startup.AutofacContainer.Resolve<IMapper>();
         }
 
-        public ContactListModel(IContactService contactService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public ContactListModel(IContactService contactService, IColumnService columnService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
+            _columnService = columnService;
             _contactService = contactService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -37,7 +40,7 @@ namespace DataImporter.Areas.Member.Models
                 tableModel.PageSize,
                 tableModel.SearchText,
                 tableModel.GetSortText(new string[] { "Timestamp", "Name" }),
-                "Attendence"
+                string.IsNullOrWhiteSpace(tableModel.GroupName) ? null : tableModel.GroupName
                 );
 
             return new
@@ -49,13 +52,18 @@ namespace DataImporter.Areas.Member.Models
 
         }
 
-        public List<Column> GetColums()
+        public IList<Column> GetColums(DataTablesAjaxRequestModel tableModel)
         {
-            var _columns = new List<Column>()
+            var _columns = new List<Column>() { };
+
+            try
             {
-                 new Column { Id = 0, GroupId = 0, Name="Manas"},
-                 new Column { Id = 0, GroupId = 0, Name="Tester"}
-            };
+                _columns = _columnService.GetAllColumns(string.IsNullOrWhiteSpace(tableModel.GroupName) ? null : tableModel.GroupName);
+            }
+            catch
+            {
+                return _columns;
+            }
 
             return _columns;
         }

@@ -90,6 +90,7 @@ namespace DataImporter.Web
                     .AddEntityFrameworkStores<ApplicationDbContext>();
                     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
                     services.AddControllersWithViews();
+                    services.AddControllers();
                     services.AddHttpContextAccessor();
                     services.AddRazorPages();
                     services.AddDatabaseDeveloperPageExceptionFilter();
@@ -129,6 +130,7 @@ namespace DataImporter.Web
                     pattern: "{controller=Home}/{action=Index}/{Id?}");
 
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
 
             });
         }

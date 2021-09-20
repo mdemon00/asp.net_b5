@@ -38,9 +38,9 @@ namespace DataImporter.Web.Areas.Member.Controllers
         
         public JsonResult GetColumns()
         {
+            var dataTablesModel = new DataTablesAjaxRequestModel(Request);
             var model = new ContactListModel();
-            var data = model.GetColums();
-
+            var data = model.GetColums(dataTablesModel);
             return Json(data);
         }
     }

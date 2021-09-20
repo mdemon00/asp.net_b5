@@ -4,6 +4,8 @@ using Autofac;
 using Microsoft.AspNetCore.Http;
 using DataImporter.Common.Utilities;
 using DataImporter.Web;
+using System.Collections.Generic;
+using DataImporter.Importing.BusinessObjects;
 
 namespace DataImporter.Areas.Member.Models
 {
@@ -44,6 +46,11 @@ namespace DataImporter.Areas.Member.Models
                         }
                     ).ToArray()
             };
+        }
+
+        internal IList<Group> GetAllGroups()
+        {
+            return _groupService.GetAllGroups();
         }
 
         internal void Delete(int id)

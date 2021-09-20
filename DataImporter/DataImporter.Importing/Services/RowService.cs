@@ -35,6 +35,15 @@ namespace DataImporter.Importing.Services
             return rows;
         }
 
+        public IList<int> GetAllRowsId(int groupId)
+        {
+            var rowsId = _importingUnitOfWork.Rows.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId, null, null, false)
+                .Skip(1)
+                .Select(x => x.Id).ToList();
+
+            return rowsId;
+        }
+
         public Entities.Row CreateRow(Row row)
         {
             if (row == null)

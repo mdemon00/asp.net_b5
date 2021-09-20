@@ -4,53 +4,11 @@
     ViewData["Title"] = "Index";
 }
 
-@*@section Styles{
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-}*@
 
-@section Scripts
-    {
-    <script>
-        $(function () {
-            $.fn.myFunction();
-            $('#contacts').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": "/member/Contact/GetContactsData",
-                "columnDefs": [
-                    {
-                        "orderable": false,
-                        "targets": 2,
-                        "render": function (data, type, row) {
-                            return `<td>
-                                        <div class="form-button-action">
-                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div></td>`;
-                        }
-                    }
-                ],
-                oLanguage: {
-                    sProcessing: "<div class='card-body is-loading is-loading-lg'></div>"
-                }
-            });
-            $('#contacts').on('click', '.show-delete-modal', function (event) {
-                var id = $(this).data("id");
-                var modal = $("#modal-default");
-                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
-                $("#deleteId").val(id);
-                $("#deleteForm").attr("action", "/member/contact/delete")
-                modal.modal('show');
-            });
-            $("#deleteButton").click(function () {
-                $("#deleteForm").submit();
-            });
-        });
-    </script>
+@section Styles {
+    <link rel="stylesheet" href="/lib/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <link href="/lib/select2/css/select2.min.css" rel="stylesheet" />
+
 }
 
 <div class="page-inner">
@@ -103,13 +61,10 @@
                         <div class="col-md-12">
                             <form id="clear">
                                 <div class="row">
-                                    <div class="form-group col-md-2 pl-1">
+                                    <div class="form-group col-md-2">
                                         <label>Group</label>
-                                        <div class=" select2-input">
-                                            <select id="multiple" name="multiple[]" class="form-control" multiple="multiple">
-                                                <option value="AL">student</option>
-                                                <option value="AA">teacher</option>
-                                                <option value="AP">drive</option>
+                                        <div class="select2-input">
+                                            <select id="gropuNames" name="gropuNames" class="form-control">
                                             </select>
                                         </div>
                                     </div>
@@ -127,12 +82,12 @@
                                     </div>
                                     <div class="col-md-1 pl-1 mt-auto">
                                         <div class="form-group">
-                                            <a class="btn btn-primary btn-default" href="#"><i class="fa fa-filter "></i> Filter</a>
+                                            <a class="btn btn-primary btn-default" id="advFilter"><i class="fa fa-filter "></i> Filter</a>
                                         </div>
                                     </div>
                                     <div class="col-md-2 pl-1 mt-auto">
                                         <div class="form-group">
-                                            <a class="btn btn-secondary btn-default " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
+                                            <a class="btn btn-secondary btn-default " href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
                                         </div>
                                     </div>
                                 </div>
@@ -191,102 +146,194 @@
                             </div>
                         </div>
                     </div>
-                    @*<div class="col-md-8">
-                            <div class="form-group">
-                                <label>Input Date Picker</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="datepicker" name="datepicker">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">
-                                            <i class="fa fa-calendar"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>*@
-                    @*<div class="text-center">
-                            <a class="btn btn-success btn-lg " href="#"><i class="fa fa-filter "></i> Filter</a>
-                            <a class="btn btn-secondary btn-lg " onclick="clear()" href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
-                        </div>*@
-                <div class="table-responsive">
-                    <table id="contacts" class="display table table-striped table-hover">
-                        <thead>
-                            <tr id="row1">
 
-                            </tr>
+                    <div class="table-responsive">
+                        <table id="contacts" class="display table table-striped table-hover">
+                            <thead>
+                                <tr id="row1">
+                                </tr>
 
-                        </thead>
-                        <tfoot>
-                            <tr id="row2">
-
-                            </tr>
-                        </tfoot>
-                    </table>
-                    <partial name="_DeletePopupPartial" />
+                            </thead>
+                            <tfoot>
+                                <tr id="row2">
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <partial name="_DeletePopupPartial" />
                     </div>
-                </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        $.fn.myFunction = function () {
-            $.ajax({
-                type: "GET",
-                url: '/member/Contact/GetColumns',
-                data: {},
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                beforeSend: function () {
-                    $('#body').addClass("is-loading is-loading-lg");
 
+@section Scripts
+    {
+    <script>
+        $('#gropuNames').on('select2:select', function (e) {
+            data = e.params.data;
+            name = data.text;
+
+            var def = $.Deferred();
+            def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns(name));
+
+        });
+
+        $.fn.Datatable = function (name = '', targets = 0) {
+
+             $('#contacts').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    'type': 'POST',
+                    'url': '/member/Contact/GetContactsData',
+                    'data': {
+                        groupName: name,
+                    }
                 },
-                success: function (response) {
-                    console.log(response);
-                    // Looping over emloyee list and display it
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": targets,
+                        "render": function (data, type, row) {
+                            return `<td>
+                                                                                                                        <div class="form-button-action">
+                                                                                                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
+                                                                                                                                <i class="fa fa-edit"></i>
+                                                                                                                            </button>
+                                                                                                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                                                                                                                <i class="fa fa-times"></i>
+                                                                                                                            </button>
+                                                                                                                        </div></td>`;
+                        }
+                    }
+                ],
+                oLanguage: {
+                    sProcessing: "<div class='card-body is-loading is-loading-lg'></div>"
+                }
+             });
+            $('#contacts').on('click', '.show-delete-modal', function (event) {
+                var id = $(this).data("id");
+                var modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+                $("#deleteId").val(id);
+                $("#deleteForm").attr("action", "/member/contact/delete")
+                modal.modal('show');
+            });
+            $("#deleteButton").click(function () {
+                $("#deleteForm").submit();
+            });
+        }
+    </script>
+
+    <script src="/lib/moment.js/moment.min.js"></script>
+    <script src="/lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+
+    <script>
+        $('#date-min').datetimepicker({
+            format: 'MM/DD/YYYY',
+        });
+
+        $('#date-max').datetimepicker({
+            format: 'MM/DD/YYYY',
+        });
+    </script>
+
+}
+
+
+<script>
+    $("#gropuNames").select2({
+        placeholder: "Select..",
+        theme: "bootstrap",
+        ajax: {
+            type: "GET",
+            url: "/api/GroupApi/Search",
+            contentType: "application/json; charset=utf-8",
+            data: function (params) {
+                var query =
+                {
+                    term: params.term,
+                };
+                return query;
+            },
+            processResults: function (result) {
+                return {
+                    results: $.map(result, function (item) {
+                        return {
+                            id: item.id,
+                            text: item.name
+                        };
+                    }),
+                };
+            }
+        }
+    });
+
+</script>
+<script>
+     $.fn.GetColumns = function (name = '') {
+        $.ajax({
+            type: "POST",
+            url: '/member/Contact/GetColumns',
+            data: {
+                groupName: name,
+            },
+            beforeSend: function () {
+                $('#body').addClass("is-loading is-loading-lg");
+
+            },
+            success: function (response) {
+                console.log(response);
+
+                $("#contacts > thead > tr").empty();
+                $("#contacts > tfoot > tr").empty();
+                $("#contacts > tbody > tr").empty();
+
+
+                var length = 0;
+                if (response != null) {
                     $.each(response, function (index, col) {
                         $('#row1').append('<th style="width: 10%">' + col.name + index + '</th>');
                         $('#row2').append('<th>' + col.name + index + '</th>');
+                        length++;
                     });
+
                     $('#row1').append('<th style="width: 10%">Action</th>');
                     $('#row2').append('<th style="width: 10%">Action</th>');
-                },
-                complete: function () {
-                    $('#body').removeClass("is-loading is-loading-lg");
 
-                },
-                failure: function (jqXHR, textStatus, errorThrown) {
-                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                    $.fn.Datatable(name, length);
                 }
-            });
-        }
-    });
+                else
+                {
+                    $("#contacts > thead > tr").empty();
+                    $("#contacts > tfoot > tr").empty();
+                    $("#contacts > tbody > tr").empty();
+
+                    $('#row1').append('<th style="width: 10%">Action</th>');
+                    $('#row2').append('<th style="width: 10%">Action</th>');
+
+                    $.fn.Datatable(name);
+
+                }
+
+            },
+            complete: function () {
+                $('#body').removeClass("is-loading is-loading-lg");
+            },
+            failure: function (jqXHR, textStatus, errorThrown) {
+                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+            }
+        });
+    }
 </script>
 
+
+
 <script>
-    //$(document).ready(function () {
-
-    //    // Add Row
-    //    $('#contacts').DataTable({
-    //        "pageLength": 5,
-    //    });
-    //});
-
-
-    $('#date-min').datetimepicker({
-        format: 'MM/DD/YYYY',
-    });
-
-    $('#date-max').datetimepicker({
-        format: 'MM/DD/YYYY',
-    });
-
     $(function () {
 
         $('#toggle-event').change(function () {
-            /*                $('#console-event').html('Toggle: ' + $(this).prop('checked'))*/
             if ($(this).prop('checked')) {
                 $('#advance-search').addClass("show");
             }
@@ -299,7 +346,13 @@
 
     $(document).ready(function () {
 
+        //var def = $.Deferred();
+        //def.then($.fn.GetColumns(), $.fn.Datatable());
+
+        $.fn.GetColumns();
+
         Dropzone.autoDiscover = false;
+
         //Simple Dropzonejs
         $("#dZUpload").dropzone({
             url: "hn_SimpeFileUploader.ashx",
@@ -313,7 +366,11 @@
                 file.previewElement.classList.add("dz-error");
             }
         });
+
     });
 
 
+    $('#advFilter').click(() => {
+
+    });
 </script>
