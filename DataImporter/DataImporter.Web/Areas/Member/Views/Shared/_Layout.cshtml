@@ -416,7 +416,6 @@
 
 
 
-    <script src="/lib/dropzone/dropzone.min.js" type="text/javascript"></script>
 
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 
@@ -537,6 +536,49 @@
             lineColor: '#ffa534',
             fillColor: 'rgba(255, 165, 52, .14)'
         });
+    </script>
+
+    <script>
+        $.fn.Notify = function () {
+
+            $.notify({
+                // options
+                icon: 'flaticon-alarm-1',
+                title: 'Bootstrap notify',
+                message: 'Turning standard Bootstrap alerts into "notify" like notifications',
+                url: 'https://github.com/mouse0270/bootstrap-notify',
+                target: '_blank'
+            }, {
+                // settings
+                element: 'body',
+                position: null,
+                type: "danger",
+                allow_dismiss: true,
+                newest_on_top: false,
+                showProgressbar: false,
+                placement: {
+                    from: "top",
+                    align: "right"
+                },
+                offset: 20,
+                spacing: 10,
+                z_index: 1031,
+                delay: 5000,
+                timer: 1000,
+                url_target: '_blank',
+                mouse_over: null,
+                animate: {
+                    enter: 'animated fadeInDown',
+                    exit: 'animated fadeOutUp'
+                },
+                onShow: null,
+                onShown: null,
+                onClose: null,
+                onClosed: null,
+                icon_type: 'class'
+            });
+
+        };
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

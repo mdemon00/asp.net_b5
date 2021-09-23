@@ -49,40 +49,118 @@ namespace DataImporter.Web.Areas.Member.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Failed to create group");
+                    ModelState.AddModelError("", ex.Message);
                     _logger.LogError(ex, "Create Group Failed");
                 }
+                
             }
-            return View(model);
+
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         public IActionResult Edit(int id)
         {
             var model = new EditGroupModel();
-            model.LoadModelData(id);
 
-            return View(model);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    model.LoadModelData(id);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    _logger.LogError(ex, "Group Id not found");
+                }
+
+            }
+
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok(model);
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Edit(EditGroupModel model)
         {
+
             if (ModelState.IsValid)
             {
-                model.Update();
+                try
+                {
+                    model.Update();
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    _logger.LogError(ex, "Edit Group Failed");
+                }
+
             }
 
-            return View(model);
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok();
+            }
+
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpGet]
         public IActionResult Delete(int id)
         {
             var model = new GroupListModel();
 
-            model.Delete(id);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    model.Delete(id);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    _logger.LogError(ex, "Delete Group Failed");
+                }
 
-            return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok();
+            }
         }
     }
 }

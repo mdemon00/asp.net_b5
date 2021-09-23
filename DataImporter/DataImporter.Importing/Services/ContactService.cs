@@ -3,6 +3,8 @@ using ClosedXML.Excel;
 using DataImporter.Importing.BusinessObjects;
 using DataImporter.Importing.Exceptions;
 using DataImporter.Importing.UnitOfWorks;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,9 +18,11 @@ namespace DataImporter.Importing.Services
         private readonly IColumnService _columnService;
         private readonly IRowService _rowService;
         private readonly ICellService _cellService;
+        private readonly ILogger<ContactService> _logger;
 
         public ContactService(IImportingUnitOfWork importingUnitOfWork,
-            IMapper mapper, IGroupService groupService, IColumnService columnService, IRowService rowService, ICellService cellService)
+            IMapper mapper, IGroupService groupService, IColumnService columnService, 
+            IRowService rowService, ICellService cellService, ILogger<ContactService> logger)
         {
             _importingUnitOfWork = importingUnitOfWork;
             _mapper = mapper;
@@ -26,6 +30,7 @@ namespace DataImporter.Importing.Services
             _columnService = columnService;
             _rowService = rowService;
             _cellService = cellService;
+            _logger = logger;
         }
 
         public void ImportSheet(string path, dynamic worksheetName, string groupName)
@@ -46,17 +51,7 @@ namespace DataImporter.Importing.Services
                 // first sheet only, need to implement for all sheets
                 IXLWorksheet workSheet = workBook.Worksheets.FirstOrDefault();
 
-                foreach (IXLColumn column in workSheet.Columns())
-                {
-                    if (!string.IsNullOrEmpty(column.ColumnLetter()))
-                    {
-                        _columnService.CreateColumn(new BusinessObjects.Column
-                        {
-                            Name = column.ColumnLetter(),
-                            GroupId = group.Id
-                        });
-                    }
-                }
+                var count = 0;
 
                 foreach (IXLRow row in workSheet.Rows())
                 {
@@ -69,15 +64,33 @@ namespace DataImporter.Importing.Services
 
                     if (currentRow != null)
                     {
+                        count++;
                         foreach (IXLCell cell in row.Cells())
                         {
                             if (!string.IsNullOrEmpty(cell.Value.ToString()))
                             {
-                                _cellService.CreateCell(new BusinessObjects.Cell
+                                try
                                 {
-                                    Data = cell.Value.ToString(),
-                                    RowId = currentRow.Id
-                                });
+                                    _cellService.CreateCell(new BusinessObjects.Cell
+                                    {
+                                        Data = cell.Value.ToString(),
+                                        RowId = currentRow.Id
+                                    });
+
+                                    if (count == 1) //Inserting first row as column
+                                        _columnService.CreateColumn(new BusinessObjects.Column
+                                        {
+                                            Name = cell.Value.ToString(),
+                                            GroupId = group.Id
+                                        });
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex.ToString());
+                                    throw new InvalidOperationException("Import failed");
+
+                                }
+
                             }
                         }
                     }

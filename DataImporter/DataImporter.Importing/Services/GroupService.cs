@@ -55,6 +55,8 @@ namespace DataImporter.Importing.Services
 
         private bool IsNameAlreadyUsed(string name, int id) =>
             _importingUnitOfWork.Groups.GetCount(x => x.Name == name && x.Id != id) > 0;
+        private bool IsIdAvaiable(int id) =>
+            _importingUnitOfWork.Groups.GetCount(x => x.Id != id) > 0;
 
         public (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize,
             string searchText, string sortText)
@@ -109,8 +111,19 @@ namespace DataImporter.Importing.Services
 
         public void DeleteGroup(int id)
         {
-            _importingUnitOfWork.Groups.Remove(id);
-            _importingUnitOfWork.Save();
+            if (!IsIdAvaiable(id))
+                throw new DuplicateNameException("Group Id is invalid");
+
+            try
+            {
+                _importingUnitOfWork.Groups.Remove(id);
+                _importingUnitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Couldn't delete group" + ex);
+            }
+
         }
     }
 }

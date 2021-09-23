@@ -1,0 +1,55 @@
+﻿<script src="/lib/dropzone/dropzone.min.js" type="text/javascript"></script>
+
+
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header no-bd">
+                <h5 class="modal-title">
+                    <span class="fw-mediumbold">
+                        New
+                    </span>
+                    <span class="fw-light">
+                        Upload
+                    </span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="dropzone">
+                    <div class="dz-message" data-dz-message>
+                        <div class="icon">
+                            <i class="flaticon-file"></i>
+                        </div>
+                        <h4 class="message">Drag and Drop files here</h4>
+                        <div class="note">(This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)</div>
+                    </div>
+                    <div class="fallback">
+                        <input name="file" type="file" multiple />
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer no-bd">
+                <div class="form-group mr-auto w-50" id="gp2">
+                    <label style="position: absolute;margin-top: -29px; width: 50%;">Select a group where to Import.</label>
+                    <div class="select2-input">
+                        <select id="gropuNames2" name="gropuNames2" class="form-control" style="width: 85%">
+                        </select>
+                    </div>
+                </div>
+
+                <input type="hidden" id="tempStore" value="" />
+                <button type="button" id="importButton" class="btn btn-primary">Import</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+</script>

@@ -30,6 +30,7 @@ namespace DataImporter.Areas.Member.Models
             var group = _groupService.GetGroup(id);
 
             Name = group.Name;
+            Id = group.Id;
         }
 
         internal void Update()

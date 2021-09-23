@@ -4,51 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-@section Scripts
-{
-    <script>
-        $(function () {
-            $('#groups').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": "/member/Group/GetGroupData",
-                "ajax": {
-                    'type': 'POST',
-                    'url': '/member/Group/GetGroupData',
-                    'data': {},
-                },
-                    "columnDefs": [
-                        {
-                            "orderable": false,
-                            "targets": 1,
-                            "render": function (data, type, row) {
-                                return `<td>
-                                    <div class="form-button-action">
-                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/group/edit/${data}'" value='${data}'>
-                                            <i class="fa fa-edit"></i>
-                                        </button>
-                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                    </div></td>`;
-                            }
-                        }
-                    ]
-                });
-            $('#groups').on('click', '.show-delete-modal', function (event) {
-                var id = $(this).data("id");
-                var modal = $("#modal-default");
-                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
-                $("#deleteId").val(id);
-                $("#deleteForm").attr("action", "/member/group/delete")
-                modal.modal('show');
-            });
-            $("#deleteButton").click(function () {
-                $("#deleteForm").submit();
-            });
-        });
-    </script>
-}
 
 <div class="page-inner">
     <div class="page-header">
@@ -86,42 +41,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- Modal -->
-                    <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header no-bd">
-                                    <h5 class="modal-title">
-                                        <span class="fw-mediumbold">
-                                            New
-                                        </span>
-                                        <span class="fw-light">
-                                            Group
-                                        </span>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <label for="largeInput">Name</label>
-                                                    <input type="text" class="form-control form-control" id="groupInput" placeholder="Enter Name">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer no-bd">
-                                    <button type="button" id="addRowButton" class="btn btn-primary">Add</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_CreatePartial" />
                     <div class="table-responsive">
                         <table id="groups" class="display table table-striped table-hover">
                             <thead>
@@ -138,9 +58,114 @@
                             </tfoot>
                         </table>
                         <partial name="_DeletePopupPartial" />
+                        <partial name="_EditPartial" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+@section Scripts
+{
+    <script>
+
+        $.fn.Datatable = function () {
+            $('#groups').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/member/Group/GetGroupData",
+                "ajax": {
+                    'type': 'POST',
+                    'url': '/member/Group/GetGroupData',
+                    'data': {},
+                },
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": 1,
+                        "render": function (data, type, row) {
+                            return `<td>
+                                                <div class="form-button-action">
+                                                    <button id="editButton" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" onclick="$.fn.EditModal('/member/group/edit/${data}')" data-original-title="Edit Task" value='${data}'>
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
+                                                </div></td>`;
+                        }
+                    }
+                ],
+                oLanguage: {
+                    sProcessing: "<div class='card-body is-loading is-loading-lg'></div>"
+                }
+            });
+            $('#groups').on('click', '.show-delete-modal', function (event) {
+                var id = $(this).data("id");
+                var modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+                $("#deleteButton").val(id);
+                modal.modal('show');
+            });
+        }
+
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+
+        var def = $.Deferred();
+        def.then($.fn.Datatable());
+
+    });
+</script>
+
+<script>
+    $.fn.DeleteModal = function (value = 0) {
+        $.ajax({
+            url: '/member/group/delete/' + value,
+            type: "GET",
+            beforeSend: function () {
+                $('#deleteButton').addClass("is-loading");
+            },
+            success: function (response) {
+                $('#deleteButton').removeClass("is-loading");
+                $('#modal-default').modal('hide');
+            },
+            complete: function (response) {
+                if (response.status == 200) {
+                    swal("Done", "Group successfully deleted", {
+                        icon: "success",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-success'
+                            }
+                        },
+                    });
+
+                    $('#groups').DataTable().ajax.reload();
+
+                }
+                else {
+                    $('#deleteButton').removeClass("is-loading");
+
+                    swal("Failed", response.responseText, {
+                        icon: "error",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-danger'
+                            }
+                        },
+                    });
+                }
+            },
+            failure: function (jqXHR, textStatus, errorThrown) {
+                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+            }
+        });
+    }
+</script>

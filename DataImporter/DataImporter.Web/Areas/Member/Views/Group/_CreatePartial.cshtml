@@ -1,0 +1,112 @@
+﻿<!-- Modal -->
+<div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header no-bd">
+                <h5 class="modal-title">
+                    <span class="fw-mediumbold">
+                        New
+                    </span>
+                    <span class="fw-light">
+                        Group
+                    </span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="groupform" class="form-horizontal" method="post" novalidate="novalidate">
+                    <div class="row  form-show-validation">
+                        <div class="col-sm-12">
+                            <div class="form-group" id="form-group">
+                                <label for="largeInput">Name</label>
+                                <span class="required-label">*</span>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter GroupName" required="required">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer no-bd">
+                <button type="button" id="addRowButton" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/lib/jquery-validate/jquery.validate.min.js"></script>
+<script>
+    $("#addRowButton").click(function (evt) {
+        evt.preventDefault();
+        $("#groupform").submit();
+    });
+
+    /* validate */
+
+    // validation when select change
+    $("#state").change(function () {
+        $(this).valid();
+    })
+
+    $("#groupform").validate({
+        validClass: "success",
+        rules: {
+            name: { required: true },
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        success: function (element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        },
+        submitHandler: function (form) {
+            $.ajax({
+                url: '/member/group/create',
+                type: form.method,
+                beforeSend: function () {
+                    $('#addRowButton').addClass("is-loading");
+                },
+                data: $(form).serialize(),
+                success: function (response) {
+                    $('#addRowButton').removeClass("is-loading");
+                    $('#addRowModal').modal('hide');
+                },
+                complete: function (response) {
+                    if (response.status == 200) {
+                        swal("Done", "Group successfully created", {
+                            icon: "success",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-success'
+                                }
+                            },
+                        });
+
+                        $('#name').val('');
+                        $('#groups').DataTable().ajax.reload();
+
+                    }
+                    else {
+                        $('#addRowButton').removeClass("is-loading");
+                        $('#form-group').addClass("has-error");
+
+                        swal("Failed", response.responseText, {
+                            icon: "error",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-danger'
+                                }
+                            },
+                        });
+                    }
+                },
+                failure: function (jqXHR, textStatus, errorThrown) {
+                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                }
+            });
+        }
+    });
+
+</script>

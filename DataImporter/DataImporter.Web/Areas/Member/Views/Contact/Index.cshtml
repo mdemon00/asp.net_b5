@@ -11,6 +11,7 @@
 
 }
 
+
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Contacts</h4>
@@ -64,7 +65,7 @@
                                     <div class="form-group col-md-2">
                                         <label>Group</label>
                                         <div class="select2-input">
-                                            <select id="gropuNames" name="gropuNames" class="form-control">
+                                            <select id="gropuNames" name="gropuNames" class="form-control" style="width: 92%">
                                             </select>
                                         </div>
                                     </div>
@@ -99,53 +100,8 @@
                     <partial name="_ExportModalPartial" />
 
                     <!-- Import Modal -->
-                    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header no-bd">
-                                    <h5 class="modal-title">
-                                        <span class="fw-mediumbold">
-                                            New
-                                        </span>
-                                        <span class="fw-light">
-                                            Upload
-                                        </span>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="upload.php" class="dropzone">
-                                        <div class="dz-message" data-dz-message>
-                                            <div class="icon">
-                                                <i class="flaticon-file"></i>
-                                            </div>
-                                            <h4 class="message">Drag and Drop files here</h4>
-                                            <div class="note">(This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)</div>
-                                        </div>
-                                        <div class="fallback">
-                                            <input name="file" type="file" multiple />
-                                        </div>
-                                    </form>
-                                </div>
+                    <partial name="_ImportModalPartial" />
 
-                                <div class="modal-footer no-bd">
-                                    <div class="form-group mr-auto w-50">
-                                        <label style="position: absolute;margin-top: -29px; width: 50%;">Select a group where to Import.</label>
-                                        <select name="Job" class="form-control">
-                                            <option>student</option>
-                                            <option>teacher</option>
-                                            <option>drive</option>
-                                        </select>
-                                    </div>
-
-                                    <button type="button" id="addRowButton" class="btn btn-primary">Import</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="table-responsive">
                         <table id="contacts" class="display table table-striped table-hover">
@@ -181,7 +137,7 @@
 
         $.fn.Datatable = function (name = '', targets = 0) {
 
-             $('#contacts').DataTable({
+            $('#contacts').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
@@ -197,21 +153,21 @@
                         "targets": targets,
                         "render": function (data, type, row) {
                             return `<td>
-                                                                                                                        <div class="form-button-action">
-                                                                                                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
-                                                                                                                                <i class="fa fa-edit"></i>
-                                                                                                                            </button>
-                                                                                                                            <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
-                                                                                                                                <i class="fa fa-times"></i>
-                                                                                                                            </button>
-                                                                                                                        </div></td>`;
+                                                                                                                                    <div class="form-button-action">
+                                                                                                                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
+                                                                                                                                            <i class="fa fa-edit"></i>
+                                                                                                                                        </button>
+                                                                                                                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                                                                                                                            <i class="fa fa-times"></i>
+                                                                                                                                        </button>
+                                                                                                                                    </div></td>`;
                         }
                     }
                 ],
                 oLanguage: {
                     sProcessing: "<div class='card-body is-loading is-loading-lg'></div>"
                 }
-             });
+            });
             $('#contacts').on('click', '.show-delete-modal', function (event) {
                 var id = $(this).data("id");
                 var modal = $("#modal-default");
@@ -223,6 +179,7 @@
             $("#deleteButton").click(function () {
                 $("#deleteForm").submit();
             });
+
         }
     </script>
 
@@ -271,8 +228,41 @@
     });
 
 </script>
+
 <script>
-     $.fn.GetColumns = function (name = '') {
+    $("#gropuNames2").select2({
+        dropdownParent: $('#gp2'),
+        placeholder: "Select..",
+        theme: "bootstrap",
+        ajax: {
+            type: "GET",
+            url: "/api/GroupApi/Search",
+            contentType: "application/json; charset=utf-8",
+            data: function (params) {
+                var query =
+                {
+                    term: params.term,
+                };
+                return query;
+            },
+            processResults: function (result) {
+                return {
+                    results: $.map(result, function (item) {
+                        return {
+                            id: item.id,
+                            text: item.name
+                        };
+                    }),
+                };
+            }
+        }
+    });
+
+</script>
+
+
+<script>
+    $.fn.GetColumns = function (name = '') {
         $.ajax({
             type: "POST",
             url: '/member/Contact/GetColumns',
@@ -304,8 +294,7 @@
 
                     $.fn.Datatable(name, length);
                 }
-                else
-                {
+                else {
                     $("#contacts > thead > tr").empty();
                     $("#contacts > tfoot > tr").empty();
                     $("#contacts > tbody > tr").empty();
@@ -346,31 +335,102 @@
 
     $(document).ready(function () {
 
-        //var def = $.Deferred();
-        //def.then($.fn.GetColumns(), $.fn.Datatable());
 
         $.fn.GetColumns();
 
-        Dropzone.autoDiscover = false;
+        Dropzone.instances.forEach(bz => bz.destroy());
 
-        //Simple Dropzonejs
-        $("#dZUpload").dropzone({
-            url: "hn_SimpeFileUploader.ashx",
+        $(".dropzone").dropzone({
+            url: "/member/contact/upload",
+            paramName: "file", // The name that will be used to transfer the file
+            maxFilesize: 10, // MB
             addRemoveLinks: true,
             success: function (file, response) {
-                var imgName = response;
-                file.previewElement.classList.add("dz-success");
-                console.log("Successfully uploaded : " + imgName);
+                $('#tempStore').val(file.name);
             },
             error: function (file, response) {
-                file.previewElement.classList.add("dz-error");
+                console.log(response);
             }
         });
 
     });
 
+    $("#importButton").click(function (evt) {
 
-    $('#advFilter').click(() => {
+        try {
+            var fileName = $('#tempStore').val();
+            var groupName = $('#gropuNames2').select2('data')[0].text;
+        }
+        catch (err) {
+            console.log(err);
+        }
 
+        if (!fileName || fileName.length === 0) {
+            swal("Error", "Please Upload a file first!", {
+                icon: "error",
+                buttons: {
+                    confirm: {
+                        className: 'btn btn-danger'
+                    }
+                },
+            });
+        }
+        else if (!groupName || groupName.length === 0) {
+            swal("Error", "Group not selected!", {
+                icon: "error",
+                buttons: {
+                    confirm: {
+                        className: 'btn btn-danger'
+                    }
+                },
+            });
+        }
+        else {
+            $.ajax({
+                url: '/member/contact/Import',
+                data: {
+                    GroupName: groupName,
+                    FileName: fileName,
+                },
+                type: "POST",
+                beforeSend: function () {
+                    $('#importButton').addClass("is-loading");
+                },
+                success: function (response) {
+                    $('#importButton').removeClass("is-loading");
+                    $('#importModal').modal('hide');
+                },
+                complete: function (response) {
+                    if (response.status == 200) {
+                        swal("Done", "Imported successfully", {
+                            icon: "success",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-success'
+                                }
+                            },
+                        });
+
+                        var def = $.Deferred();
+                        def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns(response.GroupName));
+                    }
+                    else {
+                        $('#importButton').removeClass("is-loading");
+
+                        swal("Failed", response.responseText, {
+                            icon: "error",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-danger'
+                                }
+                            },
+                        });
+                    }
+                },
+                failure: function (jqXHR, textStatus, errorThrown) {
+                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                }
+            });
+        }
     });
 </script>
