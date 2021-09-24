@@ -3,6 +3,10 @@ using Autofac.Extensions.DependencyInjection;
 using DataImporter.Common;
 using DataImporter.Importing;
 using DataImporter.Importing.Contexts;
+using DataImporter.Membership;
+using DataImporter.Membership.Contexts;
+using DataImporter.Membership.Entities;
+using DataImporter.Membership.Services;
 using DataImporter.Web.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,7 +38,6 @@ namespace DataImporter.Web
 
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment WebHostEnvironment { get; set; }
-
         public static ILifetimeScope AutofacContainer { get; set; }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -45,6 +48,8 @@ namespace DataImporter.Web
                 connectionInfo.migrationAssemblyName));
 
             builder.RegisterModule(new CommonModule());
+            builder.RegisterModule(new MembershipModule(connectionInfo.connectionString,
+    connectionInfo.migrationAssemblyName));
         }
 
         private (string connectionString, string migrationAssemblyName) GetConnectionStringAndAssemblyName()
@@ -59,14 +64,51 @@ namespace DataImporter.Web
         {
             var connectionInfo = GetConnectionStringAndAssemblyName();
 
+            services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionInfo.connectionString, b =>
+    b.MigrationsAssembly(connectionInfo.migrationAssemblyName)));
+
+
             services.AddDbContext<ImportingContext>(options =>
                 options.UseSqlServer(connectionInfo.connectionString, b =>
                 b.MigrationsAssembly(connectionInfo.migrationAssemblyName)));
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionInfo.connectionString, b =>
-                b.MigrationsAssembly(connectionInfo.migrationAssemblyName)));
+            // Identity customization started here
+            services
+                .AddIdentity<ApplicationUser, Role>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserManager<UserManager>()
+                .AddRoleManager<RoleManager>()
+                .AddSignInManager<SignInManager>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
+            services.AddRazorPages();
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -85,15 +127,6 @@ namespace DataImporter.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
-                    services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-                    services.AddControllersWithViews();
-                    services.AddControllers();
-                    services.AddHttpContextAccessor();
-                    services.AddRazorPages();
-                    services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

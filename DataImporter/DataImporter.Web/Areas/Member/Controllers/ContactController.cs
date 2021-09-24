@@ -1,5 +1,6 @@
 ﻿using DataImporter.Areas.Member.Models;
 using DataImporter.Common.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DataImporter.Web.Areas.Member.Controllers
 {
-    [Area("Member")]
+    [Area("Member"), Authorize(Roles = "Member")]
     public class ContactController : Controller
     {
         private readonly ILogger<ContactController> _logger;

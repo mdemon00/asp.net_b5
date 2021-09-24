@@ -32,13 +32,13 @@
   <ItemGroup>
     <Folder Include="Areas\Member\Data\" />
     <Folder Include="Logs\" />
-    <Folder Include="Models\" />
     <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DataImporter.Common\DataImporter.Common.csproj" />
     <ProjectReference Include="..\DataImporter.Importing\DataImporter.Importing.csproj" />
+    <ProjectReference Include="..\DataImporter.Membership\DataImporter.Membership.csproj" />
   </ItemGroup>
 
 </Project>

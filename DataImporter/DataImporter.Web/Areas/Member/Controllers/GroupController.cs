@@ -1,5 +1,6 @@
 ﻿using DataImporter.Areas.Member.Models;
 using DataImporter.Common.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataImporter.Web.Areas.Member.Controllers
 {
-    [Area("Member")]
+    [Area("Member"), Authorize(Roles = "Member")]
     public class GroupController : Controller
     {
         private readonly ILogger<GroupController> _logger;

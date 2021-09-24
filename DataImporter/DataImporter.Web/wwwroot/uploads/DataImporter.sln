@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Web", "DataImporter.Web\DataImporter.Web.csproj", "{A983B29F-D336-48F4-A69A-89FFABD5395E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Web", "DataImporter.Web\DataImporter.Web.csproj", "{A983B29F-D336-48F4-A69A-89FFABD5395E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Data", "DataImporter.Data\DataImporter.Data.csproj", "{9BF7820E-EE30-4B0B-9A7B-BEA8621D77CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Data", "DataImporter.Data\DataImporter.Data.csproj", "{9BF7820E-EE30-4B0B-9A7B-BEA8621D77CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Importing", "DataImporter.Importing\DataImporter.Importing.csproj", "{2AC46F44-90FC-48D8-8C58-E9036725D986}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Importing", "DataImporter.Importing\DataImporter.Importing.csproj", "{2AC46F44-90FC-48D8-8C58-E9036725D986}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Common", "DataImporter.Common\DataImporter.Common.csproj", "{39BE9550-61E9-43F3-B8D9-D907819CD3FF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Membership", "DataImporter.Membership\DataImporter.Membership.csproj", "{959A3B3C-8132-439D-8434-D862393D43DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Common", "DataImporter.Common\DataImporter.Common.csproj", "{39BE9550-61E9-43F3-B8D9-D907819CD3FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{39BE9550-61E9-43F3-B8D9-D907819CD3FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39BE9550-61E9-43F3-B8D9-D907819CD3FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39BE9550-61E9-43F3-B8D9-D907819CD3FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{959A3B3C-8132-439D-8434-D862393D43DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{959A3B3C-8132-439D-8434-D862393D43DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{959A3B3C-8132-439D-8434-D862393D43DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{959A3B3C-8132-439D-8434-D862393D43DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
