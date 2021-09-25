@@ -1,4 +1,5 @@
-﻿using DataImporter.Areas.Member.Models;
+﻿using Autofac;
+using DataImporter.Areas.Member.Models;
 using DataImporter.Common.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -19,34 +20,33 @@ namespace DataImporter.Web.Areas.Member.Controllers
     {
         private readonly ILogger<ContactController> _logger;
         private IWebHostEnvironment _environment;
+        private readonly ILifetimeScope _scope;
 
-        public ContactController(ILogger<ContactController> logger, IWebHostEnvironment environment)
+        public ContactController(ILogger<ContactController> logger, IWebHostEnvironment environment, ILifetimeScope scope)
         {
             _logger = logger;
             _environment = environment;
+            _scope = scope;
         }
 
         public IActionResult Index()
         {
-            //var model = new CreateContactModel();
-            //model.Create();
-
-            var model = new ContactListModel();
+            var model = _scope.Resolve<ContactListModel>();
             return View(model);
         }
 
         public JsonResult GetContactsData()
         {
             var dataTablesModel = new DataTablesAjaxRequestModel(Request);
-            var model = new ContactListModel();
+            var model = _scope.Resolve <ContactListModel> ();
             var data = model.GetContacts(dataTablesModel);
             return Json(data);
-        } 
-        
+        }
+
         public JsonResult GetColumns()
         {
             var dataTablesModel = new DataTablesAjaxRequestModel(Request);
-            var model = new ContactListModel();
+            var model = _scope.Resolve <ContactListModel> ();
             var data = model.GetColums(dataTablesModel);
             return Json(data);
         }
@@ -64,7 +64,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
                         await file.CopyToAsync(fileStream);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return BadRequest("File couldn't upload." + ex);
                 }
@@ -83,7 +83,8 @@ namespace DataImporter.Web.Areas.Member.Controllers
                     var fullDir = Path.Combine(uploads, model.FileName);
                     var fileName = Path.GetFileNameWithoutExtension(fullDir);
 
-                    model.Import(fullDir,fileName, model.GroupName);
+                    model.Resolve(_scope);
+                    model.Import(fullDir, fileName, model.GroupName);
                 }
                 catch (Exception ex)
                 {

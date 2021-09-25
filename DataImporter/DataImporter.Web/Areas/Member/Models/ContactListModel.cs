@@ -16,13 +16,20 @@ namespace DataImporter.Areas.Member.Models
         private IContactService _contactService;
         private IColumnService _columnService;
         private IHttpContextAccessor _httpContextAccessor;
-        private readonly IMapper _mapper;
+        private IMapper _mapper;
+        private ILifetimeScope _scope;
+
         public ContactListModel()
         {
-            _contactService = Startup.AutofacContainer.Resolve<IContactService>();
-            _columnService = Startup.AutofacContainer.Resolve<IColumnService>();
-            _httpContextAccessor = Startup.AutofacContainer.Resolve<IHttpContextAccessor>();
-            _mapper = Startup.AutofacContainer.Resolve<IMapper>();
+        }
+
+        public void Resolve(ILifetimeScope scope)
+        {
+            _scope = scope;
+            _contactService = _scope.Resolve<IContactService>();
+            _columnService = _scope.Resolve<IColumnService>();
+            _httpContextAccessor = _scope.Resolve<IHttpContextAccessor>();
+            _mapper = _scope.Resolve<IMapper>();
         }
 
         public ContactListModel(IContactService contactService, IColumnService columnService, IHttpContextAccessor httpContextAccessor, IMapper mapper)

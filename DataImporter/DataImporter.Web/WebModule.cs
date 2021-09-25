@@ -12,6 +12,10 @@ namespace DataImporter.Web
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<GroupListModel>().AsSelf();
+            builder.RegisterType<EditGroupModel>().AsSelf();
+            builder.RegisterType<CreateGroupModel>().AsSelf();
+            builder.RegisterType<ContactListModel>().AsSelf();
+            builder.RegisterType<ImportContactModel>().AsSelf();
 
             base.Load(builder);
         }

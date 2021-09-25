@@ -16,13 +16,21 @@ namespace DataImporter.Areas.Member.Models
 
         public string FileName { get; set; }
 
-        private readonly IContactService _contactService;
-        private readonly IMapper _mapper;
+        private IContactService _contactService;
+        private IMapper _mapper;
+        private ILifetimeScope _scope;
 
         public ImportContactModel()
         {
             _contactService = Startup.AutofacContainer.Resolve<IContactService>();
             _mapper = Startup.AutofacContainer.Resolve<IMapper>();
+        }
+
+        public void Resolve(ILifetimeScope scope)
+        {
+            _scope = scope;
+            _contactService = _scope.Resolve<IContactService>();
+            _mapper = _scope.Resolve<IMapper>();
         }
 
         public ImportContactModel(IContactService contactService)

@@ -50,6 +50,7 @@ namespace DataImporter.Web
                 connectionInfo.migrationAssemblyName));
 
             builder.RegisterModule(new CommonModule());
+            builder.RegisterModule(new WebModule());
             builder.RegisterModule(new MembershipModule(connectionInfo.connectionString,
     connectionInfo.migrationAssemblyName));
         }

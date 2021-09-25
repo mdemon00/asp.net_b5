@@ -16,15 +16,21 @@ namespace DataImporter.Areas.Member.Models
         [Required, MaxLength(200, ErrorMessage = "Name should be less than 200 charcaters")]
         public string Name { get; set; }
 
-        private readonly IGroupService _groupService;
-        private readonly IMapper _mapper;
+        private IGroupService _groupService;
+        private IMapper _mapper;
+        private ILifetimeScope _scope;
+
 
         public EditGroupModel()
         {
-            _groupService = Startup.AutofacContainer.Resolve<IGroupService>();
-            _mapper = Startup.AutofacContainer.Resolve<IMapper>();
         }
 
+        public void Resolve(ILifetimeScope scope)
+        {
+            _scope = scope;
+            _groupService = _scope.Resolve<IGroupService>();
+            _mapper = _scope.Resolve<IMapper>();
+        }
         public void LoadModelData(int id)
         {
             var group = _groupService.GetGroup(id);

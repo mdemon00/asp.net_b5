@@ -1,4 +1,5 @@
-﻿using DataImporter.Areas.Member.Models;
+﻿using Autofac;
+using DataImporter.Areas.Member.Models;
 using DataImporter.Common.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,29 +14,31 @@ namespace DataImporter.Web.Areas.Member.Controllers
     public class GroupController : Controller
     {
         private readonly ILogger<GroupController> _logger;
+        private readonly ILifetimeScope _scope;
 
-        public GroupController(ILogger<GroupController> logger)
+        public GroupController(ILogger<GroupController> logger, ILifetimeScope scope)
         {
             _logger = logger;
+            _scope = scope;
         }
 
         public IActionResult Index()
         {
-            var model = new GroupListModel();
+            var model = _scope.Resolve<GroupListModel>();
             return View(model);
         }
 
         public JsonResult GetGroupData()
         {
             var dataTablesModel = new DataTablesAjaxRequestModel(Request);
-            var model = new GroupListModel();
+            var model = _scope.Resolve<GroupListModel>();
             var data = model.GetGroups(dataTablesModel);
             return Json(data);
         }
 
         public IActionResult Create()
         {
-            var model = new CreateGroupModel();
+            var model = _scope.Resolve<CreateGroupModel>();
             return View(model);
         }
 
@@ -46,6 +49,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
             {
                 try
                 {
+                    model.Resolve(_scope);
                     model.CreateGroup();
                 }
                 catch (Exception ex)
@@ -77,6 +81,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
             {
                 try
                 {
+                    model.Resolve(_scope);
                     model.LoadModelData(id);
                 }
                 catch (Exception ex)
@@ -108,6 +113,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
             {
                 try
                 {
+                    model.Resolve(_scope);
                     model.Update();
                 }
                 catch (Exception ex)
@@ -141,6 +147,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
             {
                 try
                 {
+                    model.Resolve(_scope);
                     model.Delete(id);
                 }
                 catch (Exception ex)
