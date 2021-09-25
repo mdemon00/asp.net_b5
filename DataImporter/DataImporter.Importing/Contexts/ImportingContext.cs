@@ -1,4 +1,5 @@
 ﻿using DataImporter.Importing.Entities;
+using DataImporter.Membership.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataImporter.Importing.Contexts
@@ -26,6 +27,16 @@ namespace DataImporter.Importing.Contexts
             base.OnConfiguring(dbContextOptionsBuilder);
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Entity<ApplicationUser>()
+                .ToTable("AspNetUsers",t => t.ExcludeFromMigrations())
+                .HasMany<Group>()
+                .WithOne(t => t.ApplicationUser);
+
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Column> Columns { get; set; }
         public DbSet<Row> Rows { get; set; }

@@ -4,6 +4,10 @@ using DataImporter.Importing.BusinessObjects;
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using DataImporter.Web;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace DataImporter.Areas.Member.Models
 {
@@ -15,7 +19,7 @@ namespace DataImporter.Areas.Member.Models
         private IGroupService _groupService;
         private IMapper _mapper;
         private ILifetimeScope _scope;
-
+        private IHttpContextAccessor _httpContextAccessor;
         public CreateGroupModel()
         {
         }
@@ -25,13 +29,14 @@ namespace DataImporter.Areas.Member.Models
             _scope = scope;
             _groupService = _scope.Resolve<IGroupService>();
             _mapper = _scope.Resolve<IMapper>();
+            _httpContextAccessor = _scope.Resolve<IHttpContextAccessor>();
         }
 
         internal void CreateGroup()
         {
             var group = new Group
             {
-               Name = Name
+                Name = Name
             };
 
             _groupService.CreateGroup(group);

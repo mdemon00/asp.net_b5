@@ -2,23 +2,33 @@
 using DataImporter.Importing.BusinessObjects;
 using DataImporter.Importing.Exceptions;
 using DataImporter.Importing.UnitOfWorks;
+using DataImporter.Membership.Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace DataImporter.Importing.Services
 {
     public class GroupService : IGroupService
     {
         private readonly IImportingUnitOfWork _importingUnitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
+        private IHttpContextAccessor _httpContextAccessor;
 
         public GroupService(IImportingUnitOfWork importingUnitOfWork,
-            IMapper mapper)
+            UserManager<ApplicationUser> userManager,
+            IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _importingUnitOfWork = importingUnitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IList<Group> GetAllGroups()
@@ -43,6 +53,14 @@ namespace DataImporter.Importing.Services
             if (IsNameAlreadyUsed(group.Name))
                 throw new DuplicateNameException("Group name already exists");
 
+            if (!IsGroupOwnerAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                group.ApplicationUserId = ApplicationUserId;
+            else
+                throw new InvalidParameterException("Something Went Wrong");
+
             _importingUnitOfWork.Groups.Add(
                 _mapper.Map<Entities.Group>(group)
             );
@@ -55,8 +73,16 @@ namespace DataImporter.Importing.Services
 
         private bool IsNameAlreadyUsed(string name, int id) =>
             _importingUnitOfWork.Groups.GetCount(x => x.Name == name && x.Id != id) > 0;
+
         private bool IsIdAvaiable(int id) =>
             _importingUnitOfWork.Groups.GetCount(x => x.Id != id) > 0;
+
+        private bool IsGroupOwnerAvailable()
+        {
+            string userId = _userManager.GetUserId(_httpContextAccessor.HttpContext.User);
+
+            return !string.IsNullOrEmpty(userId);
+        }
 
         public (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize,
             string searchText, string sortText)

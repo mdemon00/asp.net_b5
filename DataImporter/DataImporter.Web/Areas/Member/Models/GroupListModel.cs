@@ -7,6 +7,7 @@ using DataImporter.Web;
 using System.Collections.Generic;
 using DataImporter.Importing.BusinessObjects;
 using AutoMapper;
+using System.Security.Claims;
 
 namespace DataImporter.Areas.Member.Models
 {
