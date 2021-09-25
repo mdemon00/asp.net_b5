@@ -8,6 +8,8 @@ using DataImporter.Membership.Contexts;
 using DataImporter.Membership.Entities;
 using DataImporter.Membership.Services;
 using DataImporter.Web.Data;
+using DataImporter.Web.Models.Account;
+using DataImporter.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -127,6 +129,10 @@ namespace DataImporter.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            services.Configure<RecaptchaSettingsModel>(Configuration.GetSection("GooglereCAPTCHA"));
+
+            services.AddTransient<RecaptchaService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

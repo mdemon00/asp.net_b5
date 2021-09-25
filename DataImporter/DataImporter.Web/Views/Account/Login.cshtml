@@ -1,4 +1,6 @@
 ﻿@model DataImporter.Web.Models.Account.LoginModel
+@using Microsoft.Extensions.Options
+@inject IOptions<DataImporter.Web.Models.Account.RecaptchaSettingsModel> GoogleRecaptcha
 
 @{
     ViewData["Title"] = "Log in";
@@ -23,6 +25,7 @@
                     <input asp-for="Password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
+                <input type="hidden" id="Input_Token" asp-for="Token" value=""/>
                 <div class="form-group">
                     <div class="checkbox">
                         <label asp-for="RememberMe">
@@ -68,6 +71,20 @@
     </div>
 </div>
 
-@section Scripts {
+@section Scripts{
+
     <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://www.google.com/recaptcha/api.js?render=@GoogleRecaptcha.Value.Recaptcha_Site_Key"></script>
+
+    <script>
+       grecaptcha.ready(function () {
+           grecaptcha.execute('@GoogleRecaptcha.Value.Recaptcha_Site_Key', { action: 'homepage' }).then(function (token) {
+
+               $('#Input_Token').val(token);
+
+                });
+            });
+    </script>
+
 }

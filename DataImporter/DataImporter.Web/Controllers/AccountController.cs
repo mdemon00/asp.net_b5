@@ -2,6 +2,7 @@
 using DataImporter.Membership.Services;
 using DataImporter.Web.Models;
 using DataImporter.Web.Models.Account;
+using DataImporter.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -24,19 +25,22 @@ namespace DataImporter.Web.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly RoleManager<Role> _roleManager;
         private readonly IEmailSender _emailSender;
+        private readonly RecaptchaService _recaptcha;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             RoleManager<Role> roleManager,
             ILogger<AccountController> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RecaptchaService recaptcha)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _logger = logger;
             _emailSender = emailSender;
+            _recaptcha = recaptcha;
         }
 
         public async Task<IActionResult> Register(string returnUrl = null)
@@ -125,6 +129,13 @@ namespace DataImporter.Web.Controllers
             returnUrl ??= Url.Content("~/");
 
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            var recaptcha = _recaptcha.RecaptchaVerify(model.Token);
+
+            if(!recaptcha.Result.success && recaptcha.Result.score <= 0.5)
+            {
+                ModelState.AddModelError(string.Empty, "Human verification failed...");
+            }
 
             if (ModelState.IsValid)
             {
