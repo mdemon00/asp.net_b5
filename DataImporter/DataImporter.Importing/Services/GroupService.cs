@@ -33,7 +33,7 @@ namespace DataImporter.Importing.Services
 
         public IList<Group> GetAllGroups()
         {
-            if (!IsGroupOwnerAvailable())
+            if (!IsUserAvailable())
                 throw new InvalidParameterException("User not registered");
 
             if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
@@ -60,7 +60,7 @@ namespace DataImporter.Importing.Services
             if (IsNameAlreadyUsed(group.Name))
                 throw new DuplicateNameException("Group name already exists");
 
-            if (!IsGroupOwnerAvailable())
+            if (!IsUserAvailable())
                 throw new InvalidParameterException("User not registered");
 
             if (Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
@@ -82,9 +82,16 @@ namespace DataImporter.Importing.Services
             _importingUnitOfWork.Groups.GetCount(x => x.Name == name && x.Id != id) > 0;
 
         private bool IsIdAvaiable(int id) =>
-            _importingUnitOfWork.Groups.GetCount(x => x.Id != id) > 0;
+            _importingUnitOfWork.Groups.GetCount(x => x.Id != id) > 0;  
+        
+        private bool IsGroupBelongsToOwner(Guid applicationUserId, int groupId = 0, string name = null) =>
+            _importingUnitOfWork.Groups.GetCount(
+                !string.IsNullOrWhiteSpace(name) ?
+                x => x.Name == name && x.ApplicationUserId == applicationUserId :
+                x => x.Id == groupId && x.ApplicationUserId == applicationUserId
+                ) > 0;
 
-        private bool IsGroupOwnerAvailable()
+        private bool IsUserAvailable()
         {
             string userId = _userManager.GetUserId(_httpContextAccessor.HttpContext.User);
 
@@ -94,7 +101,7 @@ namespace DataImporter.Importing.Services
         public (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize,
             string searchText, string sortText)
         {
-            if (!IsGroupOwnerAvailable())
+            if (!IsUserAvailable())
                 throw new InvalidParameterException("User not registered");
 
             if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
@@ -114,6 +121,15 @@ namespace DataImporter.Importing.Services
 
         public Group GetGroup(int id)
         {
+            if (!IsUserAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                throw new InvalidParameterException("Something Went Wrong");
+
+            if (!IsGroupBelongsToOwner(ApplicationUserId, id))
+                throw new InvalidParameterException("Unauthorized Access");
+
             var group = _importingUnitOfWork.Groups.GetById(id);
 
             if (group == null) return null;
@@ -123,6 +139,15 @@ namespace DataImporter.Importing.Services
 
         public Group GetGroup(string name)
         {
+            if (!IsUserAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                throw new InvalidParameterException("Something Went Wrong");
+
+            if (!IsGroupBelongsToOwner(ApplicationUserId, 0, name))
+                throw new InvalidParameterException("Unauthorized Access");
+
             var group = _importingUnitOfWork.Groups.GetDynamic(
                 string.IsNullOrWhiteSpace(name) ? null : x => x.Name.Contains(name));
 
@@ -135,6 +160,17 @@ namespace DataImporter.Importing.Services
         {
             if (group == null)
                 throw new InvalidOperationException("Group is missing");
+
+            if (!IsUserAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                group.ApplicationUserId = ApplicationUserId;
+            else
+                throw new InvalidParameterException("Something Went Wrong");
+
+            if (!IsGroupBelongsToOwner(ApplicationUserId, group.Id))
+                throw new InvalidParameterException("Unauthorized Access");
 
             if (IsNameAlreadyUsed(group.Name, group.Id))
                 throw new DuplicateNameException("Group name already used in other group.");
@@ -154,6 +190,15 @@ namespace DataImporter.Importing.Services
         {
             if (!IsIdAvaiable(id))
                 throw new DuplicateNameException("Group Id is invalid");
+
+            if (!IsUserAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                throw new InvalidParameterException("Something Went Wrong");
+
+            if (!IsGroupBelongsToOwner(ApplicationUserId, id))
+                throw new InvalidParameterException("Unauthorized Access");
 
             try
             {
