@@ -33,7 +33,14 @@ namespace DataImporter.Importing.Services
 
         public IList<Group> GetAllGroups()
         {
-            var groupEntities = _importingUnitOfWork.Groups.GetAll();
+            if (!IsGroupOwnerAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                throw new InvalidParameterException("Something Went Wrong");
+
+            var groupEntities = _importingUnitOfWork.Groups.GetDynamic(x => x.ApplicationUserId == ApplicationUserId, null, null, false);
+
             var groups = new List<Group>();
 
             foreach (var entity in groupEntities)
@@ -87,9 +94,17 @@ namespace DataImporter.Importing.Services
         public (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize,
             string searchText, string sortText)
         {
+            if (!IsGroupOwnerAvailable())
+                throw new InvalidParameterException("User not registered");
+
+            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                throw new InvalidParameterException("Something Went Wrong");
+
             var groupData = _importingUnitOfWork.Groups.GetDynamic(
-                string.IsNullOrWhiteSpace(searchText) ? null : x => x.Name.Contains(searchText),
-                sortText, string.Empty, pageIndex, pageSize);
+                  !string.IsNullOrWhiteSpace(searchText) ?
+                  x => x.ApplicationUserId == ApplicationUserId && x.Name.Contains(searchText) :
+                  x => x.ApplicationUserId == ApplicationUserId,
+                  sortText, string.Empty, pageIndex, pageSize);
 
             var resultData = (from gr in groupData.data
                               select _mapper.Map<Group>(gr)).ToList();

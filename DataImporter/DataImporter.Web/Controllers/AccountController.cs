@@ -49,7 +49,7 @@ namespace DataImporter.Web.Controllers
             model.ReturnUrl = returnUrl;
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            await _roleManager.CreateAsync(new Role("Member"));
+            //await _roleManager.CreateAsync(new Role("Member"));
 
             return View(model);
         }
