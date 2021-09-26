@@ -46,7 +46,7 @@ namespace DataImporter.Importing.Services
             var columns = new List<Column>();
             var columnEntities = new List<Entities.Column>();
 
-            if (groupName == null)
+            if (string.IsNullOrEmpty(groupName))
             {
                 try
                 {
@@ -56,7 +56,7 @@ namespace DataImporter.Importing.Services
                 {
                     _logger.LogError("{0} : Can't get group Id {1}", DateTimeOffset.Now, ex);
 
-                    return null;
+                    return columns;
                 }
             }
             else
@@ -70,7 +70,7 @@ namespace DataImporter.Importing.Services
                 }
                 catch
                 {
-                    return null;
+                    return columns;
                 }
 
             }
@@ -81,11 +81,11 @@ namespace DataImporter.Importing.Services
             }
             catch
             {
-                return null;
+                return columns;
             }
 
             if (columnEntities.Count < 1)
-                return null;
+                return columns;
 
             foreach (var entity in columnEntities)
             {
@@ -100,9 +100,6 @@ namespace DataImporter.Importing.Services
         {
             if (column == null)
                 throw new InvalidParameterException("Column was not provided");
-
-            if (IsNameAlreadyUsed(column.Name))
-                throw new DuplicateNameException("Column name already exists");
 
             _importingUnitOfWork.Columns.Add(
                 _mapper.Map<Entities.Column>(column)

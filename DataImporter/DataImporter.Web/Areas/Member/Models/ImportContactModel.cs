@@ -40,7 +40,6 @@ namespace DataImporter.Areas.Member.Models
         internal void Import(string fullDirectoryAddress, string fileName, string gorupName)
         {
 
-            //_contactService.ImportSheet(@"C:\Users\John\Documents\AspAttendence.xlsx", "AspAttendence","Attendence");
             _contactService.ImportSheet(fullDirectoryAddress, fileName, gorupName);
         }
     }

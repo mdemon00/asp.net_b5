@@ -110,7 +110,7 @@ namespace DataImporter.Common.Utilities
 
                     var column = int.Parse(columnValue.Value.ToArray()[0]);
                     var direction = directionValue.Value.ToArray()[0];
-                    var sortDirection = $"{columnNames[column]} {(direction == "asc" ? "asc" : "desc")}";
+                    var sortDirection = $"{columnNames[column]} {(direction.Trim() == "asc" ? "asc" : "desc")}";
                     sortText.Append(sortDirection);
                 }
             }

@@ -21,7 +21,7 @@ namespace DataImporter.Importing.Services
         private readonly ILogger<ContactService> _logger;
 
         public ContactService(IImportingUnitOfWork importingUnitOfWork,
-            IMapper mapper, IGroupService groupService, IColumnService columnService, 
+            IMapper mapper, IGroupService groupService, IColumnService columnService,
             IRowService rowService, ICellService cellService, ILogger<ContactService> logger)
         {
             _importingUnitOfWork = importingUnitOfWork;
@@ -131,7 +131,7 @@ namespace DataImporter.Importing.Services
                 var filteredCellGroup = new List<string>();
                 var exist = false;
 
-                if (searchText != null)
+                if (!string.IsNullOrEmpty(searchText))
                 {
                     foreach (var cell in cellGroup)
                     {
@@ -142,7 +142,7 @@ namespace DataImporter.Importing.Services
                     }
                 }
 
-                if (exist || searchText == null)
+                if (exist || string.IsNullOrEmpty(searchText))
                 {
                     foreach (var cell in cellGroup)
                     {
@@ -156,11 +156,22 @@ namespace DataImporter.Importing.Services
 
             totalDisplay = resultData.Count();
 
-            if (sortText != null)
+            if (!string.IsNullOrEmpty(sortText))
             {
-                var pos = cellsData.First().Data == sortText.Split(" ")[0] ? 0 : 1;
+                var pos = 0;
 
-                if (sortText.Split(" ")[1] == "asc")
+                try
+                {
+                     pos = _columnService.GetAllColumns(groupName)
+                        .Select((Value, Index) => new { Value, Index })
+                        .Where(p => p.Value.Name.Trim() == sortText.Split(" ")[0].Trim()).FirstOrDefault().Index;
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError("Getting position failed" +  ex);
+                }
+
+                if (sortText.Split(" ").Contains("asc"))
                 {
                     resultData = resultData.OrderBy(o => o[pos])
                         .Skip((pageIndex - 1) * pageSize).Take(pageSize)

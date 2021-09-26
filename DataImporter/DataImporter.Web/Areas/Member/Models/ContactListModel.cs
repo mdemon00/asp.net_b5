@@ -46,7 +46,7 @@ namespace DataImporter.Areas.Member.Models
                 tableModel.PageIndex,
                 tableModel.PageSize,
                 tableModel.SearchText,
-                tableModel.GetSortText(new string[] { "Timestamp", "Name" }),
+                tableModel.GetSortText(_columnService.GetAllColumns(tableModel.GroupName).Select(i => i.Name.ToString()).ToArray()),
                 string.IsNullOrWhiteSpace(tableModel.GroupName) ? null : tableModel.GroupName
                 );
 
