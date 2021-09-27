@@ -21,17 +21,17 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <div class="form-group">
-                                    <div class="form-group pl-1 col-md-6">
-                                        <label>Group</label>
+                                    <div class="form-group pl-1 mb-2 col-md-12">
+                                        <label>Groups</label>
                                         <div class="select2-input">
-                                            <select id="multiple2" name="multiple[]" class="form-control" multiple="multiple">
+                                            <select id="multiple2" name="multiple[]" class="form-control" multiple="multiple" style="width: 100%">
                                                 <option value="AL">student</option>
                                                 <option value="AA">teacher</option>
                                                 <option value="AP">drive</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="input-group">
+                                    <div class="input-group p-1">
                                         <input type="email" class="form-control" aria-label="Text input with dropdown button">
                                         <div class="input-group-append">
                                             <button class="btn btn-primary">Send To Email</button>
@@ -44,7 +44,7 @@
                 </form>
             </div>
             <div class="modal-footer no-bd">
-                <button type="button" id="addRowButton" class="btn btn-primary">Download Now</button>
+                <button type="button" id="Export" class="btn btn-primary">Download Now</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -56,10 +56,68 @@
 <script>
 
     $('#multiple2').select2({
-        theme: "bootstrap"
+        theme: "bootstrap",
+        ajax: {
+            type: "GET",
+            url: "/api/GroupApi/Search",
+            contentType: "application/json; charset=utf-8",
+            data: function (params) {
+                var query =
+                {
+                    term: params.term,
+                };
+                return query;
+            },
+            processResults: function (result) {
+                return {
+                    results: $.map(result, function (item) {
+                        return {
+                            id: item.id,
+                            text: item.name
+                        };
+                    }),
+                };
+            }
+        }
     });
 
-    $('#multiple').select2({
-        theme: "bootstrap"
+    $("#Export").click(function (evt) {
+
+        //Get Text
+
+        var selected = $('#multiple2').select2("data");
+
+        var groups = new Array();
+        for (var i = 0; i <= selected.length - 1; i++) {
+
+            groups.push(selected[i].text)
+        }
+
+        $.ajax({
+            url: '/member/contact/Export',
+            data: {
+                GroupNames: groups,
+            },
+            type: "POST",
+            failure: function (jqXHR, textStatus, errorThrown) {
+                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+            },
+            complete: function (response) {
+                    $.ajax({
+                        url: '/member/contact/DownloadFile',
+                        data: {
+                            fileName: groups[0],
+                        },
+                        type: "POST",
+                        failure: function (jqXHR, textStatus, errorThrown) {
+                            alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                        },
+                        success: function (returnValue) {
+                            console.log(returnValue)
+                        }
+                    });
+            }
+        });
     });
+
 </script>

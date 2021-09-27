@@ -3,9 +3,12 @@ using ClosedXML.Excel;
 using DataImporter.Importing.BusinessObjects;
 using DataImporter.Importing.Exceptions;
 using DataImporter.Importing.UnitOfWorks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 
 namespace DataImporter.Importing.Services
@@ -19,8 +22,10 @@ namespace DataImporter.Importing.Services
         private readonly IRowService _rowService;
         private readonly ICellService _cellService;
         private readonly ILogger<ContactService> _logger;
+        private IWebHostEnvironment _environment;
 
         public ContactService(IImportingUnitOfWork importingUnitOfWork,
+            IWebHostEnvironment environment,
             IMapper mapper, IGroupService groupService, IColumnService columnService,
             IRowService rowService, ICellService cellService, ILogger<ContactService> logger)
         {
@@ -31,6 +36,7 @@ namespace DataImporter.Importing.Services
             _rowService = rowService;
             _cellService = cellService;
             _logger = logger;
+            _environment = environment;
         }
 
         public void ImportSheet(string path, dynamic worksheetName, string groupName)
@@ -99,12 +105,81 @@ namespace DataImporter.Importing.Services
             }
         }
 
+        public void ExportSheet(List<String> groupNames)
+        {
+            if(groupNames.Count < 1)
+                throw new InvalidParameterException("No groups found");
+
+            IList<string[]> records = new List<string[]> { };
+
+            try
+            {
+                 records = GetContacts(1, 1, null, null, groupNames[0], true).records;
+            }
+            catch(Exception ex)
+            {
+                throw new InvalidParameterException("Something Went Wrong " + ex);
+            }
+
+            if(records == null || records.Count() < 1)
+                throw new InvalidParameterException("Something Went Wrong ");
+
+            DataTable dt = new DataTable();
+
+            dt.TableName = groupNames[0];
+
+            var count = 0;
+            foreach (var row in records)
+            {
+                if (count == 0)
+                {
+                    foreach (var cell in row)
+                    {
+                        dt.Columns.Add(cell);
+                    }
+                }
+                else
+                {
+                    dt.Rows.Add();
+                    int cellIndex = 0;
+                    foreach (var cell in row)
+                    {
+                        dt.Rows[dt.Rows.Count - 1][cellIndex] = cell;
+                        cellIndex++;
+                    }
+                }
+                count++;
+            }
+
+            //Name of File  
+            string fileName = groupNames[0] + ".xlsx";
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                //Add DataTable in worksheet  
+                wb.Worksheets.Add(dt);
+
+                var downloads = Path.Combine(_environment.WebRootPath, "downloads");
+
+                try
+                {
+                    using (var fileStream = new FileStream(Path.Combine(downloads, fileName), FileMode.Create))
+                    {
+                        wb.SaveAs(fileStream);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidParameterException("Export failed " + ex);
+                }
+            }
+
+        }
         public (IList<string[]> records, int total, int totalDisplay) GetContacts(int pageIndex, int pageSize,
-    string searchText, string sortText, string groupName)
+    string searchText, string sortText, string groupName, bool export = false)
         {
             int groupId;
 
-            if (groupName == null)
+            if (string.IsNullOrEmpty(groupName))
             {
                 groupId = _groupService.GetAllGroups().FirstOrDefault().Id;
             }
@@ -156,19 +231,22 @@ namespace DataImporter.Importing.Services
 
             totalDisplay = resultData.Count();
 
+            if(export)
+                return (resultData, total, totalDisplay);
+
             if (!string.IsNullOrEmpty(sortText))
             {
                 var pos = 0;
 
                 try
                 {
-                     pos = _columnService.GetAllColumns(groupName)
-                        .Select((Value, Index) => new { Value, Index })
-                        .Where(p => p.Value.Name.Trim() == sortText.Split(" ")[0].Trim()).FirstOrDefault().Index;
+                    pos = _columnService.GetAllColumns(groupName)
+                       .Select((Value, Index) => new { Value, Index })
+                       .Where(p => p.Value.Name.Trim() == sortText.Split(" ")[0].Trim()).FirstOrDefault().Index;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    _logger.LogError("Getting position failed" +  ex);
+                    _logger.LogError("Getting position failed" + ex);
                 }
 
                 if (sortText.Split(" ").Contains("asc"))

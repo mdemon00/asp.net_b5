@@ -107,5 +107,45 @@ namespace DataImporter.Web.Areas.Member.Controllers
             }
         }
 
+        public IActionResult Export(ExportContactModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    model.Resolve(_scope);
+                    model.Export();
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    _logger.LogError(ex, "Export Failed");
+                }
+
+            }
+
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok();
+            }
+        }
+
+        public FileResult DownloadFile(string fileName)
+        {
+            var downloads = Path.Combine(_environment.WebRootPath, "downloads");
+
+            ////Read the File data into Byte Array.
+            //byte[] bytes = System.IO.File.ReadAllBytes(Path.Combine(downloads, fileName + ".xlsx"));
+
+            //Send the File to Download.
+            return File(Path.Combine(downloads, fileName + ".xlsx"), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
     }
 }

@@ -3,25 +3,20 @@ using AutoMapper;
 using DataImporter.Importing.Services;
 using DataImporter.Web;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace DataImporter.Areas.Member.Models
 {
-
-    public class ImportContactModel
+    public class ExportContactModel
     {
-        [Required, MaxLength(200, ErrorMessage = "GroupName should be less than 200 charcaters")]
-        public string GroupName { get; set; }
-
-        [Required, MaxLength(200, ErrorMessage = "FileName should be less than 200 charcaters")]
-
-        public string FileName { get; set; }
+        //[Required, MaxLength(200, ErrorMessage = "GroupName should be less than 200 charcaters")]
+        public List<String> GroupNames { get; set; }
 
         private IContactService _contactService;
         private IMapper _mapper;
         private ILifetimeScope _scope;
 
-        public ImportContactModel()
+        public ExportContactModel()
         {
             _contactService = Startup.AutofacContainer.Resolve<IContactService>();
             _mapper = Startup.AutofacContainer.Resolve<IMapper>();
@@ -34,14 +29,14 @@ namespace DataImporter.Areas.Member.Models
             _mapper = _scope.Resolve<IMapper>();
         }
 
-        public ImportContactModel(IContactService contactService)
+        public ExportContactModel(IContactService contactService)
         {
             _contactService = contactService;
         }
-        internal void Import(string fullDirectoryAddress, string fileName, string gorupName)
+        internal void Export()
         {
-
-            _contactService.ImportSheet(fullDirectoryAddress, fileName, gorupName);
+            
+            _contactService.ExportSheet(GroupNames);
         }
     }
 }
