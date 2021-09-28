@@ -35,6 +35,12 @@ namespace DataImporter.Importing.Contexts
                 .HasMany<Group>()
                 .WithOne(t => t.ApplicationUser);
 
+            modelBuilder.Entity<History>()
+                .HasOne(s => s.Group)
+                .WithMany(g => g.Histories)
+                .HasForeignKey(s => s.GroupName)
+                .HasPrincipalKey(c => c.Name);
+
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<Group> Groups { get; set; }
