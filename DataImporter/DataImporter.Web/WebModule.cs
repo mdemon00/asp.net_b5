@@ -16,6 +16,7 @@ namespace DataImporter.Web
             builder.RegisterType<CreateGroupModel>().AsSelf();
             builder.RegisterType<ContactListModel>().AsSelf();
             builder.RegisterType<ImportContactModel>().AsSelf();
+            builder.RegisterType<HistoryListModel>().AsSelf();
 
             base.Load(builder);
         }

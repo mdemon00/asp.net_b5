@@ -42,8 +42,7 @@ namespace DataImporter.Areas.Member.Models
                                 record.FileName,
                                 record.GroupName,
                                 record.ProcessType,
-                                record.Status,
-                                record.Id.ToString()
+                                record.Status
                         }
                     ).ToArray()
             };

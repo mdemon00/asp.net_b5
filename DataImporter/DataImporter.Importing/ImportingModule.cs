@@ -41,8 +41,8 @@ namespace DataImporter.Importing
 
             builder.RegisterType<CellRepository>().As<ICellRepository>()
                 .InstancePerLifetimeScope();
-
-            builder.RegisterType<ImportingUnitOfWork>().As<IImportingUnitOfWork>()
+            
+            builder.RegisterType<HistoryRepository>().As<IHistoryRepository>()
                 .InstancePerLifetimeScope();
 
 
@@ -56,10 +56,17 @@ namespace DataImporter.Importing
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ContactService>().As<IContactService>()
-    .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<CellService>().As<ICellService>()
                 .InstancePerLifetimeScope();
+            
+            builder.RegisterType<HistoryService>().As<IHistoryService>()
+                .InstancePerLifetimeScope();
+
+
+            builder.RegisterType<ImportingUnitOfWork>().As<IImportingUnitOfWork>()
+                 .InstancePerLifetimeScope();
 
             base.Load(builder);
         }

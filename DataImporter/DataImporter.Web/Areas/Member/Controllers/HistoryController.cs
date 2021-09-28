@@ -28,7 +28,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
             return View(model);
         }
 
-        public JsonResult GetGroupData()
+        public JsonResult GetHistoryData()
         {
             var dataTablesModel = new DataTablesAjaxRequestModel(Request);
             var model = _scope.Resolve<HistoryListModel>();
