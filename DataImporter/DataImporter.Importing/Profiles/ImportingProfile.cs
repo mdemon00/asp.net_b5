@@ -12,6 +12,7 @@ namespace DataImporter.Importing.Profiles
             CreateMap<EO.Column, BO.Column>().ReverseMap();
             CreateMap<EO.Row, BO.Row>().ReverseMap();
             CreateMap<EO.Cell, BO.Cell>().ReverseMap();
+            CreateMap<EO.History, BO.History>().ReverseMap();
         }
     }
 }

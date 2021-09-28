@@ -4,14 +4,16 @@ using DataImporter.Importing.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataImporter.Web.Data.Migrations.Importing
 {
     [DbContext(typeof(ImportingContext))]
-    partial class ImportingContextModelSnapshot : ModelSnapshot
+    [Migration("20210928063902_AddApplicationIdInHistory")]
+    partial class AddApplicationIdInHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

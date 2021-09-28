@@ -12,15 +12,18 @@ namespace DataImporter.Importing.UnitOfWorks
         public IColumnRepository Columns { get; private set; }
         public IRowRepository Rows { get; private set; }
         public ICellRepository Cells { get; private set; }
+        public IHistoryRepository Histories { get; private set; }
 
         public ImportingUnitOfWork(IImportingContext context,
-            IGroupRepository groups, IColumnRepository columns, IRowRepository rows, ICellRepository cells
+            IGroupRepository groups, IColumnRepository columns, IRowRepository rows,
+            ICellRepository cells, IHistoryRepository histories
             ) : base((DbContext)context)
         {
             Groups = groups;
             Columns = columns;
             Rows = rows;
             Cells = cells;
+            Histories = histories;
         }
     }
 }

@@ -8,6 +8,9 @@ namespace DataImporter.Importing.BusinessObjects
         public string FileName { get; set; }
         public string GroupName { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string status { get; set; }
+        public string Status { get; set; }
+        public string ProcessType { get; set; }
+
+        public Guid ApplicationUserId { get; set; }
     }
 }

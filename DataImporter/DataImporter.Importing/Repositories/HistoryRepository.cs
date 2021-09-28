@@ -5,11 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataImporter.Importing.Repositories
 {
-
-    public class RowRepository : Repository<Row, int>,
-IRowRepository
+    public class HistoryRepository : Repository<History, int>, IHistoryRepository
     {
-        public RowRepository(IImportingContext context)
+        public HistoryRepository(IImportingContext context)
             : base((DbContext)context)
         {
         }

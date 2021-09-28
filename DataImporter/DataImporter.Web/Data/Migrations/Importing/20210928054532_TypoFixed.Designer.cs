@@ -4,14 +4,16 @@ using DataImporter.Importing.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataImporter.Web.Data.Migrations.Importing
 {
     [DbContext(typeof(ImportingContext))]
-    partial class ImportingContextModelSnapshot : ModelSnapshot
+    [Migration("20210928054532_TypoFixed")]
+    partial class TypoFixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +89,6 @@ namespace DataImporter.Web.Data.Migrations.Importing
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -106,8 +105,6 @@ namespace DataImporter.Web.Data.Migrations.Importing
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("GroupName");
 
@@ -225,18 +222,10 @@ namespace DataImporter.Web.Data.Migrations.Importing
 
             modelBuilder.Entity("DataImporter.Importing.Entities.History", b =>
                 {
-                    b.HasOne("DataImporter.Membership.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataImporter.Importing.Entities.Group", "Group")
                         .WithMany("Histories")
                         .HasForeignKey("GroupName")
                         .HasPrincipalKey("Name");
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Group");
                 });

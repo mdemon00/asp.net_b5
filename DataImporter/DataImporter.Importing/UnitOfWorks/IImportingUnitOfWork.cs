@@ -11,5 +11,6 @@ namespace DataImporter.Importing.UnitOfWorks
         IColumnRepository Columns { get; }
         IRowRepository Rows { get; }
         ICellRepository Cells { get; }
+        IHistoryRepository Histories { get; }
     }
 }

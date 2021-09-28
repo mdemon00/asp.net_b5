@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace DataImporter.Importing.Services
 {
-
     public interface IGroupService
     {
         IList<Group> GetAllGroups();

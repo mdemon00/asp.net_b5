@@ -35,6 +35,11 @@ namespace DataImporter.Importing.Contexts
                 .HasMany<Group>()
                 .WithOne(t => t.ApplicationUser);
 
+            modelBuilder.Entity<ApplicationUser>()
+                .ToTable("AspNetUsers", t => t.ExcludeFromMigrations())
+                .HasMany<History>()
+                .WithOne(t => t.ApplicationUser);
+
             modelBuilder.Entity<History>()
                 .HasOne(s => s.Group)
                 .WithMany(g => g.Histories)
@@ -47,5 +52,6 @@ namespace DataImporter.Importing.Contexts
         public DbSet<Column> Columns { get; set; }
         public DbSet<Row> Rows { get; set; }
         public DbSet<Cell> Cells { get; set; }
+        public DbSet<History> History { get; set; }
     }
 }
