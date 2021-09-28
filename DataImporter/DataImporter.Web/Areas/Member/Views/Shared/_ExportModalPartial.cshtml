@@ -81,6 +81,15 @@
         }
     });
 
+    function Base64ToBytes(base64) {
+        var s = window.atob(base64);
+        var bytes = new Uint8Array(s.length);
+        for (var i = 0; i < s.length; i++) {
+            bytes[i] = s.charCodeAt(i);
+        }
+        return bytes;
+    };
+
     $("#Export").click(function (evt) {
 
         //Get Text
@@ -93,6 +102,8 @@
             groups.push(selected[i].text)
         }
 
+        console.log(groups);
+
         $.ajax({
             url: '/member/contact/Export',
             data: {
@@ -102,20 +113,29 @@
             failure: function (jqXHR, textStatus, errorThrown) {
                 alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
             },
-            complete: function (response) {
-                    $.ajax({
-                        url: '/member/contact/DownloadFile',
-                        data: {
-                            fileName: groups[0],
-                        },
-                        type: "POST",
-                        failure: function (jqXHR, textStatus, errorThrown) {
-                            alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
-                        },
-                        success: function (returnValue) {
-                            console.log(returnValue)
-                        }
-                    });
+            complete: function () {
+                $.ajax({
+                    url: '/member/contact/DownloadFile',
+                    type: "POST",
+                    data: JSON.stringify({ fileName: groups[0] }),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var bytes = Base64ToBytes(data);
+                        var blob = new Blob([bytes], { type: "application/octetstream" });
+                        var a = document.createElement('a');
+                        var url = window.URL.createObjectURL(blob);
+                        a.href = url;
+                        a.download = groups[0] + '.xlsx';
+                        document.body.append(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                    },
+                    failure: function (jqXHR, textStatus, errorThrown) {
+                        alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                    },
+                });
             }
         });
     });

@@ -137,15 +137,46 @@ namespace DataImporter.Web.Areas.Member.Controllers
             }
         }
 
-        public FileResult DownloadFile(string fileName)
+        [HttpPost]
+        public IActionResult DownloadFile([FromBody] ExportContactModel model)
         {
-            var downloads = Path.Combine(_environment.WebRootPath, "downloads");
+            byte[] bytes = new Byte[] { };
 
-            ////Read the File data into Byte Array.
-            //byte[] bytes = System.IO.File.ReadAllBytes(Path.Combine(downloads, fileName + ".xlsx"));
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    model.Resolve(_scope);
 
-            //Send the File to Download.
-            return File(Path.Combine(downloads, fileName + ".xlsx"), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                    var downloads = Path.Combine(_environment.WebRootPath, "downloads");
+
+                    ////Read the File data into Byte Array.
+                     bytes = System.IO.File.ReadAllBytes(Path.Combine(downloads, model.fileName + ".xlsx"));
+
+                    //Send the File to Download.
+                    //return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName + ".xlsx");
+
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    _logger.LogError(ex, "Dwonload Failed");
+                }
+
+            }
+
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok(Convert.ToBase64String(bytes, 0, bytes.Length));
+            }
+
         }
     }
 }
