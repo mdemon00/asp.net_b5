@@ -2,6 +2,12 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using DataImporter.Importing;
 using DataImporter.Importing.Contexts;
+using DataImporter.Membership;
+using DataImporter.Membership.Contexts;
+using DataImporter.Membership.Entities;
+using DataImporter.Membership.Services;
+using DataImporter.Worker.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +67,10 @@ namespace DataImporter.Worker
 
                     builder.RegisterModule(new ImportingModule(connectionString,
                          _migrationAssemblyName));
+                    builder.RegisterModule(new MembershipModule(connectionString,
+                         _migrationAssemblyName));
+                    builder.RegisterModule(new WorkerModule(connectionString,
+                         _migrationAssemblyName, _configuration));
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -70,6 +80,52 @@ namespace DataImporter.Worker
                     services.AddDbContext<ImportingContext>(options =>
                          options.UseSqlServer(connectionString, b =>
                          b.MigrationsAssembly(_migrationAssemblyName)));
+
+                    services.AddHttpContextAccessor();
+                    services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseSqlServer(connectionString, b =>
+                        b.MigrationsAssembly(_migrationAssemblyName)));
+
+
+                    services.AddDbContext<ImportingContext>(options =>
+                        options.UseSqlServer(connectionString, b =>
+                        b.MigrationsAssembly(_migrationAssemblyName)));
+
+                    // Identity customization started here
+                    services
+                        .AddIdentity<ApplicationUser, Role>()
+                        .AddEntityFrameworkStores<ApplicationDbContext>()
+                        .AddUserManager<UserManager>()
+                        .AddRoleManager<RoleManager>()
+                        .AddSignInManager<SignInManager>()
+                        .AddDefaultUI()
+                        .AddDefaultTokenProviders();
+
+                    services.Configure<IdentityOptions>(options =>
+                    {
+                        // Password settings.
+                        options.Password.RequireDigit = false;
+                        options.Password.RequireLowercase = true;
+                        options.Password.RequireNonAlphanumeric = true;
+                        options.Password.RequireUppercase = false;
+                        options.Password.RequiredLength = 6;
+                        options.Password.RequiredUniqueChars = 1;
+
+                        // Lockout settings.
+                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                        options.Lockout.MaxFailedAccessAttempts = 5;
+                        options.Lockout.AllowedForNewUsers = true;
+
+                        // User settings.
+                        options.User.AllowedUserNameCharacters =
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                        options.User.RequireUniqueEmail = false;
+                    });
+
+                    services.Configure<WorkerSettingsModel>(_configuration.GetSection("DataImporter"));
+
                 });
     }
 }

@@ -1,6 +1,9 @@
+using DataImporter.Importing.Services;
+using DataImporter.Worker.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +16,9 @@ namespace DataImporter.Worker
     {
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
+        private WorkerSettingsModel _settings;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, IOptions<WorkerSettingsModel> settings)
         {
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
@@ -22,15 +26,23 @@ namespace DataImporter.Worker
                 .Build();
 
             _logger = logger;
+            _settings = settings.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                try
+                {
 
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogInformation("Error {ex} {time}", ex, DateTimeOffset.Now);
+                }
+
+                await Task.Delay(_settings.Worker_Delay_Time, stoppingToken);
             }
         }
     }
