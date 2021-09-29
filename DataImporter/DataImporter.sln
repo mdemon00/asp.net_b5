@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Importing", "D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Common", "DataImporter.Common\DataImporter.Common.csproj", "{39BE9550-61E9-43F3-B8D9-D907819CD3FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Membership", "DataImporter.Membership\DataImporter.Membership.csproj", "{959A3B3C-8132-439D-8434-D862393D43DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Membership", "DataImporter.Membership\DataImporter.Membership.csproj", "{959A3B3C-8132-439D-8434-D862393D43DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Worker", "DataImporter.Worker\DataImporter.Worker.csproj", "{56FC7558-9665-4005-AEA2-34886EB62A10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{959A3B3C-8132-439D-8434-D862393D43DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{959A3B3C-8132-439D-8434-D862393D43DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{959A3B3C-8132-439D-8434-D862393D43DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56FC7558-9665-4005-AEA2-34886EB62A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56FC7558-9665-4005-AEA2-34886EB62A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56FC7558-9665-4005-AEA2-34886EB62A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56FC7558-9665-4005-AEA2-34886EB62A10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
