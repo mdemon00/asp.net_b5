@@ -1,0 +1,87 @@
+﻿<!-- Large modal -->
+<button id="Preview" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content table-responsive">
+            <div id="demo">
+ 
+         
+            </div>
+            <div class="modal-footer no-bd">
+                <button type="button" id="importButton" class="btn btn-primary">Confirm</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function JSONToHTMLTable(jsonData, elementToBind) {
+
+        //This Code gets all columns for header   and stored in array col
+        var col = [];
+        for (var i = 0; i < jsonData.length; i++) {
+            for (var key in jsonData[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+
+        //This Code creates HTML table
+        var table = document.createElement("table");
+        table.setAttribute('class', 'table table-hover');
+
+        //This Code getsrows for header creader above.
+        var tr = table.insertRow(-1);
+
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th");
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+
+        //This Code adds data to table as rows
+        for (var i = 0; i < jsonData.length; i++) {
+
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = jsonData[i][col[j]];
+            }
+        }
+
+        //This Code gets the all columns for header
+        var divContainer = document.getElementById(elementToBind);
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+    }
+</script>
+
+<script>
+    $("#Preview").click(function (evt) {
+        $.ajax({
+            url: '/member/contact/Preview',
+            data: {
+                FileName: 'ads-1.xlsx',
+            },
+            type: "POST",
+            complete: function (response) {
+                if (response.status == 200) {
+                    var data = JSON.parse(response.responseText);
+                    JSONToHTMLTable(data,"demo")
+                }
+                else {
+                }
+            },
+            failure: function (jqXHR, textStatus, errorThrown) {
+                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+            }
+        });
+    });
+    // convert string to JSON
+    /*   response = $.parseJSON(response);*/
+</script>
+

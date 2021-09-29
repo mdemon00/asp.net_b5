@@ -74,6 +74,5 @@ namespace DataImporter.Areas.Member.Models
 
             return _columns;
         }
-
     }
 }

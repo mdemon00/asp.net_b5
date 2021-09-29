@@ -39,6 +39,41 @@ namespace DataImporter.Importing.Services
             _environment = environment;
         }
 
+        public DataTable ImportExceltoDatatable(string filePath, string sheetName)
+        {
+            using (XLWorkbook workBook = new XLWorkbook(filePath))
+            {
+                IXLWorksheet workSheet = workBook.Worksheet(1);
+
+                DataTable dt = new DataTable();
+
+                bool firstRow = true;
+                foreach (IXLRow row in workSheet.Rows())
+                {
+                    if (firstRow)
+                    {
+                        foreach (IXLCell cell in row.Cells())
+                        {
+                            dt.Columns.Add(cell.Value.ToString());
+                        }
+                        firstRow = false;
+                    }
+                    else
+                    {
+                        dt.Rows.Add();
+                        int i = 0;
+
+                        foreach (IXLCell cell in row.Cells(row.FirstCellUsed().Address.ColumnNumber, row.LastCellUsed().Address.ColumnNumber))
+                        {
+                            dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                            i++;
+                        }
+                    }
+                }
+
+                return dt;
+            }
+        }
         public void ImportSheet(string path, dynamic worksheetName, string groupName)
         {
             if (path == null)

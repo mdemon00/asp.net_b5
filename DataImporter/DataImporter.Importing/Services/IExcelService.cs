@@ -1,11 +1,13 @@
 ﻿using DataImporter.Importing.BusinessObjects;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace DataImporter.Importing.Services
 {
     public interface IExcelService
     {
+        DataTable ImportExceltoDatatable(string filePath, string sheetName);
         void ImportSheet(string path, dynamic worksheetName, string groupName);
         void ExportSheet(List<String> groupNames);
         (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,

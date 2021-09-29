@@ -7,10 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DataImporter.Web.Areas.Member.Controllers
@@ -73,6 +76,56 @@ namespace DataImporter.Web.Areas.Member.Controllers
             return Ok();
         }
 
+        public IActionResult Preview(PreviewModel model)
+        {
+            string data = string.Empty;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+                    var fullDir = Path.Combine(uploads, model.FileName);
+                    var fileName = Path.GetFileNameWithoutExtension(fullDir);
+
+                    model.Resolve(_scope);
+                    var dt = model.GetPreview(fullDir, fileName);
+
+                    //List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+                    //Dictionary<string, object> row = null;
+
+                    //foreach (DataRow dr in dt.Rows)
+                    //{
+                    //    row = new Dictionary<string, object>();
+                    //    foreach (DataColumn col in dt.Columns)
+                    //    {
+                    //        row.Add(col.ColumnName, dr[col]);
+                    //    }
+                    //    rows.Add(row);
+                    //}
+
+                     data = JsonConvert.SerializeObject(dt);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    _logger.LogError(ex, "Import Failed");
+                }
+
+            }
+
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+                return BadRequest(messages);
+            }
+            else
+            {
+                return Ok(data);
+            }
+        }
         public IActionResult Import(ImportContactModel model)
         {
             if (ModelState.IsValid)
