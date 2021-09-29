@@ -13,7 +13,7 @@ namespace DataImporter.Areas.Member.Models
 {
     public class ContactListModel
     {
-        private IContactService _contactService;
+        private IExcelService _excelService;
         private IColumnService _columnService;
         private IHttpContextAccessor _httpContextAccessor;
         private IMapper _mapper;
@@ -26,23 +26,23 @@ namespace DataImporter.Areas.Member.Models
         public void Resolve(ILifetimeScope scope)
         {
             _scope = scope;
-            _contactService = _scope.Resolve<IContactService>();
+            _excelService = _scope.Resolve<IExcelService>();
             _columnService = _scope.Resolve<IColumnService>();
             _httpContextAccessor = _scope.Resolve<IHttpContextAccessor>();
             _mapper = _scope.Resolve<IMapper>();
         }
 
-        public ContactListModel(IContactService contactService, IColumnService columnService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public ContactListModel(IExcelService contactService, IColumnService columnService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _columnService = columnService;
-            _contactService = contactService;
+            _excelService = contactService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
         }
 
         internal object GetContacts(DataTablesAjaxRequestModel tableModel)
         {
-            var data = _contactService.GetContacts(
+            var data = _excelService.GetSheets(
                 tableModel.PageIndex,
                 tableModel.PageSize,
                 tableModel.SearchText,

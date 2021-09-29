@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace DataImporter.Importing.Services
 {
-    public class ContactService : IContactService
+    public class ExcelService : IExcelService
     {
         private readonly IImportingUnitOfWork _importingUnitOfWork;
         private readonly IMapper _mapper;
@@ -21,13 +21,13 @@ namespace DataImporter.Importing.Services
         private readonly IColumnService _columnService;
         private readonly IRowService _rowService;
         private readonly ICellService _cellService;
-        private readonly ILogger<ContactService> _logger;
+        private readonly ILogger<ExcelService> _logger;
         private IWebHostEnvironment _environment;
 
-        public ContactService(IImportingUnitOfWork importingUnitOfWork,
+        public ExcelService(IImportingUnitOfWork importingUnitOfWork,
             IWebHostEnvironment environment,
             IMapper mapper, IGroupService groupService, IColumnService columnService,
-            IRowService rowService, ICellService cellService, ILogger<ContactService> logger)
+            IRowService rowService, ICellService cellService, ILogger<ExcelService> logger)
         {
             _importingUnitOfWork = importingUnitOfWork;
             _mapper = mapper;
@@ -114,7 +114,7 @@ namespace DataImporter.Importing.Services
 
             try
             {
-                 records = GetContacts(1, 1, null, null, groupNames[0], true).records;
+                 records = GetSheets(1, 1, null, null, groupNames[0], true).records;
             }
             catch(Exception ex)
             {
@@ -174,7 +174,7 @@ namespace DataImporter.Importing.Services
             }
 
         }
-        public (IList<string[]> records, int total, int totalDisplay) GetContacts(int pageIndex, int pageSize,
+        public (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
     string searchText, string sortText, string groupName, bool export = false)
         {
             int groupId;

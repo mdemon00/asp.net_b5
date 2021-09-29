@@ -13,31 +13,31 @@ namespace DataImporter.Areas.Member.Models
         public List<String> GroupNames { get; set; }
         public string fileName { get; set; }
 
-        private IContactService _contactService;
+        private IExcelService _excelService;
         private IMapper _mapper;
         private ILifetimeScope _scope;
 
         public ExportContactModel()
         {
-            _contactService = Startup.AutofacContainer.Resolve<IContactService>();
+            _excelService = Startup.AutofacContainer.Resolve<IExcelService>();
             _mapper = Startup.AutofacContainer.Resolve<IMapper>();
         }
 
         public void Resolve(ILifetimeScope scope)
         {
             _scope = scope;
-            _contactService = _scope.Resolve<IContactService>();
+            _excelService = _scope.Resolve<IExcelService>();
             _mapper = _scope.Resolve<IMapper>();
         }
 
-        public ExportContactModel(IContactService contactService)
+        public ExportContactModel(IExcelService contactService)
         {
-            _contactService = contactService;
+            _excelService = contactService;
         }
         internal void Export()
         {
-            
-            _contactService.ExportSheet(GroupNames);
+
+            _excelService.ExportSheet(GroupNames);
         }
     }
 }

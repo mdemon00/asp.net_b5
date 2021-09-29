@@ -55,7 +55,7 @@ namespace DataImporter.Importing
             builder.RegisterType<RowService>().As<IRowService>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<ContactService>().As<IContactService>()
+            builder.RegisterType<ExcelService>().As<IExcelService>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<CellService>().As<ICellService>()
