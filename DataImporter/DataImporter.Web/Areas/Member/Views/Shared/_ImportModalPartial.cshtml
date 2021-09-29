@@ -110,9 +110,8 @@
         }
         else {
             $.ajax({
-                url: '/member/contact/Import',
+                url: '/member/contact/Preview',
                 data: {
-                    GroupName: groupName,
                     FileName: fileName,
                 },
                 type: "POST",
@@ -125,29 +124,11 @@
                 },
                 complete: function (response) {
                     if (response.status == 200) {
-                        swal("Done", "Imported successfully", {
-                            icon: "success",
-                            buttons: {
-                                confirm: {
-                                    className: 'btn btn-success'
-                                }
-                            },
-                        });
-
-                        var def = $.Deferred();
-                        def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns(response.GroupName));
+                        var data = JSON.parse(response.responseText);
+                        JSONToHTMLTable(data, "previewTable")
+                        $('#PreviewModal').modal('show');
                     }
                     else {
-                        $('#importButton').removeClass("is-loading");
-
-                        swal("Failed", response.responseText, {
-                            icon: "error",
-                            buttons: {
-                                confirm: {
-                                    className: 'btn btn-danger'
-                                }
-                            },
-                        });
                     }
                 },
                 failure: function (jqXHR, textStatus, errorThrown) {

@@ -48,8 +48,11 @@ namespace DataImporter.Importing.Services
                 DataTable dt = new DataTable();
 
                 bool firstRow = true;
+                var count = 1;
                 foreach (IXLRow row in workSheet.Rows())
                 {
+                    if (count == 10)
+                        return dt;
                     if (firstRow)
                     {
                         foreach (IXLCell cell in row.Cells())
@@ -69,6 +72,7 @@ namespace DataImporter.Importing.Services
                             i++;
                         }
                     }
+                    count++;
                 }
 
                 return dt;

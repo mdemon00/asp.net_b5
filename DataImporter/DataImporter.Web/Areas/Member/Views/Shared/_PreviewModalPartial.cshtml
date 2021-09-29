@@ -1,15 +1,11 @@
-﻿<!-- Large modal -->
-<button id="Preview" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
-
-<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+﻿
+<div id="PreviewModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content table-responsive">
-            <div id="demo">
- 
-         
+            <div id="previewTable">  
             </div>
             <div class="modal-footer no-bd">
-                <button type="button" id="importButton" class="btn btn-primary">Confirm</button>
+                <button type="button" id="PreviewButton" class="btn btn-primary">Confirm</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -61,27 +57,61 @@
 </script>
 
 <script>
-    $("#Preview").click(function (evt) {
-        $.ajax({
-            url: '/member/contact/Preview',
-            data: {
-                FileName: 'ads-1.xlsx',
-            },
-            type: "POST",
-            complete: function (response) {
-                if (response.status == 200) {
-                    var data = JSON.parse(response.responseText);
-                    JSONToHTMLTable(data,"demo")
-                }
-                else {
-                }
-            },
-            failure: function (jqXHR, textStatus, errorThrown) {
-                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+    $("#PreviewButton").click(function (evt) {
+
+            try {
+                var fileName = $('#tempStore').val();
+                var groupName = $('#gropuNames2').select2('data')[0].text;
             }
-        });
+            catch (err) {
+                console.log(err);
+            }
+
+             $.ajax({
+                url: '/member/contact/Import',
+                data: {
+                    GroupName: groupName,
+                    FileName: fileName,
+                },
+                type: "POST",
+                beforeSend: function () {
+                    $('#PreviewButton').addClass("is-loading");
+                },
+                success: function (response) {
+                    $('#PreviewButton').removeClass("is-loading");
+                    $('#PreviewModal').modal('hide');
+                },
+                complete: function (response) {
+                    if (response.status == 200) {
+                        swal("Done", "Task Added to Queue. Please wait.. ", {
+                            icon: "success",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-success'
+                                }
+                            },
+                        });
+
+                        //var def = $.Deferred();
+                        //def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns(response.GroupName));
+                    }
+                    else {
+                        $('#PreviewButton').removeClass("is-loading");
+
+                        swal("Failed", response.responseText, {
+                            icon: "error",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-danger'
+                                }
+                            },
+                        });
+                    }
+                },
+                failure: function (jqXHR, textStatus, errorThrown) {
+                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                }
+            });
     });
-    // convert string to JSON
-    /*   response = $.parseJSON(response);*/
 </script>
 

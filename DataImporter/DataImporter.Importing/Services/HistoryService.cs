@@ -43,6 +43,10 @@ namespace DataImporter.Importing.Services
             else
                 throw new InvalidParameterException("Something Went Wrong");
 
+            history.ProcessType = "Import";
+            history.Status = "Pending";
+            history.CreatedDate = DateTime.Now;
+
             _importingUnitOfWork.Histories.Add(
                 _mapper.Map<Entities.History>(history)
             );

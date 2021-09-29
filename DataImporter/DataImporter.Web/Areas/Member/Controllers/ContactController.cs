@@ -91,19 +91,6 @@ namespace DataImporter.Web.Areas.Member.Controllers
                     model.Resolve(_scope);
                     var dt = model.GetPreview(fullDir, fileName);
 
-                    //List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
-                    //Dictionary<string, object> row = null;
-
-                    //foreach (DataRow dr in dt.Rows)
-                    //{
-                    //    row = new Dictionary<string, object>();
-                    //    foreach (DataColumn col in dt.Columns)
-                    //    {
-                    //        row.Add(col.ColumnName, dr[col]);
-                    //    }
-                    //    rows.Add(row);
-                    //}
-
                      data = JsonConvert.SerializeObject(dt);
                 }
                 catch (Exception ex)
@@ -132,17 +119,13 @@ namespace DataImporter.Web.Areas.Member.Controllers
             {
                 try
                 {
-                    var uploads = Path.Combine(_environment.WebRootPath, "uploads");
-                    var fullDir = Path.Combine(uploads, model.FileName);
-                    var fileName = Path.GetFileNameWithoutExtension(fullDir);
-
                     model.Resolve(_scope);
-                    model.Import(fullDir, fileName, model.GroupName);
+                    model.Import();
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", ex.Message);
-                    _logger.LogError(ex, "Import Failed");
+                    _logger.LogError(ex, "Add to Queue Failed");
                 }
 
             }

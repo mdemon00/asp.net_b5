@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using AutoMapper;
+using DataImporter.Importing.BusinessObjects;
 using DataImporter.Importing.Services;
 using DataImporter.Web;
 using System;
@@ -18,30 +19,37 @@ namespace DataImporter.Areas.Member.Models
         public string FileName { get; set; }
 
         private IExcelService _excelService;
+        private IHistoryService _historyService;
         private IMapper _mapper;
         private ILifetimeScope _scope;
 
         public ImportContactModel()
         {
-            _excelService = Startup.AutofacContainer.Resolve<IExcelService>();
-            _mapper = Startup.AutofacContainer.Resolve<IMapper>();
         }
 
         public void Resolve(ILifetimeScope scope)
         {
             _scope = scope;
             _excelService = _scope.Resolve<IExcelService>();
+            _historyService = _scope.Resolve<IHistoryService>();
             _mapper = _scope.Resolve<IMapper>();
         }
 
-        public ImportContactModel(IExcelService contactService)
+        public ImportContactModel(IExcelService excelService, IHistoryService historyService)
         {
-            _excelService = contactService;
+            _excelService = excelService;
+            _historyService = historyService;
         }
-        internal void Import(string fullDirectoryAddress, string fileName, string gorupName)
+        internal void Import()
         {
+            var history = new History
+            {
+                FileName = FileName,
+                GroupName = GroupName
+            };
 
-            _excelService.ImportSheet(fullDirectoryAddress, fileName, gorupName);
+            _historyService.CreateHistory(history);
+            //_excelService.ImportSheet(fullDirectoryAddress, fileName, gorupName);
         }
     }
 }
