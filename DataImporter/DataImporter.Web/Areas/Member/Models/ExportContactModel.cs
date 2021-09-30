@@ -36,8 +36,8 @@ namespace DataImporter.Areas.Member.Models
         }
         internal void Export()
         {
-
-            _excelService.ExportSheet(GroupNames);
+            // only for one group name. need to implement for multiple
+            _excelService.ExportSheet(GroupNames[0]);
         }
     }
 }

@@ -144,16 +144,16 @@ namespace DataImporter.Importing.Services
             }
         }
 
-        public void ExportSheet(List<String> groupNames)
+        public void ExportSheet(string groupName)
         {
-            if(groupNames.Count < 1)
-                throw new InvalidParameterException("No groups found");
+            if(string.IsNullOrEmpty(groupName))
+                throw new InvalidParameterException("No group found");
 
             IList<string[]> records = new List<string[]> { };
 
             try
             {
-                 records = GetSheets(1, 1, null, null, groupNames[0], true).records;
+                 records = GetSheets(1, 1, null, null, groupName, true).records;
             }
             catch(Exception ex)
             {
@@ -165,7 +165,7 @@ namespace DataImporter.Importing.Services
 
             DataTable dt = new DataTable();
 
-            dt.TableName = groupNames[0];
+            dt.TableName = groupName;
 
             var count = 0;
             foreach (var row in records)
@@ -191,7 +191,7 @@ namespace DataImporter.Importing.Services
             }
 
             //Name of File  
-            string fileName = groupNames[0] + ".xlsx";
+            string fileName = groupName + ".xlsx";
             using (XLWorkbook wb = new XLWorkbook())
             {
                 //Add DataTable in worksheet  

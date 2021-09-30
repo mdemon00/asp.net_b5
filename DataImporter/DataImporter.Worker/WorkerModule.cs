@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using DataImporter.Worker.Services;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -21,5 +22,13 @@ namespace DataImporter.Worker
             _configuration = configuration;
         }
 
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<TaskManagementService>().As<ITaskManagementService>()
+                .InstancePerLifetimeScope();
+
+
+            base.Load(builder);
+        }
     }
 }

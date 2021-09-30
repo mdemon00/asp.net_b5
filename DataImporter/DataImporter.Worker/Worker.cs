@@ -1,5 +1,6 @@
 using DataImporter.Importing.Services;
 using DataImporter.Worker.Models;
+using DataImporter.Worker.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,8 @@ namespace DataImporter.Worker
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
         private WorkerSettingsModel _settings;
-
-        public Worker(ILogger<Worker> logger, IOptions<WorkerSettingsModel> settings)
+        private TaskManagementService _taskManagementService;
+        public Worker(ILogger<Worker> logger, IOptions<WorkerSettingsModel> settings, TaskManagementService taskManagementService)
         {
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
@@ -27,6 +28,7 @@ namespace DataImporter.Worker
 
             _logger = logger;
             _settings = settings.Value;
+            _taskManagementService = taskManagementService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -35,7 +37,7 @@ namespace DataImporter.Worker
             {
                 try
                 {
-
+                    _taskManagementService.CompletePendingTask();
                 }
                 catch(Exception ex)
                 {

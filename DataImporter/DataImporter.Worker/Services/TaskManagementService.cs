@@ -43,18 +43,18 @@ namespace DataImporter.Worker.Services
                         }
                         catch(Exception ex)
                         {
-                            throw new InvalidOperationException("Error" + ex);
+                            throw new InvalidOperationException("Error " + ex);
                         }
                     }
                     else if (history.ProcessType == "Export")
                     {
                         try
                         {
-
+                            _excelService.ExportSheet(history.GroupName);
                         }
                         catch (Exception ex)
                         {
-                            throw new InvalidOperationException("Error" + ex);
+                            throw new InvalidOperationException("Error " + ex);
                         }
                     }
                 }

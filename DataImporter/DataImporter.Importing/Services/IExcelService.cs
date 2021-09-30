@@ -9,7 +9,7 @@ namespace DataImporter.Importing.Services
     {
         DataTable ImportExceltoDatatable(string filePath, string sheetName);
         void ImportSheet(string path, dynamic worksheetName, string groupName);
-        void ExportSheet(List<String> groupNames);
+        void ExportSheet(string groupName);
         (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
             string searchText, string sortText, string groupName, bool export = false);
         List<Column> GetColums();
