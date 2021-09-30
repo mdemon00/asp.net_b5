@@ -20,6 +20,7 @@ namespace DataImporter.Importing
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 
             builder.RegisterType<ImportingContext>().AsSelf()
                 .WithParameter("connectionString", _connectionString)
