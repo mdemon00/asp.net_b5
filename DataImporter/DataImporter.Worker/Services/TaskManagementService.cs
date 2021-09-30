@@ -39,7 +39,13 @@ namespace DataImporter.Worker.Services
                     {
                         try
                         {
+                            history.Status = "Processing";
+                            _historyService.UpdateHistory(history);
+
                             _excelService.ImportSheet(_settings.Upload_Location, history.FileName, history.GroupName);
+
+                            history.Status = "Completed";
+                            _historyService.UpdateHistory(history);
                         }
                         catch(Exception ex)
                         {
@@ -50,7 +56,13 @@ namespace DataImporter.Worker.Services
                     {
                         try
                         {
+                            history.Status = "Processing";
+                            _historyService.UpdateHistory(history);
+
                             _excelService.ExportSheet(history.GroupName);
+
+                            history.Status = "Completed";
+                            _historyService.UpdateHistory(history);
                         }
                         catch (Exception ex)
                         {
