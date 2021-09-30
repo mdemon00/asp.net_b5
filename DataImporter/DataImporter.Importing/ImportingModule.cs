@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Features.ResolveAnything;
 using DataImporter.Importing.Contexts;
 using DataImporter.Importing.Repositories;
 using DataImporter.Importing.Services;
@@ -19,6 +20,7 @@ namespace DataImporter.Importing
 
         protected override void Load(ContainerBuilder builder)
         {
+
             builder.RegisterType<ImportingContext>().AsSelf()
                 .WithParameter("connectionString", _connectionString)
                 .WithParameter("migrationAssemblyName", _migrationAssemblyName)
@@ -67,6 +69,7 @@ namespace DataImporter.Importing
 
             builder.RegisterType<ImportingUnitOfWork>().As<IImportingUnitOfWork>()
                  .InstancePerLifetimeScope();
+
 
             base.Load(builder);
         }

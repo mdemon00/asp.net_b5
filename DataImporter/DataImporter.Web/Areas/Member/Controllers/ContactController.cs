@@ -1,12 +1,14 @@
 ﻿using Autofac;
 using DataImporter.Areas.Member.Models;
 using DataImporter.Common.Utilities;
+using DataImporter.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,13 +24,13 @@ namespace DataImporter.Web.Areas.Member.Controllers
     public class ContactController : Controller
     {
         private readonly ILogger<ContactController> _logger;
-        private IWebHostEnvironment _environment;
+        private WebSettingsModel _settings;
         private readonly ILifetimeScope _scope;
 
-        public ContactController(ILogger<ContactController> logger, IWebHostEnvironment environment, ILifetimeScope scope)
+        public ContactController(ILogger<ContactController> logger, IOptions<WebSettingsModel> settings, ILifetimeScope scope)
         {
             _logger = logger;
-            _environment = environment;
+            _settings = settings.Value;
             _scope = scope;
         }
 
@@ -57,12 +59,11 @@ namespace DataImporter.Web.Areas.Member.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(IFormFile file)
         {
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
             if (file.Length > 0)
             {
                 try
                 {
-                    using (var fileStream = new FileStream(Path.Combine(uploads, file.FileName), FileMode.Create))
+                    using (var fileStream = new FileStream(Path.Combine(_settings.Upload_Location, file.FileName), FileMode.Create))
                     {
                         await file.CopyToAsync(fileStream);
                     }
@@ -84,8 +85,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
             {
                 try
                 {
-                    var uploads = Path.Combine(_environment.WebRootPath, "uploads");
-                    var fullDir = Path.Combine(uploads, model.FileName);
+                    var fullDir = Path.Combine(_settings.Upload_Location, model.FileName);
                     var fileName = Path.GetFileNameWithoutExtension(fullDir);
 
                     model.Resolve(_scope);
@@ -184,10 +184,9 @@ namespace DataImporter.Web.Areas.Member.Controllers
                 {
                     model.Resolve(_scope);
 
-                    var downloads = Path.Combine(_environment.WebRootPath, "downloads");
 
                     ////Read the File data into Byte Array.
-                     bytes = System.IO.File.ReadAllBytes(Path.Combine(downloads, model.fileName + ".xlsx"));
+                     bytes = System.IO.File.ReadAllBytes(Path.Combine(_settings.Upload_Location, model.fileName + ".xlsx"));
 
                     //Send the File to Download.
                     //return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName + ".xlsx");

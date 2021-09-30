@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Autofac.Features.ResolveAnything;
 using DataImporter.Importing;
 using DataImporter.Importing.Contexts;
 using DataImporter.Membership;
@@ -64,6 +65,8 @@ namespace DataImporter.Worker
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
                 {
                     var connectionString = hostContext.Configuration.GetConnectionString("DefaultConnection");
+
+                    builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 
                     builder.RegisterModule(new ImportingModule(connectionString,
                          _migrationAssemblyName));

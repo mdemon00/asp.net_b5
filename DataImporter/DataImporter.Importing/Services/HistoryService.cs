@@ -84,7 +84,7 @@ namespace DataImporter.Importing.Services
             return resultData;
         }
 
-        public void UpdateHistory(Entities.History history)
+        public void UpdateHistory(History history)
         {
             if (history == null)
                 throw new InvalidOperationException("History is missing");

@@ -22,10 +22,8 @@ namespace DataImporter.Importing.Services
         private readonly IRowService _rowService;
         private readonly ICellService _cellService;
         private readonly ILogger<ExcelService> _logger;
-        private IWebHostEnvironment _environment;
 
         public ExcelService(IImportingUnitOfWork importingUnitOfWork,
-            IWebHostEnvironment environment,
             IMapper mapper, IGroupService groupService, IColumnService columnService,
             IRowService rowService, ICellService cellService, ILogger<ExcelService> logger)
         {
@@ -36,7 +34,6 @@ namespace DataImporter.Importing.Services
             _rowService = rowService;
             _cellService = cellService;
             _logger = logger;
-            _environment = environment;
         }
 
         public DataTable ImportExceltoDatatable(string filePath, string sheetName)
@@ -91,7 +88,7 @@ namespace DataImporter.Importing.Services
 
             var group = _groupService.GetGroup(groupName);
 
-            using (XLWorkbook workBook = new XLWorkbook(path))
+            using (XLWorkbook workBook = new XLWorkbook(Path.Combine(path, worksheetName)))
             {
                 // first sheet only, need to implement for all sheets
                 IXLWorksheet workSheet = workBook.Worksheets.FirstOrDefault();
@@ -144,7 +141,7 @@ namespace DataImporter.Importing.Services
             }
         }
 
-        public void ExportSheet(string groupName)
+        public void ExportSheet(string path, string groupName)
         {
             if(string.IsNullOrEmpty(groupName))
                 throw new InvalidParameterException("No group found");
@@ -190,18 +187,14 @@ namespace DataImporter.Importing.Services
                 count++;
             }
 
-            //Name of File  
-            string fileName = groupName + ".xlsx";
             using (XLWorkbook wb = new XLWorkbook())
             {
                 //Add DataTable in worksheet  
                 wb.Worksheets.Add(dt);
 
-                var downloads = Path.Combine(_environment.WebRootPath, "downloads");
-
                 try
                 {
-                    using (var fileStream = new FileStream(Path.Combine(downloads, fileName), FileMode.Create))
+                    using (var fileStream = new FileStream(Path.Combine(path, groupName + ".xlsx"), FileMode.Create))
                     {
                         wb.SaveAs(fileStream);
                     }
@@ -216,16 +209,22 @@ namespace DataImporter.Importing.Services
         public (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
     string searchText, string sortText, string groupName, bool export = false)
         {
-            int groupId;
+            int groupId = 0;
 
             if (string.IsNullOrEmpty(groupName))
             {
-                groupId = _groupService.GetAllGroups().FirstOrDefault().Id;
+                var group = _groupService.GetAllGroups().FirstOrDefault();
+
+                if (group != null)
+                    groupId = group.Id;
             }
             else
             {
                 groupId = _groupService.GetGroup(groupName).Id;
             }
+
+            if (groupId == 0)
+                return (new List<string[]>() { }, 0, 0);
 
             var rowsId = _rowService.GetAllRowsId(groupId);
 
@@ -233,6 +232,9 @@ namespace DataImporter.Importing.Services
                 return (new List<string[]>() { }, 0, 0);
 
             var cellsData = _cellService.GetCells(rowsId);
+
+            if (cellsData.Count < 1)
+                return (new List<string[]>() { }, 0, 0);
 
             var cellsGroupList = cellsData.GroupBy(x => x.RowId).ToList();
 

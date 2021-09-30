@@ -2,6 +2,8 @@
 using AutoMapper;
 using DataImporter.Importing.Services;
 using DataImporter.Web;
+using DataImporter.Web.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 
@@ -17,10 +19,10 @@ namespace DataImporter.Areas.Member.Models
         private IMapper _mapper;
         private ILifetimeScope _scope;
 
+        private WebSettingsModel _settings;
+
         public ExportContactModel()
         {
-            _excelService = Startup.AutofacContainer.Resolve<IExcelService>();
-            _mapper = Startup.AutofacContainer.Resolve<IMapper>();
         }
 
         public void Resolve(ILifetimeScope scope)
@@ -28,16 +30,18 @@ namespace DataImporter.Areas.Member.Models
             _scope = scope;
             _excelService = _scope.Resolve<IExcelService>();
             _mapper = _scope.Resolve<IMapper>();
+            _settings = _scope.Resolve<WebSettingsModel>();
         }
 
-        public ExportContactModel(IExcelService contactService)
+        public ExportContactModel(IExcelService contactService, IOptions<WebSettingsModel> settings)
         {
             _excelService = contactService;
+            _settings = settings.Value;
         }
         internal void Export()
         {
             // only for one group name. need to implement for multiple
-            _excelService.ExportSheet(GroupNames[0]);
+            _excelService.ExportSheet(_settings.Download_Location, GroupNames[0]);
         }
     }
 }

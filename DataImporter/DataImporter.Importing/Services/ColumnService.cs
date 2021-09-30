@@ -50,7 +50,10 @@ namespace DataImporter.Importing.Services
             {
                 try
                 {
-                    groupId = _groupService.GetAllGroups().FirstOrDefault().Id;
+                    var group = _groupService.GetAllGroups().FirstOrDefault();
+
+                    if(group != null)
+                        groupId = group.Id;
                 }
                 catch (Exception ex)
                 {

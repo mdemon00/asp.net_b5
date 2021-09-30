@@ -7,6 +7,7 @@ using DataImporter.Membership;
 using DataImporter.Membership.Contexts;
 using DataImporter.Membership.Entities;
 using DataImporter.Membership.Services;
+using DataImporter.Web.Models;
 using DataImporter.Web.Models.Account;
 using DataImporter.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -133,6 +134,8 @@ namespace DataImporter.Web
             services.Configure<RecaptchaSettingsModel>(Configuration.GetSection("GooglereCAPTCHA"));
 
             services.AddTransient<RecaptchaService>();
+
+            services.Configure<WebSettingsModel>(Configuration.GetSection("DataImporter"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

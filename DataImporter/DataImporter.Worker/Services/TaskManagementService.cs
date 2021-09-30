@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 
 namespace DataImporter.Worker.Services
 {
-    public interface ITaskManagementService
-    {
-        void CompletePendingTask();
-
-    }
     public class TaskManagementService : ITaskManagementService
     {
         private IHistoryService _historyService;
@@ -59,7 +54,7 @@ namespace DataImporter.Worker.Services
                             history.Status = "Processing";
                             _historyService.UpdateHistory(history);
 
-                            _excelService.ExportSheet(history.GroupName);
+                            _excelService.ExportSheet(_settings.Download_Location, history.GroupName);
 
                             history.Status = "Completed";
                             _historyService.UpdateHistory(history);
