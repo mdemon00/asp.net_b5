@@ -70,8 +70,7 @@ namespace DataImporter.Web.Data.Migrations.Importing
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -96,8 +95,8 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GroupName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ProcessType")
                         .HasColumnType("nvarchar(max)");
@@ -109,7 +108,7 @@ namespace DataImporter.Web.Data.Migrations.Importing
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("GroupName");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("History");
                 });
@@ -233,8 +232,9 @@ namespace DataImporter.Web.Data.Migrations.Importing
 
                     b.HasOne("DataImporter.Importing.Entities.Group", "Group")
                         .WithMany("Histories")
-                        .HasForeignKey("GroupName")
-                        .HasPrincipalKey("Name");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
 

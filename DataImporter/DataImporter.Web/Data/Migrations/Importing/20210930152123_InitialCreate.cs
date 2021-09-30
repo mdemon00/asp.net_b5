@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataImporter.Web.Data.Migrations.Importing
 {
-    public partial class InitialCreateImportingContext : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,6 +45,35 @@ namespace DataImporter.Web.Data.Migrations.Importing
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "History",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProcessType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GroupId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_History", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_History_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_History_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -102,6 +131,16 @@ namespace DataImporter.Web.Data.Migrations.Importing
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_History_ApplicationUserId",
+                table: "History",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_History_GroupId",
+                table: "History",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rows_GroupId",
                 table: "Rows",
                 column: "GroupId");
@@ -114,6 +153,9 @@ namespace DataImporter.Web.Data.Migrations.Importing
 
             migrationBuilder.DropTable(
                 name: "Columns");
+
+            migrationBuilder.DropTable(
+                name: "History");
 
             migrationBuilder.DropTable(
                 name: "Rows");

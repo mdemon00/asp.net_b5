@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataImporter.Web.Data.Migrations.Importing
 {
     [DbContext(typeof(ImportingContext))]
-    [Migration("20210925212508_InitialCreateImportingContext")]
-    partial class InitialCreateImportingContext
+    [Migration("20210930152123_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -79,6 +79,40 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("DataImporter.Importing.Entities.History", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProcessType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("History");
                 });
 
             modelBuilder.Entity("DataImporter.Importing.Entities.Row", b =>
@@ -190,6 +224,25 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("DataImporter.Importing.Entities.History", b =>
+                {
+                    b.HasOne("DataImporter.Membership.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataImporter.Importing.Entities.Group", "Group")
+                        .WithMany("Histories")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Group");
+                });
+
             modelBuilder.Entity("DataImporter.Importing.Entities.Row", b =>
                 {
                     b.HasOne("DataImporter.Importing.Entities.Group", "Group")
@@ -204,6 +257,8 @@ namespace DataImporter.Web.Data.Migrations.Importing
             modelBuilder.Entity("DataImporter.Importing.Entities.Group", b =>
                 {
                     b.Navigation("Columns");
+
+                    b.Navigation("Histories");
                 });
 
             modelBuilder.Entity("DataImporter.Importing.Entities.Row", b =>

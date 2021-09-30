@@ -43,8 +43,8 @@ namespace DataImporter.Importing.Contexts
             modelBuilder.Entity<History>()
                 .HasOne(s => s.Group)
                 .WithMany(g => g.Histories)
-                .HasForeignKey(s => s.GroupId);
-
+                .HasForeignKey(s => s.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<Group> Groups { get; set; }
