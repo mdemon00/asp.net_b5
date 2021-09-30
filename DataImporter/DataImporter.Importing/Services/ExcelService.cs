@@ -86,7 +86,7 @@ namespace DataImporter.Importing.Services
             if (groupName == null)
                 throw new InvalidParameterException("GroupName was not provided");
 
-            var group = _groupService.GetGroup(groupName);
+            var group = _groupService.GetGroup(groupName, true);
 
             using (XLWorkbook workBook = new XLWorkbook(Path.Combine(path, worksheetName)))
             {

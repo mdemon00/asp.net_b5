@@ -121,14 +121,16 @@ namespace DataImporter.Importing.Services
             return _mapper.Map<Group>(group);
         }
 
-        public Group GetGroup(string name)
+        public Group GetGroup(string name, bool fromWorkerService = false)
         {
+            if (!fromWorkerService)
+            {
+                if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                    throw new InvalidParameterException("Something Went Wrong");
 
-            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
-                throw new InvalidParameterException("Something Went Wrong");
-
-            if (!IsGroupBelongsToOwner(ApplicationUserId, 0, name))
-                throw new InvalidParameterException("Unauthorized Access");
+                if (!IsGroupBelongsToOwner(ApplicationUserId, 0, name))
+                    throw new InvalidParameterException("Unauthorized Access");
+            }
 
             var group = _importingUnitOfWork.Groups.GetDynamic(
                 string.IsNullOrWhiteSpace(name) ? null : x => x.Name.Contains(name));
@@ -138,18 +140,21 @@ namespace DataImporter.Importing.Services
             return _mapper.Map<Group>(group);
 
         }
-        public void UpdateGroup(Group group)
+        public void UpdateGroup(Group group, bool fromWorkerService = false)
         {
             if (group == null)
                 throw new InvalidOperationException("Group is missing");
 
-            if (Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
-                group.ApplicationUserId = ApplicationUserId;
-            else
-                throw new InvalidParameterException("Something Went Wrong");
+            if (!fromWorkerService)
+            {
+                if (Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                    group.ApplicationUserId = ApplicationUserId;
+                else
+                    throw new InvalidParameterException("Something Went Wrong");
 
-            if (!IsGroupBelongsToOwner(ApplicationUserId, group.Id))
-                throw new InvalidParameterException("Unauthorized Access");
+                if (!IsGroupBelongsToOwner(ApplicationUserId, group.Id))
+                    throw new InvalidParameterException("Unauthorized Access");
+            }
 
             if (IsNameAlreadyUsed(group.Name, group.Id))
                 throw new DuplicateNameException("Group name already used in other group.");

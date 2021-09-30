@@ -11,8 +11,8 @@ namespace DataImporter.Importing.Services
         (IList<Group> records, int total, int totalDisplay) GetGroups(int pageIndex, int pageSize,
             string searchText, string sortText);
         Group GetGroup(int id);
-        Group GetGroup(string name);
-        void UpdateGroup(Group group);
+        Group GetGroup(string name, bool fromWorkerService = false);
+        void UpdateGroup(Group group, bool fromWorkerService = false);
         void DeleteGroup(int id);
     }
 }
