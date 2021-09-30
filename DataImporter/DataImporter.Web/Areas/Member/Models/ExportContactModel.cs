@@ -18,6 +18,7 @@ namespace DataImporter.Areas.Member.Models
         private IExcelService _excelService;
         private IMapper _mapper;
         private ILifetimeScope _scope;
+        private IGroupService _groupService;
 
         private WebSettingsModel _settings;
 
@@ -31,17 +32,21 @@ namespace DataImporter.Areas.Member.Models
             _excelService = _scope.Resolve<IExcelService>();
             _mapper = _scope.Resolve<IMapper>();
             _settings = _scope.Resolve<WebSettingsModel>();
+            _groupService = _scope.Resolve<IGroupService>();
         }
 
-        public ExportContactModel(IExcelService contactService, IOptions<WebSettingsModel> settings)
+        public ExportContactModel(IExcelService contactService, IOptions<WebSettingsModel> settings, IGroupService groupService)
         {
             _excelService = contactService;
             _settings = settings.Value;
+            _groupService = groupService;
         }
         internal void Export()
         {
             // only for one group name. need to implement for multiple
-            _excelService.ExportSheet(_settings.Download_Location, GroupNames[0]);
+            var group = _groupService.GetGroup(GroupNames[0]);
+
+            _excelService.ExportSheet(_settings.Download_Location, group == null ? 0 : group.Id);
         }
     }
 }

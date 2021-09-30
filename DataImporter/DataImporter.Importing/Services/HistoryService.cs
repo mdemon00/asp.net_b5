@@ -19,15 +19,18 @@ namespace DataImporter.Importing.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private IHttpContextAccessor _httpContextAccessor;
+        private IGroupService _groupService;
 
         public HistoryService(IImportingUnitOfWork importingUnitOfWork,
             UserManager<ApplicationUser> userManager,
-            IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            IMapper mapper, IHttpContextAccessor httpContextAccessor,
+            IGroupService groupService)
         {
             _importingUnitOfWork = importingUnitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            _groupService = groupService;
         }
 
         public void CreateHistory(History history)
@@ -62,9 +65,10 @@ namespace DataImporter.Importing.Services
             if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
                 throw new InvalidParameterException("Something Went Wrong");
 
+            //x => x.ApplicationUserId == ApplicationUserId && x.GroupName.Contains(searchText)
             var historyData = _importingUnitOfWork.Histories.GetDynamic(
                   !string.IsNullOrWhiteSpace(searchText) ?
-                  x => x.ApplicationUserId == ApplicationUserId && x.GroupName.Contains(searchText) :
+                  null :
                   x => x.ApplicationUserId == ApplicationUserId,
                   sortText, string.Empty, pageIndex, pageSize);
 

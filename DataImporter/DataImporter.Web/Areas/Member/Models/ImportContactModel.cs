@@ -22,6 +22,7 @@ namespace DataImporter.Areas.Member.Models
         private IHistoryService _historyService;
         private IMapper _mapper;
         private ILifetimeScope _scope;
+        private IGroupService _groupService;
 
         public ImportContactModel()
         {
@@ -33,19 +34,21 @@ namespace DataImporter.Areas.Member.Models
             _excelService = _scope.Resolve<IExcelService>();
             _historyService = _scope.Resolve<IHistoryService>();
             _mapper = _scope.Resolve<IMapper>();
+            _groupService = _scope.Resolve<IGroupService>(); ;
         }
 
-        public ImportContactModel(IExcelService excelService, IHistoryService historyService)
+        public ImportContactModel(IExcelService excelService, IHistoryService historyService, IGroupService groupService)
         {
             _excelService = excelService;
             _historyService = historyService;
+            _groupService = groupService;
         }
         internal void Import()
         {
             var history = new History
             {
                 FileName = FileName,
-                GroupName = GroupName
+                GroupId = _groupService.GetGroup(GroupName).Id
             };
 
             _historyService.CreateHistory(history);

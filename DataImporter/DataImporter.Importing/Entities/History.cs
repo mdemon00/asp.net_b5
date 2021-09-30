@@ -12,7 +12,7 @@ namespace DataImporter.Importing.Entities
         public string Status { get; set; }
         public string ProcessType { get; set; }
 
-        public string GroupName { get; set; }
+        public int GroupId { get; set; }
         public Group Group { get; set; }
 
         public Guid ApplicationUserId { get; set; }

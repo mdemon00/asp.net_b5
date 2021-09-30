@@ -40,52 +40,23 @@ namespace DataImporter.Importing.Services
             return columns;
         }
 
-        public List<Column> GetAllColumns(string groupName)
+        public List<Column> GetAllColumns(int groupId = 0)
         {
-            int groupId = 0;
             var columns = new List<Column>();
             var columnEntities = new List<Entities.Column>();
 
-            if (string.IsNullOrEmpty(groupName))
+            Group group = null;
+
+            if (groupId < 1)
             {
-                try
-                {
-                    var group = _groupService.GetAllGroups().FirstOrDefault();
-
-                    if(group != null)
-                        groupId = group.Id;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("{0} : Can't get group Id {1}", DateTimeOffset.Now, ex);
-
-                    return columns;
-                }
-            }
-            else
-            {
-                try
-                {
-                    var group = _groupService.GetGroup(groupName);
-
-                    if (group != null)
-                        groupId = _groupService.GetGroup(groupName).Id;
-                }
-                catch
-                {
-                    return columns;
-                }
-
+                group = _groupService.GetAllGroups().FirstOrDefault();
             }
 
-            try
-            {
-                columnEntities = (List<Entities.Column>)_importingUnitOfWork.Columns.GetDynamic(groupId == 0 ? null : x => x.GroupId == groupId, null, null, false);
-            }
-            catch
-            {
+            if (group != null)
                 return columns;
-            }
+
+            columnEntities = (List<Entities.Column>)_importingUnitOfWork.Columns.GetDynamic(x => x.GroupId == group.Id,
+                null, null, false);
 
             if (columnEntities.Count < 1)
                 return columns;

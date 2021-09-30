@@ -43,8 +43,7 @@ namespace DataImporter.Importing.Contexts
             modelBuilder.Entity<History>()
                 .HasOne(s => s.Group)
                 .WithMany(g => g.Histories)
-                .HasForeignKey(s => s.GroupName)
-                .HasPrincipalKey(c => c.Name);
+                .HasForeignKey(s => s.GroupId);
 
             base.OnModelCreating(modelBuilder);
         }

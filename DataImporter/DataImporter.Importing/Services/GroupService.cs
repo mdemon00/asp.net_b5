@@ -105,14 +105,17 @@ namespace DataImporter.Importing.Services
             return (resultData, groupData.total, groupData.totalDisplay);
         }
 
-        public Group GetGroup(int id)
+        public Group GetGroup(int id, bool fromWorkerService = false)
         {
+            if (!fromWorkerService)
+            {
+                if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
+                    throw new InvalidParameterException("Something Went Wrong");
 
-            if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
-                throw new InvalidParameterException("Something Went Wrong");
+                if (!IsGroupBelongsToOwner(ApplicationUserId, id))
+                    throw new InvalidParameterException("Unauthorized Access");
 
-            if (!IsGroupBelongsToOwner(ApplicationUserId, id))
-                throw new InvalidParameterException("Unauthorized Access");
+            }
 
             var group = _importingUnitOfWork.Groups.GetById(id);
 

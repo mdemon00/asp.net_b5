@@ -14,14 +14,16 @@ namespace DataImporter.Areas.Member.Models
         private IHttpContextAccessor _httpContextAccessor;
         private IMapper _mapper;
         private ILifetimeScope _scope;
+        private IGroupService _groupService;
         public HistoryListModel()
         {
 
         }
-        public HistoryListModel(IHistoryService historyService, IHttpContextAccessor httpContextAccessor)
+        public HistoryListModel(IHistoryService historyService, IHttpContextAccessor httpContextAccessor, IGroupService groupService)
         {
             _historyService = historyService;
             _httpContextAccessor = httpContextAccessor;
+            _groupService = groupService;
         }
         internal object GetHistories(DataTablesAjaxRequestModel tableModel)
         {
@@ -30,7 +32,7 @@ namespace DataImporter.Areas.Member.Models
                 tableModel.PageSize,
                 tableModel.SearchText,
                 tableModel.GetSortText(new string[] { "CreatedDate", "FileName", "GroupName", "ProcessType", "Status" }));
-
+            
             return new
             {
                 recordsTotal = data.total,
@@ -40,7 +42,7 @@ namespace DataImporter.Areas.Member.Models
                         {
                                 record.CreatedDate.ToString(),
                                 record.FileName,
-                                record.GroupName,
+                                _groupService.GetGroup(record.GroupId).Name,
                                 record.ProcessType,
                                 record.Status
                         }

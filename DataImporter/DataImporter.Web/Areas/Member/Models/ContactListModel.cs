@@ -18,6 +18,7 @@ namespace DataImporter.Areas.Member.Models
         private IHttpContextAccessor _httpContextAccessor;
         private IMapper _mapper;
         private ILifetimeScope _scope;
+        private IGroupService _groupService;
 
         public ContactListModel()
         {
@@ -30,24 +31,29 @@ namespace DataImporter.Areas.Member.Models
             _columnService = _scope.Resolve<IColumnService>();
             _httpContextAccessor = _scope.Resolve<IHttpContextAccessor>();
             _mapper = _scope.Resolve<IMapper>();
+            _groupService = _scope.Resolve<IGroupService>();
         }
 
-        public ContactListModel(IExcelService contactService, IColumnService columnService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public ContactListModel(IExcelService contactService, IColumnService columnService,
+            IHttpContextAccessor httpContextAccessor, IMapper mapper, IGroupService groupService)
         {
             _columnService = columnService;
             _excelService = contactService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _groupService = groupService;
         }
 
         internal object GetContacts(DataTablesAjaxRequestModel tableModel)
         {
+            var group = _groupService.GetGroup(tableModel.GroupName);
+
             var data = _excelService.GetSheets(
                 tableModel.PageIndex,
                 tableModel.PageSize,
                 tableModel.SearchText,
-                tableModel.GetSortText(_columnService.GetAllColumns(tableModel.GroupName).Select(i => i.Name.ToString()).ToArray()),
-                string.IsNullOrWhiteSpace(tableModel.GroupName) ? null : tableModel.GroupName
+                tableModel.GetSortText(_columnService.GetAllColumns(group == null ? 0 : group.Id).Select(i => i.Name.ToString()).ToArray()),
+                group == null ? 0 : group.Id
                 );
 
             return new
@@ -61,16 +67,9 @@ namespace DataImporter.Areas.Member.Models
 
         public IList<Column> GetColums(DataTablesAjaxRequestModel tableModel)
         {
-            var _columns = new List<Column>() { };
+            var group = _groupService.GetGroup(tableModel.GroupName);
 
-            try
-            {
-                _columns = _columnService.GetAllColumns(string.IsNullOrWhiteSpace(tableModel.GroupName) ? null : tableModel.GroupName);
-            }
-            catch
-            {
-                return _columns;
-            }
+            var _columns = _columnService.GetAllColumns(group == null ? 0 : group.Id);
 
             return _columns;
         }

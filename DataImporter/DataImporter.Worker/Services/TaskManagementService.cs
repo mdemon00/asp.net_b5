@@ -37,7 +37,7 @@ namespace DataImporter.Worker.Services
                             history.Status = "Processing";
                             _historyService.UpdateHistory(history);
 
-                            _excelService.ImportSheet(_settings.Upload_Location, history.FileName, history.GroupName);
+                            _excelService.ImportSheet(_settings.Upload_Location, history.FileName, history.GroupId);
 
                             history.Status = "Completed";
                             _historyService.UpdateHistory(history);
@@ -54,7 +54,7 @@ namespace DataImporter.Worker.Services
                             history.Status = "Processing";
                             _historyService.UpdateHistory(history);
 
-                            _excelService.ExportSheet(_settings.Download_Location, history.GroupName);
+                            _excelService.ExportSheet(_settings.Download_Location, history.GroupId);
 
                             history.Status = "Completed";
                             _historyService.UpdateHistory(history);

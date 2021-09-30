@@ -75,7 +75,7 @@ namespace DataImporter.Importing.Services
                 return dt;
             }
         }
-        public void ImportSheet(string path, dynamic worksheetName, string groupName)
+        public void ImportSheet(string path, dynamic worksheetName, int groupId)
         {
             if (path == null)
                 throw new InvalidParameterException("Path was not provided");
@@ -83,10 +83,10 @@ namespace DataImporter.Importing.Services
             if (worksheetName == null)
                 throw new InvalidParameterException("WorksheetName was not provided");
 
-            if (groupName == null)
-                throw new InvalidParameterException("GroupName was not provided");
+            if (groupId < 1)
+                throw new InvalidParameterException("GroupId was not provided");
 
-            var group = _groupService.GetGroup(groupName, true);
+            var group = _groupService.GetGroup(groupId, true);
 
             using (XLWorkbook workBook = new XLWorkbook(Path.Combine(path, worksheetName)))
             {
@@ -141,28 +141,26 @@ namespace DataImporter.Importing.Services
             }
         }
 
-        public void ExportSheet(string path, string groupName)
+        public void ExportSheet(string path, int groupId = 0)
         {
-            if(string.IsNullOrEmpty(groupName))
+            if (groupId < 1)
+                throw new InvalidParameterException("No group found");
+
+            var group = _groupService.GetGroup(groupId);
+
+            if (group == null)
                 throw new InvalidParameterException("No group found");
 
             IList<string[]> records = new List<string[]> { };
 
-            try
-            {
-                 records = GetSheets(1, 1, null, null, groupName, true).records;
-            }
-            catch(Exception ex)
-            {
-                throw new InvalidParameterException("Something Went Wrong " + ex);
-            }
+            records = GetSheets(1, 1, null, null, groupId, true).records;
 
-            if(records == null || records.Count() < 1)
-                throw new InvalidParameterException("Something Went Wrong ");
+            if (records.Count() < 1)
+                throw new InvalidParameterException("No records found");
 
             DataTable dt = new DataTable();
 
-            dt.TableName = groupName;
+            dt.TableName = group.Name;
 
             var count = 0;
             foreach (var row in records)
@@ -194,7 +192,7 @@ namespace DataImporter.Importing.Services
 
                 try
                 {
-                    using (var fileStream = new FileStream(Path.Combine(path, groupName + ".xlsx"), FileMode.Create))
+                    using (var fileStream = new FileStream(Path.Combine(path, group.Name + ".xlsx"), FileMode.Create))
                     {
                         wb.SaveAs(fileStream);
                     }
@@ -207,23 +205,16 @@ namespace DataImporter.Importing.Services
 
         }
         public (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
-    string searchText, string sortText, string groupName, bool export = false)
+    string searchText, string sortText, int groupId = 0, bool export = false)
         {
-            int groupId = 0;
+            Group group = null;
 
-            if (string.IsNullOrEmpty(groupName))
+            if (groupId < 1)
             {
-                var group = _groupService.GetAllGroups().FirstOrDefault();
-
-                if (group != null)
-                    groupId = group.Id;
-            }
-            else
-            {
-                groupId = _groupService.GetGroup(groupName).Id;
+                group = _groupService.GetAllGroups().FirstOrDefault();
             }
 
-            if (groupId == 0)
+            if (group == null)
                 return (new List<string[]>() { }, 0, 0);
 
             var rowsId = _rowService.GetAllRowsId(groupId);
@@ -272,23 +263,19 @@ namespace DataImporter.Importing.Services
 
             totalDisplay = resultData.Count();
 
-            if(export)
+            if (export)
                 return (resultData, total, totalDisplay);
 
             if (!string.IsNullOrEmpty(sortText))
             {
                 var pos = 0;
 
-                try
-                {
-                    pos = _columnService.GetAllColumns(groupName)
+                var columns = _columnService.GetAllColumns(groupId);
+
+                if (columns.Count < 0)
+                    pos = columns
                        .Select((Value, Index) => new { Value, Index })
                        .Where(p => p.Value.Name.Trim() == sortText.Split(" ")[0].Trim()).FirstOrDefault().Index;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Getting position failed" + ex);
-                }
 
                 if (sortText.Split(" ").Contains("asc"))
                 {
