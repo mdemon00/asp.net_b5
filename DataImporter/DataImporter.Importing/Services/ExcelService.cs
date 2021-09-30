@@ -146,7 +146,7 @@ namespace DataImporter.Importing.Services
             if (groupId < 1)
                 throw new InvalidParameterException("No group found");
 
-            var group = _groupService.GetGroup(groupId);
+            var group = _groupService.GetGroup(groupId,true);
 
             if (group == null)
                 throw new InvalidParameterException("No group found");
@@ -211,13 +211,13 @@ namespace DataImporter.Importing.Services
 
             if (groupId < 1)
             {
-                group = _groupService.GetAllGroups().FirstOrDefault();
+                if (_groupService.GetAllGroups().Count > 1)
+                    group = _groupService.GetAllGroups().FirstOrDefault();
+                else
+                    return (new List<string[]>() { }, 0, 0);
             }
 
-            if (group == null)
-                return (new List<string[]>() { }, 0, 0);
-
-            var rowsId = _rowService.GetAllRowsId(groupId);
+            var rowsId = _rowService.GetAllRowsId(group == null ? groupId : group.Id);
 
             if (rowsId.Count < 1)
                 return (new List<string[]>() { }, 0, 0);
@@ -270,7 +270,7 @@ namespace DataImporter.Importing.Services
             {
                 var pos = 0;
 
-                var columns = _columnService.GetAllColumns(groupId);
+                var columns = _columnService.GetAllColumns(group == null ? groupId : group.Id);
 
                 if (columns.Count < 0)
                     pos = columns

@@ -44,6 +44,9 @@ namespace DataImporter.Worker.Services
                         }
                         catch(Exception ex)
                         {
+                            history.Status = "Failed";
+                            _historyService.UpdateHistory(history);
+
                             throw new InvalidOperationException("Error " + ex);
                         }
                     }
@@ -61,6 +64,9 @@ namespace DataImporter.Worker.Services
                         }
                         catch (Exception ex)
                         {
+                            history.Status = "Failed";
+                            _historyService.UpdateHistory(history);
+
                             throw new InvalidOperationException("Error " + ex);
                         }
                     }

@@ -48,11 +48,13 @@ namespace DataImporter.Areas.Member.Models
             var history = new History
             {
                 FileName = FileName,
-                GroupId = _groupService.GetGroup(GroupName).Id
-            };
+                GroupId = _groupService.GetGroup(GroupName).Id,
+                ProcessType = "Import",
+                Status = "Pending",
+                CreatedDate = DateTime.Now
+        };
 
             _historyService.CreateHistory(history);
-            //_excelService.ImportSheet(fullDirectoryAddress, fileName, gorupName);
         }
     }
 }

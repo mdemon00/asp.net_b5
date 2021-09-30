@@ -49,13 +49,13 @@ namespace DataImporter.Importing.Services
 
             if (groupId < 1)
             {
-                group = _groupService.GetAllGroups().FirstOrDefault();
+                if (_groupService.GetAllGroups().Count > 1)
+                    group = _groupService.GetAllGroups().FirstOrDefault();
+                else
+                    return columns;
             }
 
-            if (group == null)
-                return columns;
-
-            columnEntities = (List<Entities.Column>)_importingUnitOfWork.Columns.GetDynamic(x => x.GroupId == group.Id,
+            columnEntities = (List<Entities.Column>)_importingUnitOfWork.Columns.GetDynamic(x => x.GroupId == (group == null ? groupId : group.Id),
                 null, null, false);
 
             if (columnEntities.Count < 1)
