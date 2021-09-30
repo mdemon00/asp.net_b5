@@ -8,6 +8,7 @@ using DataImporter.Importing.BusinessObjects;
 using System.Collections.Generic;
 using AutoMapper;
 using System.Reflection;
+using System;
 
 namespace DataImporter.Areas.Member.Models
 {
@@ -67,11 +68,16 @@ namespace DataImporter.Areas.Member.Models
 
         public IList<Column> GetColums(DataTablesAjaxRequestModel tableModel)
         {
-            var group = _groupService.GetGroup(tableModel.GroupName);
-
-            var _columns = _columnService.GetAllColumns(group == null ? 0 : group.Id);
-
-            return _columns;
+            try
+            {
+                var group = _groupService.GetGroup(tableModel.GroupName);
+                var _columns = _columnService.GetAllColumns(group == null ? 0 : group.Id);
+                return _columns;
+            }
+            catch(Exception ex)
+            {
+                return new List<Column>() { };
+            }
         }
     }
 }

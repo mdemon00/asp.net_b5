@@ -129,10 +129,10 @@ namespace DataImporter.Importing.Services
             if (!fromWorkerService)
             {
                 if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out var ApplicationUserId))
-                    throw new InvalidParameterException("Something Went Wrong");
+                    return null;
 
                 if (!IsGroupBelongsToOwner(ApplicationUserId, 0, name))
-                    throw new InvalidParameterException("Unauthorized Access");
+                    return null;
             }
 
             var group = _importingUnitOfWork.Groups.GetDynamic(

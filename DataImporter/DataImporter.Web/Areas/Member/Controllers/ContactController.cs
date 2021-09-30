@@ -43,7 +43,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
         public JsonResult GetContactsData()
         {
             var dataTablesModel = new DataTablesAjaxRequestModel(Request);
-            var model = _scope.Resolve <ContactListModel> ();
+            var model = _scope.Resolve<ContactListModel>();
             var data = model.GetContacts(dataTablesModel);
             return Json(data);
         }
@@ -51,7 +51,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
         public JsonResult GetColumns()
         {
             var dataTablesModel = new DataTablesAjaxRequestModel(Request);
-            var model = _scope.Resolve <ContactListModel> ();
+            var model = _scope.Resolve<ContactListModel>();
             var data = model.GetColums(dataTablesModel);
             return Json(data);
         }
@@ -91,7 +91,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
                     model.Resolve(_scope);
                     var dt = model.GetPreview(fullDir, fileName);
 
-                     data = JsonConvert.SerializeObject(dt);
+                    data = JsonConvert.SerializeObject(dt);
                 }
                 catch (Exception ex)
                 {
@@ -186,7 +186,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
 
 
                     ////Read the File data into Byte Array.
-                     bytes = System.IO.File.ReadAllBytes(Path.Combine(_settings.Upload_Location, model.fileName + ".xlsx"));
+                    bytes = System.IO.File.ReadAllBytes(Path.Combine(_settings.Upload_Location, model.fileName + ".xlsx"));
 
                     //Send the File to Download.
                     //return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName + ".xlsx");

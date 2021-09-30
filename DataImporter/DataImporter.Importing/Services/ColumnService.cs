@@ -52,7 +52,7 @@ namespace DataImporter.Importing.Services
                 group = _groupService.GetAllGroups().FirstOrDefault();
             }
 
-            if (group != null)
+            if (group == null)
                 return columns;
 
             columnEntities = (List<Entities.Column>)_importingUnitOfWork.Columns.GetDynamic(x => x.GroupId == group.Id,
