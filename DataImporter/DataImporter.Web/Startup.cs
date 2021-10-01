@@ -3,6 +3,8 @@ using Autofac.Extensions.DependencyInjection;
 using DataImporter.Common;
 using DataImporter.Importing;
 using DataImporter.Importing.Contexts;
+using DataImporter.Importing.Services.Mail;
+using DataImporter.Importing.Settings;
 using DataImporter.Membership;
 using DataImporter.Membership.Contexts;
 using DataImporter.Membership.Entities;
@@ -136,6 +138,10 @@ namespace DataImporter.Web
             services.AddTransient<RecaptchaService>();
 
             services.Configure<WebSettingsModel>(Configuration.GetSection("DataImporter"));
+
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+
+            services.AddTransient<IMailService, MailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
