@@ -74,7 +74,7 @@ namespace DataImporter.Worker.Services
                             throw new InvalidOperationException("Error " + ex);
                         }
 
-                        if (!history.EmailSent && !string.IsNullOrEmpty(history.Email))
+                        if (history.EmailSent == 0 && !string.IsNullOrEmpty(history.Email))
                         {
                             var filesPath = new List<string>()
                             {
@@ -88,7 +88,20 @@ namespace DataImporter.Worker.Services
                                 FilesPath = filesPath
                             };
 
-                            _mailService.SendEmailAsync(request);
+                            try
+                            {
+                                _mailService.SendEmailAsync(request);
+
+                                history.EmailSent = 1;
+
+                                _historyService.UpdateHistory(history);
+                            }
+                            catch (Exception ex)
+                            {
+                                history.EmailSent = 2;
+
+                                throw new InvalidOperationException("Error " + ex);
+                            }
                         }
                     }
                 }

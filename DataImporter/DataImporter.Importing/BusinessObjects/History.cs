@@ -12,7 +12,7 @@ namespace DataImporter.Importing.BusinessObjects
         public string Status { get; set; }
         public string ProcessType { get; set; }
         public string Email { get; set; }
-        public bool EmailSent { get; set; }
+        public int EmailSent { get; set; }
 
         public Guid ApplicationUserId { get; set; }
     }
