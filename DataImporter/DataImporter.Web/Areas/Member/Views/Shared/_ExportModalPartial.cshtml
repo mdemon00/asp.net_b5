@@ -142,8 +142,7 @@
                 },
             });
         }
-        else if ($('#emailCheckBOx').is(':checked')) {
-            if ($('#exportEmail').val().length == 0) {
+        else if ($('#emailCheckBOx').is(':checked') && $('#exportEmail').val().length == 0) {
                 swal("Error", "Email not provided!", {
                     icon: "error",
                     buttons: {
@@ -152,7 +151,6 @@
                         }
                     },
                 });
-            }
         }
         else {
             $.ajax({
