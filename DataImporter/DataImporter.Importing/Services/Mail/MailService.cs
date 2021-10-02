@@ -44,6 +44,18 @@ namespace DataImporter.Importing.Services.Mail
                     }
                 }
             }
+
+            if (mailRequest.FilesPath != null)
+            {
+                foreach (var file in mailRequest.FilesPath)
+                {
+                    if (!string.IsNullOrEmpty(file))
+                    {
+                        builder.Attachments.Add(file);
+                    }
+                }
+            }
+
             builder.HtmlBody = mailRequest.Body;
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();

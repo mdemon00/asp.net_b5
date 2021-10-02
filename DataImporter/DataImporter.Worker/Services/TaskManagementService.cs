@@ -1,5 +1,7 @@
 ﻿using DataImporter.Importing.Services;
+using DataImporter.Importing.Services.Mail;
 using DataImporter.Worker.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -13,14 +15,16 @@ namespace DataImporter.Worker.Services
     {
         private IHistoryService _historyService;
         private IExcelService _excelService;
+        private readonly IMailService _mailService;
 
         private WorkerSettingsModel _settings;
         public TaskManagementService(IHistoryService historyService, IExcelService excelService,
-            IOptions<WorkerSettingsModel> settings)
+            IOptions<WorkerSettingsModel> settings, IMailService mailService)
         {
             _historyService = historyService;
             _settings = settings.Value;
             _excelService = excelService;
+            _mailService = mailService;
         }
         public void CompletePendingTask()
         {
@@ -68,6 +72,23 @@ namespace DataImporter.Worker.Services
                             _historyService.UpdateHistory(history);
 
                             throw new InvalidOperationException("Error " + ex);
+                        }
+
+                        if (!history.EmailSent && !string.IsNullOrEmpty(history.Email))
+                        {
+                            var filesPath = new List<string>()
+                            {
+                                _settings.Download_Location + history.FileName + ".xlsx"
+                            };
+                            var request = new MailRequest()
+                            {
+                                ToEmail = history.Email,
+                                Subject = "Hello there..",
+                                Body = "Mail from DataImporter!",
+                                FilesPath = filesPath
+                            };
+
+                            _mailService.SendEmailAsync(request);
                         }
                     }
                 }
