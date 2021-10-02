@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataImporter.Web.Areas.Member.Controllers
 {
+    //This is working a send mail controller. Just keeping it here fot future referance ()
+    /*
     [Route("api/[controller]")]
     [ApiController]
     public class MailController : ControllerBase
@@ -32,4 +35,5 @@ namespace DataImporter.Web.Areas.Member.Controllers
 
         }
     }
+    */
 }

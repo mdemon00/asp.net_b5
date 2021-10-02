@@ -16,7 +16,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form id="ExportValidation" novalidate="novalidate">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -31,11 +31,15 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="input-group p-1">
-                                        <input type="email" class="form-control" aria-label="Text input with dropdown button">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary">Send To Email</button>
-                                        </div>
+                                    <div id="EmailDiv" class="form-group pl-1 pt-0 form-show-validation" style="display: none;">
+                                        <label for="email2">Email                                                                                                Address</label>
+                                        <input type="email" class="form-control" id="exportEmail" placeholder="Enter Email" required="">
+                                    </div>
+                                    <div class="form-check p-1">
+                                        <label class="form-check-label">
+                                            <input id="emailCheckBOx" class="form-check-input" type="checkbox" name="email" value="">
+                                            <span class="form-check-sign">Send this to an email address </span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -52,8 +56,36 @@
 </div>
 
 <script src="/admin/js/plugin/select2/select2.full.min.js"></script>
+<script src="/lib/jquery-validate/jquery.validate.min.js"></script>
 
 <script>
+
+    $("#ExportValidation").validate({
+        validClass: "success",
+        rules: {
+            email: {
+                required: true,
+                email: true
+            }
+
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        success: function (element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+    });
+    $(function () {
+        $('#emailCheckBOx').change(function () {
+            if ($(this).is(':checked')) {
+                $('#EmailDiv').show(250);
+            }
+            else {
+                $('#EmailDiv').hide(250);
+            }
+        });
+    });
 
     $('#multiple2').select2({
         theme: "bootstrap",
@@ -110,11 +142,24 @@
                 },
             });
         }
+        else if ($('#emailCheckBOx').is(':checked')) {
+            if ($('#exportEmail').val().length == 0) {
+                swal("Error", "Email not provided!", {
+                    icon: "error",
+                    buttons: {
+                        confirm: {
+                            className: 'btn btn-danger'
+                        }
+                    },
+                });
+            }
+        }
         else {
             $.ajax({
                 url: '/member/contact/Export',
                 data: {
                     GroupNames: groups,
+                    Email: $('#exportEmail').val()
                 },
                 type: "POST",
                 beforeSend: function () {

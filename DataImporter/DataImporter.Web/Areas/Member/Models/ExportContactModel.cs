@@ -15,6 +15,7 @@ namespace DataImporter.Areas.Member.Models
         //[Required, MaxLength(200, ErrorMessage = "GroupName should be less than 200 charcaters")]
         public List<String> GroupNames { get; set; }
         public string FileName { get; set; }
+        public string Email { get; set; }
 
         private IExcelService _excelService;
         private IMapper _mapper;
