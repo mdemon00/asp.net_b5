@@ -1,4 +1,5 @@
-﻿using DataImporter.Membership.Entities;
+﻿using DataImporter.Importing.Services.Mail;
+using DataImporter.Membership.Entities;
 using DataImporter.Membership.Services;
 using DataImporter.Web.Models;
 using DataImporter.Web.Models.Account;
@@ -26,6 +27,7 @@ namespace DataImporter.Web.Controllers
         private readonly RoleManager<Role> _roleManager;
         private readonly IEmailSender _emailSender;
         private readonly RecaptchaService _recaptcha;
+        private readonly IMailService _mailService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -33,7 +35,8 @@ namespace DataImporter.Web.Controllers
             RoleManager<Role> roleManager,
             ILogger<AccountController> logger,
             IEmailSender emailSender,
-            RecaptchaService recaptcha)
+            RecaptchaService recaptcha,
+            IMailService mailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -41,6 +44,7 @@ namespace DataImporter.Web.Controllers
             _logger = logger;
             _emailSender = emailSender;
             _recaptcha = recaptcha;
+            _mailService = mailService;
         }
 
         public async Task<IActionResult> Register(string returnUrl = null)
@@ -49,7 +53,7 @@ namespace DataImporter.Web.Controllers
             model.ReturnUrl = returnUrl;
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            await _roleManager.CreateAsync(new Role("Member"));
+            //await _roleManager.CreateAsync(new Role("Member"));
 
             return View(model);
         }
@@ -78,8 +82,14 @@ namespace DataImporter.Web.Controllers
                         values: new { userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                    await _mailService.SendEmailAsync(new MailRequest() { 
+                    Subject = "Email Confirmation",
+                    ToEmail = model.Email,
+                    Body = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
+                    });
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -134,7 +144,7 @@ namespace DataImporter.Web.Controllers
 
             if(!recaptcha.Result.success && recaptcha.Result.score <= 0.5)
             {
-                ModelState.AddModelError(string.Empty, "Human verification failed...");
+                ModelState.AddModelError(string.Empty, "Verification failed...");
             }
 
             if (ModelState.IsValid)

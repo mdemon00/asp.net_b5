@@ -50,7 +50,7 @@ namespace DataImporter.Importing.Services.Mail
                 }
             }
 
-            if (mailRequest.FilesPath != null || mailRequest.FilesPath.Count < 1)
+            if (mailRequest.FilesPath != null)
             {
                 foreach (var file in mailRequest.FilesPath)
                 {
