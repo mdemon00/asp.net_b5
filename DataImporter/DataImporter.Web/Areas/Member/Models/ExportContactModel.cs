@@ -62,7 +62,8 @@ namespace DataImporter.Areas.Member.Models
                 GroupId =  group.Id,
                 ProcessType = "Export",
                 Status = "Pending",
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                Email = Email
             };
 
             _historyService.CreateHistory(history);

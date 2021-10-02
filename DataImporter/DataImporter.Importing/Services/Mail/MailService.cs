@@ -1,4 +1,5 @@
-﻿using DataImporter.Importing.Settings;
+﻿using DataImporter.Importing.Exceptions;
+using DataImporter.Importing.Settings;
 using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -23,6 +24,10 @@ namespace DataImporter.Importing.Services.Mail
 
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
+            if (string.IsNullOrEmpty(_mailSettings.Mail) || string.IsNullOrEmpty(_mailSettings.Password)
+                || string.IsNullOrEmpty(_mailSettings.Port.ToString()) || string.IsNullOrEmpty(_mailSettings.Host))
+                throw new InvalidParameterException("Value cannnot be null");
+
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
@@ -45,7 +50,7 @@ namespace DataImporter.Importing.Services.Mail
                 }
             }
 
-            if (mailRequest.FilesPath != null)
+            if (mailRequest.FilesPath != null || mailRequest.FilesPath.Count < 1)
             {
                 foreach (var file in mailRequest.FilesPath)
                 {

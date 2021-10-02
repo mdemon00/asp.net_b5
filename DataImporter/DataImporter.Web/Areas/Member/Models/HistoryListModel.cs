@@ -31,7 +31,7 @@ namespace DataImporter.Areas.Member.Models
                 tableModel.PageIndex,
                 tableModel.PageSize,
                 tableModel.SearchText,
-                tableModel.GetSortText(new string[] { "CreatedDate", "FileName", "GroupName", "ProcessType", "Status" }));
+                tableModel.GetSortText(new string[] { "CreatedDate", "FileName", "GroupName", "ProcessType", "Status", "EmailSent" }));
             
             return new
             {
@@ -44,7 +44,8 @@ namespace DataImporter.Areas.Member.Models
                                 record.FileName,
                                 _groupService.GetGroup(record.GroupId).Name,
                                 record.ProcessType,
-                                record.Status
+                                record.Status,
+                                record.EmailSent.ToString()
                         }
                     ).ToArray()
             };

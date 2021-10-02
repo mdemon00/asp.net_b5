@@ -3,6 +3,8 @@ using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.ResolveAnything;
 using DataImporter.Importing;
 using DataImporter.Importing.Contexts;
+using DataImporter.Importing.Services.Mail;
+using DataImporter.Importing.Settings;
 using DataImporter.Membership;
 using DataImporter.Membership.Contexts;
 using DataImporter.Membership.Entities;
@@ -31,6 +33,7 @@ namespace DataImporter.Worker
         {
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("appsettings.Development.json", false)
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -128,6 +131,8 @@ namespace DataImporter.Worker
                     });
 
                     services.Configure<WorkerSettingsModel>(_configuration.GetSection("DataImporter"));
+                    services.AddTransient<IMailService, MailService>();
+                    services.Configure<MailSettings>(_configuration.GetSection("MailSettings"));
 
                 });
     }

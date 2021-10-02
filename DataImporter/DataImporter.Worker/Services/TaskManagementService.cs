@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace DataImporter.Worker.Services
     {
         private IHistoryService _historyService;
         private IExcelService _excelService;
-        private readonly IMailService _mailService;
+        private IMailService _mailService;
 
         private WorkerSettingsModel _settings;
         public TaskManagementService(IHistoryService historyService, IExcelService excelService,
@@ -78,8 +79,9 @@ namespace DataImporter.Worker.Services
                         {
                             var filesPath = new List<string>()
                             {
-                                _settings.Download_Location + history.FileName + ".xlsx"
+                                Path.Combine(_settings.Download_Location, history.FileName)
                             };
+
                             var request = new MailRequest()
                             {
                                 ToEmail = history.Email,
