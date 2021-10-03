@@ -65,10 +65,8 @@ namespace DataImporter.Web.Controllers
             return View(model);
         }
 
-        [TempData]
-        public string StatusMessage { get; set; }
 
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(RegisterConfirmationModel model, string userId, string code)
         {
             if (userId == null || code == null)
             {
@@ -83,8 +81,9 @@ namespace DataImporter.Web.Controllers
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
-            return View();
+            model.StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+
+            return View(model);
         }
 
         public async Task<IActionResult> Register(string returnUrl = null)
@@ -118,7 +117,8 @@ namespace DataImporter.Web.Controllers
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.ActionLink(
-                        "/Account/ConfirmEmail",
+                        action: "ConfirmEmail",
+                        controller: "Account",
                         values: new { userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
