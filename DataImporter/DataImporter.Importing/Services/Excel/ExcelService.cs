@@ -146,7 +146,7 @@ namespace DataImporter.Importing.Services
             if (groupId < 1)
                 throw new InvalidParameterException("No group found");
 
-            var group = _groupService.GetGroup(groupId,true);
+            var group = _groupService.GetGroup(groupId, true);
 
             if (group == null)
                 throw new InvalidParameterException("No group found");
@@ -207,31 +207,29 @@ namespace DataImporter.Importing.Services
         public (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
     string searchText, string sortText, int groupId = 0, bool export = false)
         {
-            Group group = null;
+            Entities.Group group = null;
 
             if (groupId < 1)
             {
-                if (_groupService.GetAllGroups().Count > 1)
-                    group = _groupService.GetAllGroups().FirstOrDefault();
+                if (_importingUnitOfWork.Groups.GetCount() > 1)
+                    group = _importingUnitOfWork.Groups.GetDynamic(null);
                 else
                     return (new List<string[]>() { }, 0, 0);
             }
 
-            var rowsId = _rowService.GetAllRowsId(group == null ? groupId : group.Id);
+            var cellsGroupList = _importingUnitOfWork.Rows.GetDynamic(
+                groupId == 0 ? x => x.GroupId == group.Id :
+                x => x.GroupId == groupId,
+                null, "Cells", false)
+                .SelectMany(x => x.Cells)
+                .GroupBy(x => x.RowId).Skip(1).ToList();
 
-            if (rowsId.Count < 1)
+            if(cellsGroupList.Count < 1)
                 return (new List<string[]>() { }, 0, 0);
-
-            var cellsData = _cellService.GetCells(rowsId);
-
-            if (cellsData.Count < 1)
-                return (new List<string[]>() { }, 0, 0);
-
-            var cellsGroupList = cellsData.GroupBy(x => x.RowId).ToList();
 
             var resultData = new List<string[]>();
-            var total = cellsData.Count();
-            var totalDisplay = cellsData.Count();
+            var total = cellsGroupList.SelectMany(x => x).Count();
+            var totalDisplay = total;
 
             foreach (var cellGroup in cellsGroupList)
             {
