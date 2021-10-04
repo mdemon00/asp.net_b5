@@ -1,94 +1,99 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebProject</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebProject</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+﻿@*<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - WebProject</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebProject</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                        </ul>
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
+            </nav>
+        </header>
         <div class="container">
-            &copy; 2021 - WebProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
+
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2021 - WebProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
+    </html>*@
 
 
 
+@using Microsoft.Extensions.Options
+@inject IOptions<DataImporter.Web.Models.Account.RecaptchaSettingsModel> GoogleRecaptcha
+@{
+    ViewData["Title"] = "Log in";
+}
 
 
-<!--<html class="wf-lato-n3-active wf-lato-n4-active wf-lato-n7-active wf-lato-n9-active wf-flaticon-n4-inactive wf-fontawesome5solid-n4-active wf-fontawesome5regular-n4-active wf-fontawesome5brands-n4-active wf-simplelineicons-n4-active wf-active" lang="en">
+<html class="wf-lato-n3-active wf-lato-n4-active wf-lato-n7-active wf-lato-n9-active wf-flaticon-n4-inactive wf-fontawesome5solid-n4-active wf-fontawesome5regular-n4-active wf-fontawesome5brands-n4-active wf-simplelineicons-n4-active wf-active" lang="en">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Login</title>
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport">
-    <link rel="icon" href="/admin/img/icon.ico" type="image/x-icon">-->
-<!-- Fonts and icons -->
-<!--<script src="/admin/js/plugin/webfont/webfont.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" media="all">
-<link rel="stylesheet" href="/admin/css/fonts.min.css" media="all">
+    <link rel="icon" href="/admin/img/icon.ico" type="image/x-icon">
+    <script src="/admin/js/plugin/webfont/webfont.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" media="all">
+    <link rel="stylesheet" href="/admin/css/fonts.min.css" media="all">
 
-<script>
-    WebFont.load({
-        google: { "families": ["Lato:300,400,700,900"] },
-        custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/admin/css/fonts.min.css'] },
-        active: function () {
-            sessionStorage.fonts = true;
-        }
-    });
-</script>-->
-<!-- CSS Files -->
-<!--<link rel="stylesheet" href="/admin/css/bootstrap.min.css">
+    <script>
+        WebFont.load({
+            google: { "families": ["Lato:300,400,700,900"] },
+            custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/admin/css/fonts.min.css'] },
+            active: function () {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+    <script src="/admin/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+    <link rel="stylesheet" href="/admin/css/bootstrap.min.css">
     <link rel="stylesheet" href="/admin/css/atlantis.css">
 </head>
 <body class="login">
     <div class="wrapper wrapper-login wrapper-login-full p-0">
         <div class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-secondary-gradient">
-            <h1 class="title fw-bold text-white mb-3">Join Our Comunity</h1>
-            <p class="subtitle text-white op-7">Ayo bergabung dengan komunitas kami untuk masa depan yang lebih baik</p>
+            <h1 class="title fw-bold text-white mb-3">Data Importer</h1>
+            <p class="subtitle text-white op-7">Manage your office files on our platform</p>
         </div>
         <div class="login-aside w-50 d-flex align-items-center justify-content-center bg-white">
             <div class="container container-login container-transparent animated fadeIn" style="display: block;">
-                <h3 class="text-center">Sign In To Admin</h3>
-                <div class="login-form">
+                <h3 class="text-center">Sign In</h3>
+                <form id="LoginValidation" class="login-form" novalidate="novalidate">
                     <div class="form-group">
-                        <label for="username" class="placeholder"><b>Username</b></label>
-                        <input id="username" name="username" type="text" class="form-control" required="">
+                        <label for="email" class="placeholder"><b>Email</b></label>
+                        <input id="email" name="email" type="email" class="form-control" required="">
                     </div>
                     <div class="form-group">
                         <label for="password" class="placeholder"><b>Password</b></label>
@@ -105,26 +110,26 @@
                             <input type="checkbox" class="custom-control-input" id="rememberme">
                             <label class="custom-control-label m-0" for="rememberme">Remember Me</label>
                         </div>
-                        <a href="#" class="btn btn-secondary col-md-5 float-right mt-3 mt-sm-0 fw-bold">Sign In</a>
+                        <button id="SignInButton" class="btn btn-secondary col-md-5 float-right mt-3 mt-sm-0 fw-bold">Sign In</button>
                     </div>
                     <div class="login-account">
                         <span class="msg">Don't have an account yet ?</span>
                         <a href="#" id="show-signup" class="link">Sign Up</a>
                     </div>
-                </div>
+                </form>
             </div>
 
 
             <div class="container container-signup container-transparent animated fadeIn" style="display: none;">
                 <h3 class="text-center">Sign Up</h3>
-                <div class="login-form">
+                <form class="login-form" id="SignUpValidation" novalidate="novalidate">
                     <div class="form-group">
                         <label for="fullname" class="placeholder"><b>Fullname</b></label>
                         <input id="fullname" name="fullname" type="text" class="form-control" required="">
                     </div>
                     <div class="form-group">
                         <label for="email" class="placeholder"><b>Email</b></label>
-                        <input id="email" name="email" type="email" class="form-control" required="">
+                        <input id="signUpemail" name="email" type="email" class="form-control" required="">
                     </div>
                     <div class="form-group">
                         <label for="passwordsignin" class="placeholder"><b>Password</b></label>
@@ -147,7 +152,7 @@
                     <div class="row form-sub m-0">
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" name="agree" id="agree">
-                            <label class="custom-control-label" for="agree">I Agree the terms and conditions.</label>
+                            <label class="custom-control-label" for="agree" required="">I Agree the terms and conditions.</label>
                         </div>
                     </div>
                     <div class="row form-action">
@@ -155,13 +160,16 @@
                             <a href="#" id="show-signin" class="btn btn-danger btn-link w-100 fw-bold">Cancel</a>
                         </div>
                         <div class="col-md-6">
-                            <a href="#" class="btn btn-secondary w-100 fw-bold">Sign Up</a>
+                            <button id="SignUpButton" class="btn btn-secondary w-100 fw-bold">Sign Up</button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <input type="hidden" id="Input_Token" value="" />
+
     <script src="/admin/js/core/jquery.3.2.1.min.js"></script>
     <script src="/admin/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
     <script src="/admin/js/core/popper.min.js"></script>
@@ -169,4 +177,168 @@
     <script src="/admin/js/atlantis.min.js"></script>
 
 </body>
-</html>-->
+@{ RenderBody(); }
+
+</html>
+
+<script src="https://www.google.com/recaptcha/api.js?render=@GoogleRecaptcha.Value.Recaptcha_Site_Key"></script>
+<script src="/lib/jquery-validate/jquery.validate.min.js"></script>
+<!-- Sweet Alert -->
+<script>
+       grecaptcha.ready(function () {
+           grecaptcha.execute('@GoogleRecaptcha.Value.Recaptcha_Site_Key', { action: 'homepage' }).then(function (token) {
+
+               $('#Input_Token').val(token);
+
+                });
+       });
+
+    $("#LoginValidation").validate({
+        validClass: "success",
+        rules: {
+            email: {
+                required: true,
+                email: true
+            }
+
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        success: function (element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+    });
+    $("#SignUpValidation").validate({
+        validClass: "success",
+        rules: {
+            email: {
+                required: true,
+                email: true
+            },
+           confirmpassword: {
+               equalTo: "#confirmpassword"
+            },
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        success: function (element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+    });
+
+    $("#SignUpButton").click(function (evt) {
+        evt.preventDefault();
+
+        var fullName = $("#fullname").val();
+        var email = $("#signUpemail").val();
+        var password = $("#passwordsignin").val();
+        var confirmPassword = $("#confirmpassword").val();
+        var token = $("#Input_Token").val();
+        var agreeTerms = $('#agree').is(':checked');
+
+        if (!agreeTerms) {
+            swal("Error", "You must agree to continue", {
+                icon: "error",
+                buttons: {
+                    confirm: {
+                        className: 'btn btn-danger'
+                    }
+                },
+            });
+        }
+        else {
+            $.ajax({
+                url: '/Account/Register',
+                data: {
+                    Email: email,
+                    Password: password,
+                    ConfirmPassword: confirmPassword,
+                },
+                type: "POST",
+                beforeSend: function () {
+                    $('#SignUpButton').addClass("is-loading");
+                },
+                success: function (response) {
+                    $('#SignUpButton').removeClass("is-loading");
+                },
+                complete: function (response) {
+                    if (response.status == 200) {
+                        swal("Email Sent", "Please check your mailbox ", {
+                            icon: "success",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-success'
+                                }
+                            },
+                        });
+                    }
+                    else {
+                        $('#SignUpButton').removeClass("is-loading");
+
+                        swal("Failed", response.responseText, {
+                            icon: "error",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-danger'
+                                }
+                            },
+                        });
+                    }
+                },
+                failure: function (jqXHR, textStatus, errorThrown) {
+                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                }
+            });
+        }
+
+    });
+
+        $("#SignInButton").click(function (evt) {
+
+        evt.preventDefault();
+
+        var email = $("#email").val();
+        var password = $("#password").val();
+        var token = $("#Input_Token").val();
+        var rememberMe = $('#rememberme').is(':checked');
+
+        $.ajax({
+            url: '/Account/Login',
+            data: {
+                Email: email,
+                Password: password,
+                Token: token,
+                RememberMe: rememberMe,
+            },
+            type: "POST",
+            beforeSend: function () {
+                $('#SignInButton').addClass("is-loading");
+            },
+            success: function (response) {
+                $('#SignInButton').removeClass("is-loading");
+            },
+            complete: function (response) {
+                if (response.status == 200) {
+                    window.location.href = '/member/group';
+                }
+                else {
+                    $('#SignInButton').removeClass("is-loading");
+
+                    swal("Failed", response.responseText, {
+                        icon: "error",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-danger'
+                            }
+                        },
+                    });
+                }
+            },
+            failure: function (jqXHR, textStatus, errorThrown) {
+                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+            }
+        });
+    });
+</script>
