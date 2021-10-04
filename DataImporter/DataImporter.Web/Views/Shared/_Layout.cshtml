@@ -265,7 +265,7 @@
                 },
                 complete: function (response) {
                     if (response.status == 200) {
-                        swal("Email Sent", "Please check your mailbox ", {
+                        swal("Registration Succeded", "Emial verification Sent. ", {
                             icon: "success",
                             buttons: {
                                 confirm: {
@@ -321,7 +321,7 @@
             },
             complete: function (response) {
                 if (response.status == 200) {
-                    window.location.href = '/member/group';
+                    window.location.href = '/member/dashboard';
                 }
                 else {
                     $('#SignInButton').removeClass("is-loading");

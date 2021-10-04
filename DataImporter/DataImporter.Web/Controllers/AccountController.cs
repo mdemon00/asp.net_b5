@@ -6,6 +6,7 @@ using DataImporter.Web.Models.Account;
 using DataImporter.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -173,19 +174,11 @@ namespace DataImporter.Web.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Logout(string returnUrl = null)
+        public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
-            if (returnUrl != null)
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }
