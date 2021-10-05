@@ -216,7 +216,7 @@ namespace DataImporter.Importing.Services
 
             if (groupId < 1)
             {
-                if (_importingUnitOfWork.Groups.GetCount() > 1)
+                if (_importingUnitOfWork.Groups.GetCount() > 0)
                     group = _importingUnitOfWork.Groups.GetDynamic(null);
                 else
                     return (new List<string[]>() { }, 0, 0);

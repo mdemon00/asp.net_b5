@@ -45,12 +45,12 @@ namespace DataImporter.Importing.Services
             var columns = new List<Column>();
             var columnEntities = new List<Entities.Column>();
 
-            Group group = null;
+            Entities.Group group = null;
 
             if (groupId < 1)
             {
-                if (_groupService.GetAllGroups().Count > 1)
-                    group = _groupService.GetAllGroups().FirstOrDefault();
+                if (_importingUnitOfWork.Groups.GetCount() > 0)
+                    group = _importingUnitOfWork.Groups.GetDynamic(null);
                 else
                     return columns;
             }

@@ -77,7 +77,7 @@ namespace DataImporter.Importing.Services
             _importingUnitOfWork.Groups.GetCount(x => x.Name == name && x.Id != id) > 0;
 
         private bool IsIdAvaiable(int id) =>
-            _importingUnitOfWork.Groups.GetCount(x => x.Id != id) > 0;
+            _importingUnitOfWork.Groups.GetCount(x => x.Id == id) == 1;
 
         private bool IsGroupBelongsToOwner(Guid applicationUserId, int groupId = 0, string name = null) =>
             _importingUnitOfWork.Groups.GetCount(

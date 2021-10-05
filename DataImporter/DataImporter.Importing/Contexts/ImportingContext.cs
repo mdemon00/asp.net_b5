@@ -47,25 +47,25 @@ namespace DataImporter.Importing.Contexts
                 .HasOne(x => x.Group)
                 .WithMany(g => g.Histories)
                 .HasForeignKey(x => x.GroupId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Column>()
                 .HasOne(x => x.Group)
                 .WithMany(g => g.Columns)
                 .HasForeignKey(x => x.GroupId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Row>()
                 .HasOne(x => x.Group)
                 .WithMany(g => g.Rows)
                 .HasForeignKey(x => x.GroupId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Cell>()
                 .HasOne(x => x.Row)
                 .WithMany(g => g.Cells)
                 .HasForeignKey(x => x.RowId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }
