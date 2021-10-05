@@ -44,6 +44,7 @@
                                     <th>ProcessType</th>
                                     <th>Status</th>
                                     <th>EmailSent</th>
+                                    <th>Dwonload</th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -54,6 +55,7 @@
                                     <th>ProcessType</th>
                                     <th>Status</th>
                                     <th>Email Sent</th>
+                                    <th>Download</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -78,6 +80,22 @@
                     'url': '/member/History/GetHistoryData',
                     'data': {},
                 },
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": 6,
+                        "render": function (data, type, row) {
+                            return `<div>
+<button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg"
+data-original-title="download" onclick="Download('${row[1]}','${row[3]}','${row[4]}')" value='${data}'>
+<i class="
+fas fa-cloud-download-alt
+" style='font-size:24px'></i>
+</button>
+                                        </div>`;
+                        }
+                    }
+                ],
                 oLanguage: {
                     sProcessing: "<div class='card-body is-loading is-loading-lg'></div>"
                 }
@@ -94,4 +112,71 @@
         def.then($.fn.Datatable());
 
     });
+
+    function Base64ToBytes(base64) {
+        var s = window.atob(base64);
+        var bytes = new Uint8Array(s.length);
+        for (var i = 0; i < s.length; i++) {
+            bytes[i] = s.charCodeAt(i);
+        }
+        return bytes;
+    };
+
+    function Download(fileName, processType, status) {
+        if (processType == "Import") {
+            swal("Sorry", "No download available for Import", {
+                icon: "error",
+                buttons: {
+                    confirm: {
+                        className: 'btn btn-danger'
+                    }
+                },
+            });
+        }
+        else if (processType == "Export" && status != "Completed") {
+            swal("Sorry", "No download available yet. Please wait..", {
+                icon: "error",
+                buttons: {
+                    confirm: {
+                        className: 'btn btn-danger'
+                    }
+                },
+            });
+        }
+        else {
+            $.ajax({
+                url: '/member/contact/DownloadFile',
+                type: "POST",
+                data: JSON.stringify({ FileName: fileName }),
+                cache: false,
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function () {
+                    $(fileName).addClass("is-loading is-loading-lg");
+                },
+                success: function (data) {
+                    $(fileName).removeClass("is-loading is-loading-lg");
+
+                    var bytes = Base64ToBytes(data);
+                    var blob = new Blob([bytes], { type: "application/octetstream" });
+                    var a = document.createElement('a');
+                    var url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.append(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+
+                },
+                complete: function () {
+                    $(fileName).removeClass("is-loading is-loading-lg");
+                },
+                failure: function (jqXHR, textStatus, errorThrown) {
+
+                    alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText); // Display error message
+                },
+            });
+        }
+
+    }
 </script>

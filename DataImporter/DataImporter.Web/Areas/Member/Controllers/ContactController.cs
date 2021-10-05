@@ -186,7 +186,7 @@ namespace DataImporter.Web.Areas.Member.Controllers
 
 
                     ////Read the File data into Byte Array.
-                    bytes = System.IO.File.ReadAllBytes(Path.Combine(_settings.Upload_Location, model.FileName + ".xlsx"));
+                    bytes = System.IO.File.ReadAllBytes(Path.Combine(_settings.Download_Location, model.FileName));
 
                     //Send the File to Download.
                     //return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName + ".xlsx");

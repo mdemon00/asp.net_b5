@@ -217,14 +217,29 @@ namespace DataImporter.Importing.Services
                     return (new List<string[]>() { }, 0, 0);
             }
 
-            var cellsGroupList = _importingUnitOfWork.Rows.GetDynamic(
+            List<IGrouping<int, Entities.Cell>> cellsGroupList = null;
+
+            if (export)
+            {
+                cellsGroupList = _importingUnitOfWork.Rows.GetDynamic(
+                groupId == 0 ? x => x.GroupId == group.Id :
+                x => x.GroupId == groupId,
+                null, "Cells", false)
+                .SelectMany(x => x.Cells)
+                .GroupBy(x => x.RowId).ToList();
+            }
+            else
+            {
+                cellsGroupList = _importingUnitOfWork.Rows.GetDynamic(
                 groupId == 0 ? x => x.GroupId == group.Id :
                 x => x.GroupId == groupId,
                 null, "Cells", false)
                 .SelectMany(x => x.Cells)
                 .GroupBy(x => x.RowId).Skip(1).ToList();
+            }
 
-            if(cellsGroupList.Count < 1)
+
+            if (cellsGroupList.Count < 1)
                 return (new List<string[]>() { }, 0, 0);
 
             var resultData = new List<string[]>();
