@@ -48,6 +48,7 @@ namespace DataImporter.Importing.Services
                 var count = 1;
                 foreach (IXLRow row in workSheet.Rows())
                 {
+
                     if (count == 10)
                         return dt;
                     if (firstRow)
@@ -63,11 +64,19 @@ namespace DataImporter.Importing.Services
                         dt.Rows.Add();
                         int i = 0;
 
-                        foreach (IXLCell cell in row.Cells(row.FirstCellUsed().Address.ColumnNumber, row.LastCellUsed().Address.ColumnNumber))
+                        try
                         {
-                            dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
-                            i++;
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                                i++;
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError("Error", ex);
+                        }
+
                     }
                     count++;
                 }
@@ -109,29 +118,25 @@ namespace DataImporter.Importing.Services
                         count++;
                         foreach (IXLCell cell in row.Cells())
                         {
-                            if (!string.IsNullOrEmpty(cell.Value.ToString()))
+                            try
                             {
-                                try
+                                _cellService.CreateCell(new BusinessObjects.Cell
                                 {
-                                    _cellService.CreateCell(new BusinessObjects.Cell
+                                    Data = cell.Value.ToString(),
+                                    RowId = currentRow.Id
+                                });
+
+                                if (count == 1) //Inserting first row as column
+                                    _columnService.CreateColumn(new BusinessObjects.Column
                                     {
-                                        Data = cell.Value.ToString(),
-                                        RowId = currentRow.Id
+                                        Name = cell.Value.ToString(),
+                                        GroupId = group.Id
                                     });
-
-                                    if (count == 1) //Inserting first row as column
-                                        _columnService.CreateColumn(new BusinessObjects.Column
-                                        {
-                                            Name = cell.Value.ToString(),
-                                            GroupId = group.Id
-                                        });
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogError(ex.ToString());
-                                    throw new InvalidOperationException("Import failed");
-
-                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex.ToString());
+                                throw new InvalidOperationException("Import failed");
 
                             }
                         }

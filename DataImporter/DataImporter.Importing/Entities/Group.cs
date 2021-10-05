@@ -12,6 +12,7 @@ namespace DataImporter.Importing.Entities
         public ApplicationUser ApplicationUser { get; set; }
         public string Name { get; set; }
         public IList<Column> Columns { get; set; }
+        public IList<Row> Rows { get; set; }
         public IList<History> Histories { get; set; }
     }
 }

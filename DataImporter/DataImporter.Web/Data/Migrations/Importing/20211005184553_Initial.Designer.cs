@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataImporter.Web.Data.Migrations.Importing
 {
     [DbContext(typeof(ImportingContext))]
-    [Migration("20211002124403_changedMailSentBoolToInt")]
-    partial class changedMailSentBoolToInt
+    [Migration("20211005184553_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -202,7 +202,7 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.HasOne("DataImporter.Importing.Entities.Row", "Row")
                         .WithMany("Cells")
                         .HasForeignKey("RowId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Row");
@@ -213,7 +213,7 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.HasOne("DataImporter.Importing.Entities.Group", "Group")
                         .WithMany("Columns")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Group");
@@ -235,7 +235,7 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.HasOne("DataImporter.Membership.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("DataImporter.Importing.Entities.Group", "Group")
@@ -252,9 +252,9 @@ namespace DataImporter.Web.Data.Migrations.Importing
             modelBuilder.Entity("DataImporter.Importing.Entities.Row", b =>
                 {
                     b.HasOne("DataImporter.Importing.Entities.Group", "Group")
-                        .WithMany()
+                        .WithMany("Rows")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Group");
@@ -265,6 +265,8 @@ namespace DataImporter.Web.Data.Migrations.Importing
                     b.Navigation("Columns");
 
                     b.Navigation("Histories");
+
+                    b.Navigation("Rows");
                 });
 
             modelBuilder.Entity("DataImporter.Importing.Entities.Row", b =>

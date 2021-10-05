@@ -29,22 +29,44 @@ namespace DataImporter.Importing.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             modelBuilder.Entity<ApplicationUser>()
                 .ToTable("AspNetUsers",t => t.ExcludeFromMigrations())
                 .HasMany<Group>()
-                .WithOne(t => t.ApplicationUser);
+                .WithOne(t => t.ApplicationUser)
+                .HasForeignKey(f => f.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ApplicationUser>()
                 .ToTable("AspNetUsers", t => t.ExcludeFromMigrations())
                 .HasMany<History>()
-                .WithOne(t => t.ApplicationUser);
+                .WithOne(t => t.ApplicationUser)
+                .HasForeignKey(f => f.ApplicationUserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<History>()
-                .HasOne(s => s.Group)
+                .HasOne(x => x.Group)
                 .WithMany(g => g.Histories)
-                .HasForeignKey(s => s.GroupId)
+                .HasForeignKey(x => x.GroupId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Column>()
+                .HasOne(x => x.Group)
+                .WithMany(g => g.Columns)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Row>()
+                .HasOne(x => x.Group)
+                .WithMany(g => g.Rows)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Cell>()
+                .HasOne(x => x.Row)
+                .WithMany(g => g.Cells)
+                .HasForeignKey(x => x.RowId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<Group> Groups { get; set; }

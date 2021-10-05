@@ -76,6 +76,9 @@ namespace DataImporter.Web.Controllers
         {
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
+            if (!await _roleManager.RoleExistsAsync("Member"))
+                await _roleManager.CreateAsync(new Role("Member"));
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
@@ -92,16 +95,17 @@ namespace DataImporter.Web.Controllers
                     var callbackUrl = Url.ActionLink(
                         action: "ConfirmEmail",
                         controller: "Account",
-                        values: new { userId = user.Id, code = code},
+                        values: new { userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
                     //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    await _mailService.SendEmailAsync(new MailRequest() { 
-                    Subject = "Email Confirmation",
-                    ToEmail = model.Email,
-                    Body = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
+                    await _mailService.SendEmailAsync(new MailRequest()
+                    {
+                        Subject = "Email Confirmation",
+                        ToEmail = model.Email,
+                        Body = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
                     });
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -135,7 +139,7 @@ namespace DataImporter.Web.Controllers
 
             var recaptcha = _recaptcha.RecaptchaVerify(model.Token);
 
-            if(!recaptcha.Result.success && recaptcha.Result.score <= 0.5)
+            if (!recaptcha.Result.success && recaptcha.Result.score <= 0.5)
             {
                 ModelState.AddModelError(string.Empty, "Verification failed...");
             }
