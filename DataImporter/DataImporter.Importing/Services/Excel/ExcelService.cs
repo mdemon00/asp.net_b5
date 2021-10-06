@@ -48,37 +48,41 @@ namespace DataImporter.Importing.Services
                 var count = 1;
                 foreach (IXLRow row in workSheet.Rows())
                 {
-
                     if (count == 10)
                         return dt;
-                    if (firstRow)
-                    {
-                        foreach (IXLCell cell in row.Cells())
-                        {
-                            dt.Columns.Add(cell.Value.ToString());
-                        }
-                        firstRow = false;
-                    }
-                    else
-                    {
-                        dt.Rows.Add();
-                        int i = 0;
 
-                        try
+                    if (!row.IsEmpty())
+                    {
+                        if (firstRow)
                         {
                             foreach (IXLCell cell in row.Cells())
                             {
-                                dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
-                                i++;
+                                dt.Columns.Add(cell.Value.ToString());
                             }
+                            firstRow = false;
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            _logger.LogError("Error", ex);
-                        }
+                            dt.Rows.Add();
+                            int i = 0;
 
+                            try
+                            {
+                                foreach (IXLCell cell in row.Cells())
+                                {
+                                    dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                                    i++;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError("Error", ex);
+                            }
+
+                        }
+                        count++;
                     }
-                    count++;
+
                 }
 
                 return dt;
@@ -108,10 +112,13 @@ namespace DataImporter.Importing.Services
                 {
                     Entities.Row currentRow = null;
 
-                    currentRow = _rowService.CreateRow(new Row
+                    if (!row.IsEmpty())
                     {
-                        GroupId = group.Id
-                    });
+                        currentRow = _rowService.CreateRow(new Row
+                        {
+                            GroupId = group.Id
+                        });
+                    }
 
                     if (currentRow != null)
                     {
@@ -209,6 +216,23 @@ namespace DataImporter.Importing.Services
             }
 
         }
+
+        public void RemoveSheet(string path, dynamic worksheetName)
+        {
+            try
+            {
+                if (File.Exists(Path.Combine(path, worksheetName)))
+                {
+                    File.Delete(Path.Combine(path, worksheetName));
+                }
+                else _logger.LogWarning("File not found");
+            }
+            catch (IOException ioExp)
+            {
+                _logger.LogError(ioExp.Message);
+            }
+        }
+
         public (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
     string searchText, string sortText, int groupId = 0, bool export = false)
         {
@@ -290,7 +314,7 @@ namespace DataImporter.Importing.Services
 
                 var columns = _columnService.GetAllColumns(group == null ? groupId : group.Id);
 
-                if (columns.Count < 0)
+                if (columns.Count > 0)
                     pos = columns
                        .Select((Value, Index) => new { Value, Index })
                        .Where(p => p.Value.Name.Trim() == sortText.Split(" ")[0].Trim()).FirstOrDefault().Index;

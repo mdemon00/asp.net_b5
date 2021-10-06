@@ -46,6 +46,8 @@ namespace DataImporter.Worker.Services
 
                             history.Status = "Completed";
                             _historyService.UpdateHistory(history);
+
+                            _excelService.RemoveSheet(_settings.Upload_Location, history.FileName);
                         }
                         catch(Exception ex)
                         {
