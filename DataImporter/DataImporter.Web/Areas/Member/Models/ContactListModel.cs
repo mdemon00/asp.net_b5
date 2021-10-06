@@ -52,7 +52,7 @@ namespace DataImporter.Areas.Member.Models
             var data = _excelService.GetSheets(
                 tableModel.PageIndex,
                 tableModel.PageSize,
-                tableModel.SearchText,
+                tableModel.GetSearchText(new string[] { "Category", "SearchText", "DateMin", "DateMax" }),
                 tableModel.GetSortText(_columnService.GetAllColumns(group == null ? 0 : group.Id).Select(i => i.Name.ToString()).ToArray()),
                 group == null ? 0 : group.Id
                 );

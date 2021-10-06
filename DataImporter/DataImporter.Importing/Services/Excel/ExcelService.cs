@@ -280,18 +280,18 @@ namespace DataImporter.Importing.Services
                 var filteredCellGroup = new List<string>();
                 var exist = false;
 
-                if (!string.IsNullOrEmpty(searchText))
+                if (!string.IsNullOrEmpty(searchText.Split(',')[1]))
                 {
                     foreach (var cell in cellGroup)
                     {
-                        if (cell.Data.Contains(searchText))
+                        if (cell.Data.Contains(searchText.Split(',')[1]))
                         {
                             exist = true;
                         }
                     }
                 }
 
-                if (exist || string.IsNullOrEmpty(searchText))
+                if (exist || string.IsNullOrEmpty(searchText.Split(',')[1]))
                 {
                     foreach (var cell in cellGroup)
                     {
@@ -302,6 +302,46 @@ namespace DataImporter.Importing.Services
 
                 }
             }
+
+            if (!string.IsNullOrEmpty(searchText.Split(',')[2]) && !string.IsNullOrEmpty(searchText.Split(',')[3]))
+            {
+                var fromDt = Convert.ToDateTime(searchText.Split(',')[2]);
+                var toDt = Convert.ToDateTime(searchText.Split(',')[3]);
+
+                //var temp = resultData.Select(x => x).Where((value, i) => i == 0
+                //&& Convert.ToDateTime(value) >= fromDt
+                //&& Convert.ToDateTime(value) <= toDt
+                //);
+
+                var tempData = new List<string[]>();
+
+                foreach (var arr in resultData)
+                {
+                    var found = false;
+                    var itemCount = 0;
+                    foreach (var item in arr)
+                    {
+                        if (itemCount == 0)
+                        {
+                            if (Convert.ToDateTime(item) >= fromDt && Convert.ToDateTime(item) <= toDt)
+                            {
+                                found = true;
+                            }
+                        }
+                        itemCount++;
+                    }
+
+                    if (found)
+                    {
+                        tempData.Add(arr);
+                    }
+                }
+
+                resultData = tempData;
+            }
+
+            if (resultData.Count < 1)
+                return (new List<string[]>() { }, 0, 0);
 
             totalDisplay = resultData.Count();
 

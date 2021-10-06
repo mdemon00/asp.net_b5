@@ -71,6 +71,7 @@
     <script>
 
         $.fn.Datatable = function () {
+
             $('#Histories').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -78,7 +79,12 @@
                 "ajax": {
                     'type': 'POST',
                     'url': '/member/History/GetHistoryData',
-                    'data': {},
+                    'data': {
+                        SearchItems : {
+                            Category: '1jkjhih',
+                            SearchText: '2oihihioh',
+                        }
+                    },
                 },
                 "columnDefs": [
                     {

@@ -30,6 +30,11 @@ namespace DataImporter.Common.Utilities
         {
             get
             {
+                for (var i = 0; i < 5; i++)
+                {
+                    var columnValue = _request.Form.Where(x => x.Key == $"SearchItems[course]").FirstOrDefault().Value;
+                }
+
                 return _request.Form["search[value]"];
             }
         }
@@ -41,6 +46,7 @@ namespace DataImporter.Common.Utilities
                 return _request.Form["groupName"];
             }
         }
+        
         public int SortingCols { get; set; }
 
         public DataTablesAjaxRequestModel(HttpRequest request)
@@ -94,6 +100,35 @@ namespace DataImporter.Common.Utilities
                 throw new InvalidOperationException("Http method not supported, use get or post");
         }
 
+        public string GetSearchText(string[] columnNames)
+        {
+            var method = _request.Method.ToLower();
+            if (method == "get")
+                return ReadSearchValues(_request.Query, columnNames);
+            else if (method == "post")
+                return ReadSearchValues(_request.Form, columnNames);
+            else
+                throw new InvalidOperationException("Http method not supported, use get or post");
+        }
+
+        private string ReadSearchValues(IEnumerable<KeyValuePair<string, StringValues>>
+            requestValues, string[] columnNames)
+        {
+
+            var searchText = new StringBuilder();
+
+            for( var i = 0; i < columnNames.Length; i++)
+            {
+                if (searchText.Length > 0)
+                    searchText.Append(",");
+
+                var columnValue = requestValues.Where(x => x.Key == $"SearchItems[{columnNames[i]}]").FirstOrDefault().Value;
+
+                searchText.Append(columnValue);
+            }
+
+            return searchText.ToString();
+        }
         private string ReadValues(IEnumerable<KeyValuePair<string, StringValues>>
             requestValues, string[] columnNames)
         {

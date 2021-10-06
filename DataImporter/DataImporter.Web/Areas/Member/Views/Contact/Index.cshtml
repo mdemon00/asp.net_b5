@@ -81,14 +81,25 @@
                                             <input type="text" id="date-max" name="datepicker" class="form-control" placeholder="To:">
                                         </div>
                                     </div>
+
+                                    <div class="col-md-2 pl-1 mt-auto">
+                                        <div class="form-group">
+                                            <label >Category</label>
+                                            <select class="form-control" id="CategorySelect">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2 pl-1 mt-auto">
+                                        <div class="form-group">
+                                            <label>Search Text</label>
+                                            <input type="text" class="form-control" id="SearchText" placeholder="">
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-1 pl-1 mt-auto">
                                         <div class="form-group">
                                             <a class="btn btn-primary btn-default" id="advFilter"><i class="fa fa-filter "></i> Filter</a>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2 pl-1 mt-auto">
-                                        <div class="form-group">
-                                            <a class="btn btn-secondary btn-default " href="#"><i class="fa fa-eraser "></i> Clear Filter</a>
                                         </div>
                                     </div>
                                 </div>
@@ -137,16 +148,28 @@
 
         });
 
+        $("#advFilter").click(function () {
+            var def = $.Deferred();
+            def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns($('#gropuNames').find(':selected')[0].innerText));
+        });
+
         $.fn.Datatable = function (name = '', targets = 0) {
 
             $('#contacts').DataTable({
                 "processing": true,
                 "serverSide": true,
+                bFilter: false,
                 "ajax": {
                     'type': 'POST',
                     'url': '/member/Contact/GetContactsData',
                     'data': {
                         groupName: name,
+                        SearchItems: {
+                            Category: $(CategorySelect).children("option:selected").val(),
+                            SearchText: $(SearchText).val(),
+                            DateMin: $('#date-min').datetimepicker().val(),
+                            DateMax: $('#date-max').datetimepicker().val()
+                        }
                     }
                 },
                 "columnDefs": [
@@ -155,14 +178,14 @@
                         "targets": targets,
                         "render": function (data, type, row) {
                             return `<td>
-                                                                                                                                    <div class="form-button-action">
-                                                                                                                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
-                                                                                                                                            <i class="fa fa-edit"></i>
-                                                                                                                                        </button>
-                                                                                                                                        <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
-                                                                                                                                            <i class="fa fa-times"></i>
-                                                                                                                                        </button>
-                                                                                                                                    </div></td>`;
+                                                                                                                                            <div class="form-button-action">
+                                                                                                                                                <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task" onclick="window.location.href='/member/contact/edit/${data}'" value='${data}'>
+                                                                                                                                                    <i class="fa fa-edit"></i>
+                                                                                                                                                </button>
+                                                                                                                                                <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-danger show-delete-modal" data-original-title="Remove" data-id='${data}' value='${data}'>
+                                                                                                                                                    <i class="fa fa-times"></i>
+                                                                                                                                                </button>
+                                                                                                                                            </div></td>`;
                         }
                     }
                 ],
@@ -255,8 +278,10 @@
                 var length = 0;
                 if (response != null) {
                     $.each(response, function (index, col) {
-                        $('#row1').append('<th style="width: 10%">' + col.name + index + '</th>');
+                        $('#row1').append('<th style="width: 10%">' + col.name + '</th>');
                         $('#row2').append('<th>' + col.name + index + '</th>');
+
+                        $('#CategorySelect').append('<option>' + col.name + '</option>');
                         length++;
                     });
 
