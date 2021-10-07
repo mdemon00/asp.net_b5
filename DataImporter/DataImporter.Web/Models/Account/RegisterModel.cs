@@ -23,5 +23,10 @@ namespace DataImporter.Web.Models.Account
         public string ConfirmPassword { get; set; }
         public string ReturnUrl { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+        [Required]
+        public string Token { get; set; }
+        [Required]
+        public string FullName { get; set; }
     }
 }

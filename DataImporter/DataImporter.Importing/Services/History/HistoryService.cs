@@ -105,5 +105,20 @@ namespace DataImporter.Importing.Services
 
             return !string.IsNullOrEmpty(userId);
         }
+
+        public int GetPendingTaskCount()
+        {
+            return _importingUnitOfWork.Histories.GetCount(x => x.Status == "Pending");
+        }
+        
+        public int GetImportedCount()
+        {
+            return _importingUnitOfWork.Histories.GetCount(x => x.Status == "Completed" && x.ProcessType == "Import");
+        }
+        
+        public int GetExportedCount()
+        {
+            return _importingUnitOfWork.Histories.GetCount(x => x.Status == "Completed" && x.ProcessType == "Export");
+        }
     }
 }

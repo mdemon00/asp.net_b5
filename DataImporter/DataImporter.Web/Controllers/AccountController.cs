@@ -74,14 +74,22 @@ namespace DataImporter.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            var recaptcha = _recaptcha.RecaptchaVerify(model.Token);
 
-            if (!await _roleManager.RoleExistsAsync("Member"))
-                await _roleManager.CreateAsync(new Role("Member"));
+            if (!recaptcha.Result.success && recaptcha.Result.score <= 0.5)
+            {
+                ModelState.AddModelError(string.Empty, "Verification failed...");
+            }
+
+            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                if (!await _roleManager.RoleExistsAsync("Member"))
+                    await _roleManager.CreateAsync(new Role("Member"));
+
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email,
+                    FirstName = model.FullName.Split()[0], LastName = model.FullName.Split()[1] };
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 await _userManager.AddToRoleAsync(user, "Member");

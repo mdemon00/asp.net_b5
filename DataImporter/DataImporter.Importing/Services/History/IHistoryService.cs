@@ -11,5 +11,9 @@ namespace DataImporter.Importing.Services
     string searchText, string sortText);
         IList<History> GetPendingHistory();
         void UpdateHistory(History history);
+        int GetPendingTaskCount(); 
+        int GetImportedCount(); 
+        int GetExportedCount(); 
+
     }
 }

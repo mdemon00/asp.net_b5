@@ -14,5 +14,6 @@ namespace DataImporter.Importing.Services
         Group GetGroup(string name, bool fromWorkerService = false);
         void UpdateGroup(Group group, bool fromWorkerService = false);
         void DeleteGroup(int id);
+        int GetGroupCount();
     }
 }

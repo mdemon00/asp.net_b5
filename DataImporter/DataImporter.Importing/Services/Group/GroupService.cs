@@ -195,5 +195,10 @@ namespace DataImporter.Importing.Services
             }
 
         }
+
+        public int GetGroupCount()
+        {
+            return _importingUnitOfWork.Groups.GetCount();
+        }
     }
 }
