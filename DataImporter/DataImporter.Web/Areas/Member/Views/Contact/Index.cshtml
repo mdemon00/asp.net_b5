@@ -149,8 +149,14 @@
         });
 
         $("#advFilter").click(function () {
+
+            var name = '';
+            if ($('#gropuNames').find(':selected').length > 0) {
+                name = $('#gropuNames').find(':selected')[0].innerText;
+            }
+
             var def = $.Deferred();
-            def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns($('#gropuNames').find(':selected')[0].innerText));
+            def.then($('#contacts').DataTable().destroy(), $.fn.GetColumns(name));
         });
 
         $.fn.Datatable = function (name = '', targets = 0) {
@@ -268,12 +274,12 @@
 
             },
             success: function (response) {
-                console.log(response);
 
                 $("#contacts > thead > tr").empty();
                 $("#contacts > tfoot > tr").empty();
                 $("#contacts > tbody > tr").empty();
 
+                $("#CategorySelect").empty();
 
                 var length = 0;
                 if (response != null) {

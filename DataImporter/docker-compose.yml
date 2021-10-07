@@ -1,0 +1,33 @@
+version: "3"
+services:
+    web:
+        build: 
+            context: .
+            dockerfile: DataImporter.Web/Dockerfile
+        env_file: 
+            - web.env
+        volumes:
+            - app-volume:/app/wwwroot
+        ports:
+            - "8000:80"
+        depends_on:
+            - db
+    dataImporterworker:
+        build: 
+            context: .
+            dockerfile: DataImporter.Worker/Dockerfile
+        env_file: 
+            - web.env
+        depends_on: 
+            - db 
+        volumes:
+            - app-volume:/app/wwwroot
+    db:
+        image: "mcr.microsoft.com/mssql/server"
+        env_file: 
+            - web.env
+        expose:
+            - "1433"
+volumes:
+     dataimporter-data: 
+        external: true

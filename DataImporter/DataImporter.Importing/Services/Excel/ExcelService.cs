@@ -236,6 +236,7 @@ namespace DataImporter.Importing.Services
         public (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
     string searchText, string sortText, int groupId = 0, bool export = false)
         {
+
             Entities.Group group = null;
 
             if (groupId < 1)
@@ -251,7 +252,8 @@ namespace DataImporter.Importing.Services
             if (export)
             {
                 cellsGroupList = _importingUnitOfWork.Rows.GetDynamic(
-                groupId == 0 ? x => x.GroupId == group.Id :
+                groupId == 0 ? x => x.GroupId == group.Id
+                :
                 x => x.GroupId == groupId,
                 null, "Cells", false)
                 .SelectMany(x => x.Cells)
@@ -275,23 +277,43 @@ namespace DataImporter.Importing.Services
             var total = cellsGroupList.SelectMany(x => x).Count();
             var totalDisplay = total;
 
+            // now what i am going to do is not a good coding style. Instead of searching from database i'm doing here!
+            // will fixed it later inshaAllah 
+
+            var search = "";
+            var fromdate = "";
+            var todate = "";
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                if (searchText.Split(',').Length > 0)
+                {
+                    search = searchText.Split(',')[1];
+                }
+                if (searchText.Split(',').Length > 3)
+                {
+                    fromdate = searchText.Split(',')[2];
+                    todate = searchText.Split(',')[3];
+                }
+            }
+
             foreach (var cellGroup in cellsGroupList)
             {
                 var filteredCellGroup = new List<string>();
                 var exist = false;
 
-                if (!string.IsNullOrEmpty(searchText.Split(',')[1]))
+                if (!string.IsNullOrEmpty(search))
                 {
                     foreach (var cell in cellGroup)
                     {
-                        if (cell.Data.Contains(searchText.Split(',')[1]))
+                        if (cell.Data.Contains(search))
                         {
                             exist = true;
                         }
                     }
                 }
 
-                if (exist || string.IsNullOrEmpty(searchText.Split(',')[1]))
+                if (exist || string.IsNullOrEmpty(search))
                 {
                     foreach (var cell in cellGroup)
                     {
@@ -303,15 +325,15 @@ namespace DataImporter.Importing.Services
                 }
             }
 
-            if (!string.IsNullOrEmpty(searchText.Split(',')[2]) && !string.IsNullOrEmpty(searchText.Split(',')[3]))
-            {
-                var fromDt = Convert.ToDateTime(searchText.Split(',')[2]);
-                var toDt = Convert.ToDateTime(searchText.Split(',')[3]);
+            totalDisplay = resultData.Count();
 
-                //var temp = resultData.Select(x => x).Where((value, i) => i == 0
-                //&& Convert.ToDateTime(value) >= fromDt
-                //&& Convert.ToDateTime(value) <= toDt
-                //);
+            if (export)
+                return (resultData, total, totalDisplay);
+
+            if (!string.IsNullOrEmpty(fromdate) && !string.IsNullOrEmpty(todate))
+            {
+                var fromDt = Convert.ToDateTime(fromdate);
+                var toDt = Convert.ToDateTime(todate);
 
                 var tempData = new List<string[]>();
 
@@ -345,9 +367,6 @@ namespace DataImporter.Importing.Services
 
             totalDisplay = resultData.Count();
 
-            if (export)
-                return (resultData, total, totalDisplay);
-
             if (!string.IsNullOrEmpty(sortText))
             {
                 var pos = 0;
@@ -379,17 +398,6 @@ namespace DataImporter.Importing.Services
 
                 return (resultData, total, totalDisplay);
             }
-        }
-
-        public List<Column> GetColums()
-        {
-            List<Column> _columns = new List<Column>();
-
-            var columns = _columnService.GetAllColumns();
-
-            _mapper.Map(columns, _columns);
-
-            return _columns;
         }
     }
 }

@@ -94,7 +94,7 @@ namespace DataImporter.Worker.Services
 
                             try
                             {
-                                _mailService.SendEmailAsync(request);
+                                _mailService.SendEmailAsync(request).Wait();
 
                                 history.EmailSent = 1;
 

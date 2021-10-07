@@ -13,6 +13,5 @@ namespace DataImporter.Importing.Services
         void RemoveSheet(string path, dynamic worksheetName);
         (IList<string[]> records, int total, int totalDisplay) GetSheets(int pageIndex, int pageSize,
             string searchText, string sortText, int groupId = 0, bool export = false);
-        List<Column> GetColums();
     }
 }

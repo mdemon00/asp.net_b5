@@ -184,6 +184,7 @@
 <script src="/lib/jquery-validate/jquery.validate.min.js"></script>
 <!-- Sweet Alert -->
 <script>
+    $(document).ready(function () {
        grecaptcha.ready(function () {
            grecaptcha.execute('@GoogleRecaptcha.Value.Recaptcha_Site_Key', { action: 'homepage' }).then(function (token) {
 
@@ -191,6 +192,7 @@
 
                 });
        });
+    });
 
     $("#LoginValidation").validate({
         validClass: "success",
