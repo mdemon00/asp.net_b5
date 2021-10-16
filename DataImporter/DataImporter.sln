@@ -13,7 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Common", "Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Membership", "DataImporter.Membership\DataImporter.Membership.csproj", "{959A3B3C-8132-439D-8434-D862393D43DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Worker", "DataImporter.Worker\DataImporter.Worker.csproj", "{56FC7558-9665-4005-AEA2-34886EB62A10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Worker", "DataImporter.Worker\DataImporter.Worker.csproj", "{56FC7558-9665-4005-AEA2-34886EB62A10}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{34400ABE-DE05-4047-A13C-8C96821888EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Importing.Tests", "Test\DataImporter.Importing.Test\DataImporter.Importing.Tests\DataImporter.Importing.Tests.csproj", "{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Web.Tests", "Test\DataImporter.Web.Tests\DataImporter.Web.Tests.csproj", "{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,9 +51,21 @@ Global
 		{56FC7558-9665-4005-AEA2-34886EB62A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56FC7558-9665-4005-AEA2-34886EB62A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56FC7558-9665-4005-AEA2-34886EB62A10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF} = {34400ABE-DE05-4047-A13C-8C96821888EB}
+		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB} = {34400ABE-DE05-4047-A13C-8C96821888EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {821DE323-4AD5-46B3-8EB5-6835FB80B18F}

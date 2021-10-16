@@ -7,12 +7,12 @@ services:
         env_file: 
             - web.env
         volumes:
-            - app-volume:/app/wwwroot
+            - dataimporter-data:/app/Logs
         ports:
             - "8000:80"
         depends_on:
             - db
-    dataImporterworker:
+    dataimporterworker:
         build: 
             context: .
             dockerfile: DataImporter.Worker/Dockerfile
@@ -21,7 +21,7 @@ services:
         depends_on: 
             - db 
         volumes:
-            - app-volume:/app/wwwroot
+            - dataimporter-data:/app/Logs
     db:
         image: "mcr.microsoft.com/mssql/server"
         env_file: 

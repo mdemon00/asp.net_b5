@@ -24,6 +24,12 @@ namespace DataImporter.Areas.Member.Models
         public EditGroupModel()
         {
         }
+        
+        public EditGroupModel(IGroupService groupService, IMapper mapper)
+        {
+            _groupService = groupService;
+            _mapper = mapper;
+        }
 
         public void Resolve(ILifetimeScope scope)
         {
@@ -35,8 +41,9 @@ namespace DataImporter.Areas.Member.Models
         {
             var group = _groupService.GetGroup(id);
 
-            Name = group.Name;
-            Id = group.Id;
+            _mapper.Map(group, this);
+            //Name = group.Name;
+            //Id = group.Id;
         }
 
         internal void Update()
