@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Importing.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Web.Tests", "Test\DataImporter.Web.Tests\DataImporter.Web.Tests.csproj", "{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Api", "DataImporter.Api\DataImporter.Api.csproj", "{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Api", "DataImporter.Api\DataImporter.Api.csproj", "{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.App", "DataImporter.App\DataImporter.App.csproj", "{77F67B2E-F766-4A73-ABC0-245624E1B5A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77F67B2E-F766-4A73-ABC0-245624E1B5A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77F67B2E-F766-4A73-ABC0-245624E1B5A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77F67B2E-F766-4A73-ABC0-245624E1B5A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77F67B2E-F766-4A73-ABC0-245624E1B5A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
