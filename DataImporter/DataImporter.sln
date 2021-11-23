@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Worker", "Data
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{34400ABE-DE05-4047-A13C-8C96821888EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Importing.Tests", "Test\DataImporter.Importing.Test\DataImporter.Importing.Tests\DataImporter.Importing.Tests.csproj", "{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Importing.Tests", "Test\DataImporter.Importing.Test\DataImporter.Importing.Tests\DataImporter.Importing.Tests.csproj", "{8CCC47D9-14C6-4AA1-A97E-264A6085A0FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Web.Tests", "Test\DataImporter.Web.Tests\DataImporter.Web.Tests.csproj", "{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter.Web.Tests", "Test\DataImporter.Web.Tests\DataImporter.Web.Tests.csproj", "{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter.Api", "DataImporter.Api\DataImporter.Api.csproj", "{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D6DFCC5-000E-4439-A0FD-DCB5915CBCBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD63A2EF-9F27-42E9-B29E-6A2BA27B2FD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
