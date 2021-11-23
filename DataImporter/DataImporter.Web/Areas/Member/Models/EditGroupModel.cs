@@ -41,9 +41,9 @@ namespace DataImporter.Areas.Member.Models
         {
             var group = _groupService.GetGroup(id);
 
-            _mapper.Map(group, this);
-            //Name = group.Name;
-            //Id = group.Id;
+            //_mapper.Map(group, this);
+            Name = group.Name;
+            Id = group.Id;
         }
 
         internal void Update()
